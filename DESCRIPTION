@@ -1,0 +1,24 @@
+Package: rasterPrep
+Type: Package
+Title: Package to prepare raster datasets for analysis or viewing
+Version: 0.1.1
+Author: Ethan Plunkett
+Maintainer: Ethan Plunkett <eplunkett@eco.umass.edu>
+Description: A package for preparing raster data for analysis and viewing. 
+  This package has tools for creating a series of aligned tif files from raster
+  and vector data, and a separate set of tools for creating tif files optimized
+  for viewing with GIS software.
+License: GPL-2
+Encoding: UTF-8
+Language:en-US
+LazyData: true
+RoxygenNote: 6.1.1
+Imports:
+  gdalUtils,
+  grDevices,
+  foreign,
+  raster,
+  rgdal
+Suggests: knitr,
+    rmarkdown
+VignetteBuilder: knitr

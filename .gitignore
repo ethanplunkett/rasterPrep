@@ -1,0 +1,17 @@
+# Ignore the compiled documentation
+inst/doc
+
+# Ignore rstudio files
+.Rproj.user
+.Rhistory
+.Rdata
+
+# Ignore Mac Specific Folder Data 
+.DS_Store
+
+# Ignore editpad pro __history folders
+__history/
+
+
+
+

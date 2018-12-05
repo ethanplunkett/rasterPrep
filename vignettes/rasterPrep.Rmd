@@ -1,0 +1,282 @@
+---
+title: "rasterPrep preparing raster files for modeling or viewing"
+author: "Ethan Plunkett"
+date: "`r Sys.Date()`"
+output: rmarkdown::html_vignette
+vignette: >
+  %\VignetteIndexEntry{rasterPrep}
+  %\VignetteEngine{knitr::rmarkdown}
+  %\VignetteEncoding{UTF-8}
+---
+
+```{r setup, include = FALSE}
+knitr::opts_chunk$set(
+  collapse = TRUE,
+  comment = "#>"
+)
+```
+
+# rasterPrep 
+The rasterPrep package provides a workflow to prepare data for modeling by creating a standardized set of rasters from disparate raster and vector GIS data; and a second workflow for making prepare raster files for viewing in GIS software.  These workflows are each documented in their own section below.
+
+### Installation
+
+This package requires that GDAL Utilities be installed on your computer and the directory that houses them be added to your PATH environmental variable.  On Linux and Mac systems I recommend you use your package manager to install GDAL.  On Windows I recommend you download the latest "Stable release" from http://download.gisinternals.com/; you want the "Generic installer for the GDAL core components".   With considerably more effort you can install GDAL Utilities on Windows with python bindings but that is not required for this package;  If you want to anyway read this: https://sandbox.idre.ucla.edu/sandbox/tutorials/installing-gdal-for-windows.)
+
+### A little background on GIS tools in R
+The Geospatial Data Abstraction Library ([GDAL](https://www.gdal.org)) provides a set of tools for reading and writing GIS data; it is behind the [rgdal package](https://cran.r-project.org/web/packages/rgdal/index.html), which in turn is used by many of the spatial R packages (raster, sp, and sf to name three of the most commonly used).  
+
+[GDAL Utilities](https://www.gdal.org/gdal_utilities.html) provide powerful tools for manipulating GIS files directly on disk, and full access to the utilities with all their arguments are providedin the  [gdalUtils package](https://cran.r-project.org/web/packages/gdalUtils/)) package.  However, the utilities have many arguments and are thus a little tricky to use.  
+
+This package (rasterPrep) provides convenience functions that automate filling out many of those arguments with sensible defaults.  One big simplification provided in rasterPrep is that instead of specifying the projection, cell dimensions, and extent of output raster files directly via many parameters, the functions here ask for the path to a reference raster which is used to define those parameters. 
+
+
+## I. Preparing rasters for modeling.
+
+This section walks through the process of preparing raster data for modeling.
+
+Often the first step in any raster based GIS modeling exercise is creating a series of raster files that coincide perfectly. That is they agree in cell size, cell alignment, projection, and extent. Typically, the source data is a mix of raster and vector files that do not coincide.  This workflow demonstrates how to fix that.
+
+The process:
+
+1. Load packages and setup paths
+2. Create a reference raster file
+3. Use `warpToReference()` to make existing rasters coincide with the reference
+4. Use `rasterizeToReference()` to convert vector data to rasters that coincide with the reference.
+
+### 1. Load packages and setup paths
+```{r, echo = TRUE, message = FALSE, warning = FALSE}
+# Load packages
+library(rasterPrep)
+library(gdalUtils)  # for ogr2ogr() used to reproject vector Shapefiles
+library(rgdal)  # for GDALinfo()
+
+# Note because I'm pulling data from one read-only directory and writing to a
+# a second I'm defining complete paths here.  Often it's easier to set a working
+# directory then use file names when calling the functions.
+
+# Set paths for retrieving input data included with this package
+inPaths <- list(
+  bound = system.file("extdata","Amherst.shp" , package = "rasterPrep"),
+  slope = system.file("extdata","slope.tif" , package = "rasterPrep"), 
+  roads =  system.file("extdata","roads.shp" , package = "rasterPrep"),
+  key = system.file("extdata","roadClassKey.csv" , package = "rasterPrep")
+)
+
+# Output directory: you might want to replace this with a path of your choosing:
+outDir <- tempdir() 
+
+# Set output paths 
+outPaths <- list(
+  ref = file.path(outDir, "reference.tif"),
+  slopeTemp = file.path(outDir, "slopeTemp.tif"),
+  slope = file.path(outDir, "slope.tif"),
+  roadLines = file.path(outDir, "roadsLines.shp"),
+  roadsTemp = file.path(outDir, "roads1.tif"),
+  roads  = file.path(outDir, "roads.tif"), 
+  roadClass  = file.path(outDir, "roadClass.tif") )
+
+```
+
+The three input data sets included with this package are:
+
+1.  "Amherst.shp":  The polygon boundary for the Town of Amherst, MA extracted from here:
+https://docs.digital.mass.gov/dataset/massgis-data-community-boundaries-towns
+It is in Mass Mainland mass state plain projection  ([EPSG:26986](https://epsg.io/26986)).
+This is our study area and output projection.
+
+2. "slope.tif": A raster clipped from https://scholarworks.umass.edu/data/17/ with 
+the original projection and cell alignment preserved.  It is in the USA Contiguous Albers Equal Area Conic Projection([ESRI:202003](https://epsg.io/102003)).
+
+3. "roads.shp": A Shapefile containing vector roads, originally from Open Street map but with small roads removed and clipped to Amherst.  It's in the same projection as 2. 
+
+### 2. Create a reference raster
+
+You may already have a raster that you would like all your other data to coincide with.  If so use that as your reference.  If we do not already have a reference raster then we can create one from a polygon that delineates a study area boundary and has the projection we would like to work in.
+```{r, echo = TRUE, message = FALSE, warning = FALSE, results = FALSE}
+
+makeReference(polyFile = inPaths$bound, destination = outPaths$ref, cellsize = 30)
+
+```
+
+Note: The optional 'alignTo' argument determines the cell alignment (AKA "snapping"); the default (`"origin"`) means that the edges of the cells will all fall on integer multiples of the cell size. If you already have some raster data in your desired projection you can also set alignTo="reference" and then set the reference  argument to the path of a raster that will set the cell alignment.  In this case the reference would only be used for cell alignment and not extent; allowing you to use that data without resampling or shifting the pixels. With either pixel alignment the resulting raster is going to have an extent just big enough to include all the pixels that overlap the bounds of the study area as defined in polyFile. 
+
+### 3. Warp raster data to match the reference
+
+Here we will align the sample slope data with our reference raster.  We will reproject 
+and crop in one step and then clip (assign NA outside of the boundary polygon) 
+in a second step. I've found that although we can combine these all in one step
+the masking of pixels outside of the boundary isn't always consistent on the edges when reprojection and clipping are done together.
+
+If you don't want to clip you could just use the first step and you would retain data
+for the entire rectangular extent.
+
+Because slope is continuous we'll use the `"bilinear"` resampling method 
+in the first step.  If we were working with categorical data (E.g. land cover
+classes) we would leave the default nearest neighbor (`"near"`) method.
+
+
+```{r, echo = TRUE, message = FALSE, warning = FALSE, results = FALSE}
+
+# Reproject to final extent, projection and alignment
+warpToReference(inPaths$slope, outPaths$slopeTemp, reference = outPaths$ref, method = "bilinear")
+
+# Assign NA outside of boundary
+warpToReference(outPaths$slopeTemp, outPaths$slope, reference =  outPaths$ref, clip = inPaths$bound)
+
+# Delete intermediate file
+deleteTif(outPaths$slopeTemp)
+
+```
+
+### 4. Rasterize vector to match the reference
+
+Here we will first reproject the vector roads to our output projection and then 
+use the result to create a roads raster that matches the reference raster.
+
+To reproject the vector roads we are going to use the 'ogr2ogr()' function within the
+gdalUtils R package.  You could also use sp; or sf package to read in the vector data, reproject, and write out to a new Shapefile. 
+
+```{r, echo = TRUE, message = FALSE, warning = FALSE, results = FALSE}
+
+# Reproject vector to reference projection
+ref.proj <- GDALSpatialRef(outPaths$ref)  
+ogr2ogr(inPaths$roads, outPaths$roadLines, t_srs = ref.proj)
+
+```
+
+Now we are going to rasterize the vector data using `rasterizeToReference()` from this package.
+We could do this in several ways depending on what data we want in the final
+raster. Importantly this function will write on top of any existing destination raster files
+so multiple calls can be used to overlay data from different sources together
+in a file.
+
+In this first example we'll create a raster that has the ROADCLASS from 
+the Shapefile attributes in road cells and and NA everywhere else.
+
+Note a possible better workflow would be to separate out the road classes and 
+then burn each class sequentially into the same raster starting with the smallest
+class.  That would guarantee that bigger roads were not interrupted by smaller 
+roads.  Generating the separate files for each class could be done with gdalUtils::ogr2ogr() 
+with a select statement or by using the either the sp or sf package to read in the roads and 
+write out each class to a separate file. 
+
+```{r, echo = TRUE, message = FALSE, warning = FALSE, results = FALSE}
+rasterizeToReference(outPaths$roadLines, destination = outPaths$roadClass, reference = outPaths$ref, attribute = "ROADCLASS", type = "byte")
+
+```
+
+Next an example where we'll create a raster with NA outside the study area 
+boundary,  and 0 or 1 inside the boundary to indicate if there is a road. In this
+example we'll also set `allTouched=TRUE` and will result in roads with orthogonal connections.
+
+```{r, echo = TRUE, message = FALSE, warning = FALSE, results = FALSE}
+
+# Burn in zero everywhere within the study area boundary creating a new raster file in the process
+rasterizeToReference(inPaths$bound, outPaths$roadsTemp, reference = outPaths$ref, burn = 0, allTouched = TRUE)
+
+# Burn in 1 where there are roads (on top of values from prior step)
+rasterizeToReference(outPaths$roadLines, destination = outPaths$roadsTemp, burn = 1)
+
+# Write to new file while clipping.  Without this step road cells outside of the 
+#  study boundary will have a value of 1. This re-sets them to NA.
+warpToReference(outPaths$roadsTemp, outPaths$roads, reference = outPaths$ref, clip = inPaths$bound)
+
+# Delete intermediate file
+deleteTif(outPaths$roadsTemp)
+```
+
+Print out the paths to what we created:
+```{r, results= FALSE}
+cat("Files created here:\n\t",
+    normalizePath(outPaths$ref), " our reference raster\n\t",
+    normalizePath(outPaths$roadClass), " road class\n\t", 
+    normalizePath(outPaths$roads), " roads 1, other study area cells 0\n\t", 
+    normalizePath(outPaths$slope), " slope."
+    )
+
+
+```
+Show in New WindowClear OutputExpand/Collapse Output
+OGR data source with driver: ESRI Shapefile 
+Source: "C:\Users\landeco\Documents\R\win-library\3.4\rasterPrep\extdata", layer: "Amherst"
+with 1 features
+It has 20 fields
+Integer64 fields read as strings:  TOWNS_ TOWNS_ID TOWN_ID POP_CH MASS WITH WITHOUT 
+NULL
+Show in New WindowClear OutputExpand/Collapse Output
+Warping with system command:
+ "gdalwarp" -co TFW=YES -t_srs "+proj=lcc +lat_1=42.68333333333333 +lat_2=41.71666666666667 +lat_0=41 +lon_0=-71.5 +x_0=200000 +y_0=750000 +ellps=GRS80 +towgs84=0,0,0,0,0,0,0 +units=m +no_defs "  -overwrite -te 113820 895050 120540 909750 -tr 30 30 -r bilinear "C:/Users/landeco/Documents/R/win-library/3.4/rasterPrep/extdata/slope.tif" "C:/Users/landeco/AppData/Local/Temp/3/RtmpuMAgyN/slopeTemp.tif" 
+Done warping output at: C:/Users/landeco/AppData/Local/Temp/3/RtmpuMAgyN/slopeTemp.tif 
+Warping with system command:
+ "gdalwarp" -co TFW=YES -t_srs "+proj=lcc +lat_1=42.68333333333333 +lat_2=41.71666666666667 +lat_0=41 +lon_0=-71.5 +x_0=200000 +y_0=750000 +ellps=GRS80 +towgs84=0,0,0,0,0,0,0 +units=m +no_defs "  -overwrite -te 113820 895050 120540 909750 -tr 30 30 -cutline "C:/Users/landeco/Documents/R/win-library/3.4/rasterPrep/extdata/Amherst.shp" -r near "C:/Users/landeco/AppData/Local/Temp/3/RtmpuMAgyN/slopeTemp.tif" "C:/Users/landeco/AppData/Local/Temp/3/RtmpuMAgyN/slope.tif" 
+Done warping output at: C:/Users/landeco/AppData/Local/Temp/3/RtmpuMAgyN/slope.tif 
+Deleting:
+		C:/Users/landeco/AppData/Local/Temp/3/RtmpuMAgyN/slopeTemp.tif
+		C:\Users\landeco\AppData\Local\Temp\3\RtmpuMAgyN/slopeTemp.tfw
+Show in New WindowClear OutputExpand/Collapse Output
+[1] "+proj=lcc +lat_1=42.68333333333333 +lat_2=41.71666666666667 +lat_0=41 +lon_0=-71.5 +x_0=200000 +y_0=750000 +ellps=GRS80 +towgs84=0,0,0,0,0,0,0 +units=m +no_defs "
+Show in New WindowClear OutputExpand/Collapse Output
+Rasterizing with:
+ "gdal_rasterize" -a_srs "+proj=lcc +lat_1=42.68333333333333 +lat_2=41.71666666666667 +lat_0=41 +lon_0=-71.5 +x_0=200000 +y_0=750000 +ellps=GRS80 +towgs84=0,0,0,0,0,0,0 +units=m +no_defs " -te 113820 895050 120540 909750 -tr 30 30 -ot Byte  -a_nodata 255 -a "ROADCLASS" "C:\Users\landeco\AppData\Local\Temp\3\RtmpuMAgyN/roadsLines.shp" "C:\Users\landeco\AppData\Local\Temp\3\RtmpuMAgyN/roadClass.tif" 
+Show in New WindowClear OutputExpand/Collapse Output
+ Show Traceback
+Error in rasterizeToReference(inPaths$bound, outPaths$roadsTemp, reference = outPaths$ref, : When creating a new raster file the source vector coordinate reference sytem (CRS) must match the reference CRS. Reproject source to your reference projection.
+## II. Preparing raster files for viewing with GIS software
+
+The workflow in this section is for creating .tif files that are ideally suited for viewing with GIS software. These are compressed, tiled, and have overviews (AKA pyramids).  Depending on the data contained in the file we may also add statistics, a color table, and/or a Value Attribute Table (VAT).  Tiling and overviews allow GIS software to efficiently display the data across a wide range of scales and compression reduces file size. 
+
+Everything we do here either hinders reading and processing with the raster package or adds extra files that don't help. So I do not recommend running analysis on the files created by these operations with the raster package.
+
+Tiling and overviews aren't necessary for the small demonstration files we are using but make a huge difference with large datasets.  
+
+For many datasets a single function call will create a copy of the input raster that is optimized for viewing. Here's an example with the slope grid produced above. It is a continuous grid so I'm setting `overviewResample="average"` so that each overview cell will be assigned the average value of all the original cells it covers.
+
+```{r, results= FALSE}
+  final.dir <- file.path(outDir, "final")
+ dir.create(final.dir, showWarnings = FALSE)
+ makeNiceTif(outPaths$slope, file.path(final.dir,  "slope.tif") , overviewResample = "average")
+
+```
+
+For categorical data we may want to add a VAT and color table. I've found its very difficult to embed color tables in a tif file using R. The method used by `addColorTable()` works only for byte encoded grids; it also requires every integer between 0 and the maximum value in the grid to appear in the color table. Finally, it is displayed in a somewhat clunky way in ArcGIS.  However, it is best way I've found to programmatically set the color and labels for categories in a tif file from within R; If you have a better way please let me know!
+
+We'll demonstrate with the road class grid we created above.  First, we'll use `addColorTable()` to create a .vrt file that references the tif and includes color table information. 
+The .vrt file can be opened directly with ArcGIS and can also be used to create a .tif with the color table embedded.
+
+
+```{r}
+key <- read.csv("Z:/Users/Ethan/rasterPrep/inst/extdata/roadClassKey.csv")  
+key <- read.csv(inPaths$key, stringsAsFactors = FALSE)  
+
+# Note the table must have "value", and "color" columns and can optionally 
+# have a "category" column
+vrt.file <- addColorTable(outPaths$roadClass, table = key)
+
+```
+
+Next well encode the data and the color table into a new .tif. along with compression,
+tiling, and overviews.  The default `overviewResample` of `"near"` is appropriate for
+categorical data.
+```{r}
+finalRoadClass <- file.path(final.dir,  "roadClass.tif")
+makeNiceTif(source = vrt.file, destination = finalRoadClass, overwrite = TRUE, stats = FALSE )
+```
+
+Finally, we can optionally add an ESRI style value attribute table (VAT) sidecar file to the dataset, that includes the attribute information from the key. 
+
+```{r}
+
+addVat(x = finalRoadClass, attributes = key)
+
+```
+
+
+If you use ArcGIS you may want to add a VAT to a categorical raster even if you don't add attribute information or a color table.  The presence of a VAT causes ArcGIS to default to a unique value display of the data and saves the user from having to wait in an interactive session for ArcGIS to build the VAT when you switch symbology to categories. We can do everything in a single call to the `makeNiceTif()` function:
+```{r}
+roadWithVAT <- file.path(final.dir,  "roadsWithVAT.tif")
+makeNiceTif(source = outPaths$roadClass, destination = roadWithVAT, overwrite = TRUE, overviewResample = "near", stats = FALSE, vat = TRUE )
+```
+
+
+

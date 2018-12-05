@@ -1,0 +1,20 @@
+#' Function to copy a tif and all its associated files
+#'
+#' @param from (character) path to a tif to be copied
+#' @param to (character) path where copy will be created
+#' @param includeVrt (logical) if TRUE also copy an associated .vrt file with
+#'   same base name.
+#' @param overwrite (logical) if TRUE overwrite existing file if FALSE don't.
+#' @return this function returns nothing
+#' @export
+
+copyTif <- function(from, to, includeVrt = TRUE, overwrite = FALSE){
+  # Rename a tif file (and it's associated files)
+  stopifnot(grepl(".tif$", from, ignore.case = TRUE))
+  targets <- findTifFiles(from, includeVrt = includeVrt)
+  a <- gsub(".tif$", "", from, ignore.case = TRUE)
+  b <- gsub(".tif$", "", to, ignore.case = TRUE)
+  new <- gsub(a, b, targets, ignore.case = TRUE)
+  print(data.frame(from=targets, to = new))
+  file.copy(from = targets, to=new, overwrite = overwrite)
+}
