@@ -180,8 +180,6 @@ warpToReference <- function( source, destination, reference, clip, method = "nea
     stop("An error might have occured.  The function returned: ", a)
   }
 
-
-
   if(!file.exists(destination))
     stop("Output file", destination, "was not created. System call returned: ", a)
   cat("Done warping output at:", destination, "\n")

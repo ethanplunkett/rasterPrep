@@ -1,17 +1,14 @@
+# This was added automatically when I called vignettes (along with docs) 
+Meta
+# I am specifically not ignoring the /doc folder that was added by devtools::build_vignettes(quiet = FALSE) as I want it on github.
+
 # Ignore the compiled documentation
 inst/doc
-
 # Ignore rstudio files
 .Rproj.user
 .Rhistory
 .Rdata
-
 # Ignore Mac Specific Folder Data 
 .DS_Store
-
 # Ignore editpad pro __history folders
 __history/
-
-
-
-

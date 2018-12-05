@@ -34,8 +34,8 @@ if(FALSE){
 #' When creating a new file
 #' the CRS of the source must match that of the reference and this is checked
 #' with \code{\link[raster]{compareCRS}}. In some cases the same CRS may be represented
-#' in different ways and fail the comaprison even though they are equivalent.  In
-#' those cases you may want to set \code{checkCRS} to \code{FALSE}. In constrast
+#' in different ways and fail the comparison even though they are equivalent.  In
+#' those cases you may want to set \code{checkCRS} to \code{FALSE}. In contrast
 #' if you are overlaying data on an existing file then the underlying gdal_rasterize
 #' function will reproject while rasterizing and this function will always skip
 #' the CRS check.
@@ -53,7 +53,7 @@ if(FALSE){
 #' \code{"Float64"} or for convenience you may
 #' also use the raster package's designations: \code{\link[raster]{dataType}}.
 #' @param checkCRS (logical) if FALSE skip the check that verifies the
-#' Coordinate Reference Sytems (CRS) of the source matches that of the reference.
+#' Coordinate Reference Systems (CRS) of the source matches that of the reference.
 #' Only use FALSE if you think that your CRSs are equivalent but you are getting
 #'  an error that they don't match.
 #' @param allTouched (optional, logical) defaults to FALSE.  If TRUE
@@ -99,7 +99,7 @@ rasterizeToReference <- function(source, destination, reference, burn, attribute
       "Stop reference file must have a defined projection"
     }
     if(checkCRS && !raster::compareCRS(src.proj, ref.proj)){
-      stop("When creating a new raster file the source vector coordinate reference sytem (CRS) must match the reference CRS.  Reproject source to your reference projection.")
+      stop("When creating a new raster file the source vector coordinate reference system (CRS) must match the reference CRS.  Reproject source to your reference projection.")
     }
     ref.rows <- ref.info[1]
     ref.cols <- ref.info[2]

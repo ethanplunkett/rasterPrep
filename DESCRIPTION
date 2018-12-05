@@ -10,7 +10,7 @@ Description: A package for preparing raster data for analysis and viewing.
   for viewing with GIS software.
 License: GPL-2
 Encoding: UTF-8
-Language:en-US
+Language: en-US
 LazyData: true
 RoxygenNote: 6.1.1
 Imports:
@@ -22,3 +22,5 @@ Imports:
 Suggests: knitr,
     rmarkdown
 VignetteBuilder: knitr
+URL: https://github.com/ethanplunkett/rasterPrep
+BugReports: https://github.com/ethanplunkett/rasterPrep/issues

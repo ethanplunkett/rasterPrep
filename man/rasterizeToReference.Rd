@@ -31,7 +31,7 @@ the line render path, or whose center point is within the polygon"
 see "-at" flag description for gdal_rasterize: \url{http://www.gdal.org/gdal_rasterize.html}}
 
 \item{checkCRS}{(logical) if FALSE skip the check that verifies the
-Coordinate Reference Sytems (CRS) of the source matches that of the reference.
+Coordinate Reference Systems (CRS) of the source matches that of the reference.
 Only use FALSE if you think that your CRSs are equivalent but you are getting
  an error that they don't match.}
 }
@@ -58,8 +58,8 @@ that supports fewer values such as \code{"Byte"}.
 When creating a new file
 the CRS of the source must match that of the reference and this is checked
 with \code{\link[raster]{compareCRS}}. In some cases the same CRS may be represented
-in different ways and fail the comaprison even though they are equivalent.  In
-those cases you may want to set \code{checkCRS} to \code{FALSE}. In constrast
+in different ways and fail the comparison even though they are equivalent.  In
+those cases you may want to set \code{checkCRS} to \code{FALSE}. In contrast
 if you are overlaying data on an existing file then the underlying gdal_rasterize
 function will reproject while rasterizing and this function will always skip
 the CRS check.
