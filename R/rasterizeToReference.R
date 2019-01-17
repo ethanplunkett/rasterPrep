@@ -48,6 +48,8 @@ if(FALSE){
 #' used to define the extent of destination if destination does not already exist.
 #' @param burn (optional, numeric) value to be burnt into grid (everywhere the \code{source} has data)
 #' @param attribute (optional, character) the column name in the source to extract values from
+#' @param init (optional, numeric) if supplied this value will be written into the grid as a background value
+#' prior to rasterizing.  init can only be used if the destination does not already exist.
 #' @param type the type of grid to create. Should be one of \code{"Byte"}, \code{"UInt16"},
 #' \code{"Int16"}, \code{"UInt32"}, \code{"Int32"}, \code{"Float32"},
 #' \code{"Float64"} or for convenience you may
@@ -64,7 +66,7 @@ if(FALSE){
 #' This function creates a new raster or writes values to an existing raster
 #'  at the destination.  It does not return anything.
 #' @export
-rasterizeToReference <- function(source, destination, reference, burn, attribute,
+rasterizeToReference <- function(source, destination, reference, burn, attribute,  init,
                            type = "Byte", allTouched = FALSE, checkCRS=TRUE){
 
   if(missing(burn) & missing(attribute))
@@ -127,6 +129,12 @@ rasterizeToReference <- function(source, destination, reference, burn, attribute
 
   if(!missing(attribute))
     command <- paste0(command, "-a ", shQuote(attribute), " ")
+
+  if(!missing(init)){
+    if(dest.exists) stop("The init argument can only be used when the destination file does not already exist")
+    command <- paste0(command, "-init ", init, " ")
+  }
+
 
   if(allTouched)
     command <- paste0(command, "-at ")

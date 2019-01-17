@@ -4,7 +4,7 @@
 \alias{rasterizeToReference}
 \title{Function to rasterize vector data}
 \usage{
-rasterizeToReference(source, destination, reference, burn, attribute,
+rasterizeToReference(source, destination, reference, burn, attribute, init,
   type = "Byte", allTouched = FALSE, checkCRS = TRUE)
 }
 \arguments{
@@ -19,6 +19,9 @@ used to define the extent of destination if destination does not already exist.}
 \item{burn}{(optional, numeric) value to be burnt into grid (everywhere the \code{source} has data)}
 
 \item{attribute}{(optional, character) the column name in the source to extract values from}
+
+\item{init}{(optional, numeric) if supplied this value will be written into the grid as a background value
+prior to rasterizing.  init can only be used if the destination does not already exist.}
 
 \item{type}{the type of grid to create. Should be one of \code{"Byte"}, \code{"UInt16"},
 \code{"Int16"}, \code{"UInt32"}, \code{"Int32"}, \code{"Float32"},

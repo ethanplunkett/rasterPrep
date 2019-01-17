@@ -140,8 +140,8 @@ makeReference <- function(polyFile, destination, cellsize,  burn = 1,
     # Function to check alignment of an x or y location
     # given the cellsize and offset
     # Returns TRUE if aligned
-    if(isTRUE(all.equal(loc %% cs,  xoffset))) return(TRUE)
-    if(isTRUE(all.equal(loc %% cs,  xoffset + cs))) return(TRUE)
+    if(isTRUE(all.equal(loc %% cs,  offset))) return(TRUE)
+    if(isTRUE(all.equal(loc %% cs,  offset + cs))) return(TRUE)
     return(FALSE)
   }
   stopifnot(
