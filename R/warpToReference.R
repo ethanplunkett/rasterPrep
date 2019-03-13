@@ -125,6 +125,11 @@ warpToReference <- function( source, destination, reference, clip, method = "nea
   # -te xmin ymin xmax ymax: sets target extent by default in target srs
   # -tr xres yres:  set output file resolution (in target georeferenced units)
   # -tr xres yres: set output file resolution (in target georeferenced units)
+
+
+  # Note gdalwarp uses "near" while gdaladdo uses "nearest"
+  # this allows this function to use either
+  if(method == "nearest") method <- "near"
   valid.methods <- c("near", "bilinear", "cubic", "cubicspline", "lanczos",
                      "average", "mode", "max", "min",
                      "med", "q1", "q3" )
