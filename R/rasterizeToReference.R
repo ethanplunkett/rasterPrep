@@ -62,12 +62,14 @@ if(FALSE){
 #'   "all pixels touched by lines or polygons will be updated, not just those on
 #'   the line render path, or whose center point is within the polygon"
 #'   see "-at" flag description for gdal_rasterize: \url{http://www.gdal.org/gdal_rasterize.html}
+#' @param sql (optional, character) An SQL statement to be applied to the data
+#'   source.  This can be used to filter or sort the data prior to burning.
 #' @return
 #' This function creates a new raster or writes values to an existing raster
 #'  at the destination.  It does not return anything.
 #' @export
 rasterizeToReference <- function(source, destination, reference, burn, attribute,  init,
-                           type = "Byte", allTouched = FALSE, checkCRS=TRUE){
+                           type = "Byte", allTouched = FALSE, checkCRS=TRUE, sql){
 
   if(missing(burn) & missing(attribute))
     stop("You must specify either burn or attribute for rasterization to work.")
@@ -95,7 +97,7 @@ rasterizeToReference <- function(source, destination, reference, burn, attribute
   if(!dest.exists){
     if(!file.exists(reference)) stop("reference file ", reference, " doesn't exist.")
     # Reference info is only used if the grid doesn't already exist
-    ref.info <- rgdal::GDALinfo(reference)
+    ref.info <- rgdal::GDALinfo(reference, OVERRIDE_PROJ_DATUM_WITH_TOWGS84 = FALSE)
     ref.proj <- attr(ref.info, "projection")
     if(is.na(ref.proj) || ref.proj == ""){
       "Stop reference file must have a defined projection"
@@ -118,7 +120,8 @@ rasterizeToReference <- function(source, destination, reference, burn, attribute
   if(!dest.exists){
     # Note if the destination file exists this function will update it (as long as overwrite = FALSE)
     command <- paste0( command,
-                       "-a_srs ", shQuote(ref.proj), " ",
+                       #  "-a_srs ", shQuote(ref.proj), " ",  # old
+                        #  "-a_srs ", shQuote(reference), " ",   # new 10/28/2020
                        "-te ", ref.xll, " ", ref.yll, " ", ref.xmax, " ", ref.ymax, " ",
                        "-tr ", ref.resx, " ", ref.resy, " ",
                        ifelse(missing(type), "", paste0("-ot ", type, " ")),
@@ -135,6 +138,9 @@ rasterizeToReference <- function(source, destination, reference, burn, attribute
     command <- paste0(command, "-init ", init, " ")
   }
 
+  if(!missing(sql)){
+    command <- paste0(command, "-sql ", shQuote(sql), " ")
+  }
 
   if(allTouched)
     command <- paste0(command, "-at ")

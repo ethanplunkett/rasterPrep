@@ -17,7 +17,7 @@
 #' rather than the destination pixels.  For that reason if you are both
 #' reprojecting/resampling and clipping to a polygon I recommend calling this function
 #' twice. In the first call omit the \code{clip} argument.  It will reproject
-#' and resample. Than in the second call pass in the output of first and supply
+#' and resample. Then in the second call pass in the output of first and supply
 #' the \code{clip} argument.
 #'
 #' @param source (character) path to a raster file containing data to be warped
