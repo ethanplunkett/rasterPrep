@@ -87,6 +87,7 @@ rasterizeToReference <- function(source, destination, reference, burn, attribute
   source.layer <- basename(source)
   source.layer <- gsub("\\.[Ss][Hh][Pp]$", "", source.layer)
   src.proj <- rgdal::OGRSpatialRef(dsn = source.dir, layer = source.layer)
+  #   src.wkt <- attributes(src.proj)$comment
   #oi <- ogrInfo(dsn = source.dir, layer = source.layer)
   if(is.na(src.proj) || src.proj == ""){
     "Stop source file must have a defined projection"
@@ -144,6 +145,13 @@ rasterizeToReference <- function(source, destination, reference, burn, attribute
 
   if(allTouched)
     command <- paste0(command, "-at ")
+
+  # Temporarily reset the PROJ_LIB environmental setting for system call (if indicated by settings)
+  oprojlib <- Sys.getenv("PROJ_LIB")
+  if(rasterPrepSettings$setProjLib){
+    Sys.setenv(PROJ_LIB = rasterPrepSettings$projLib )
+    on.exit(Sys.setenv(PROJ_LIB = oprojlib))
+  }
 
   command <- paste0( command, shQuote(source), " ", shQuote(destination))
 

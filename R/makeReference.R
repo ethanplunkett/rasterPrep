@@ -72,10 +72,25 @@ if(FALSE){
 #' @export
 makeReference <- function(polyFile, destination, cellsize,  burn = 1,
                           alignTo = "origin", reference,  nestingCellsize = cellsize){
+
+  # Note in March 2020 with current GDAL and PROJ I couldn't get gdal_rasterize to honor the projection
+  # of the input file.  Prior functionality and documentation represent that the projection information
+  # is retained from the polygon file used but I found that not to be the case. I also found that
+  # specifying the output projection either with a proj4 style string or with a path to a wkt file
+  # also resulted in a file with no projection.
+  #
+  # To solve this I did something hacky that I hate. I did the rasterizing to a temporary file
+  # and then used gdal_translate to copy while specifying an output rpojection. Finally, I deleted
+  # the temp file and then wkt file that specified the projection.
+  #  At some future date it might make sense to test if gdal_translate is behaving again and save
+  # creating an extra copy.
+
+
+
   if(!missing(reference)){
-    refinfo <- suppressWarnings(as.list(rgdal::GDALinfo(reference)))
+    refinfo <- suppressWarnings(as.list(rgdal::GDALinfo(reference, OVERRIDE_PROJ_DATUM_WITH_TOWGS84 = FALSE)))
     if(missing(cellsize)){
-      # If cellsize not set and reference is take scellsize (and likely nestingCellsize) from reference
+      # If cellsize not set and reference is take cellsize (and likely nestingCellsize) from reference
       stopifnot(isTRUE(all.equal(refinfo$res.x, refinfo$res.y)))
       cellsize <- refinfo$res.x
       if(missing(nestingCellsize))
@@ -89,7 +104,9 @@ makeReference <- function(polyFile, destination, cellsize,  burn = 1,
 
   layer <- gsub("\\.[Ss][Hh][Pp]$", "", basename(polyFile))
   poly <- rgdal::readOGR(dsn = dirname(polyFile), layer = layer)
-  # poly <- readshape(polyFile)
+  proj <- wkt(poly)
+  wkt.file <- tempfile(fileext = ".txt")
+   cat(proj,  file = wkt.file)
 
   # Find the extent that contains the polygon and where the cell edges fall
   # neatly on multiples of the cellsize.
@@ -151,13 +168,34 @@ makeReference <- function(polyFile, destination, cellsize,  burn = 1,
     isTRUE(is.aligned(ymax, nestingCellsize,  yoffset))
   )
 
-  gdalUtils::gdal_rasterize(src_datasource = polyFile,
-                            dst_filename = destination,
+
+   stopifnot(grepl(".tif$", destination, ignore.case = TRUE))
+   tempfile <- gsub(".tif$", "_tempzzz.tif", destination, ignore.case = TRUE)
+
+   # Temporarily reset the PROJ_LIB environmental setting for system call (if indicated by settings)
+   # Note I'm not certain that gdalUtils::gdal_rasterize doesn't use rgdal in which case
+   # this might not work. It looks like directly in the function code it uses rgdal only if
+   # output_Raster = TRUE (it defaults to FALSE so isn't here) but it calls other functions which might
+   # I could switch this to a system call and drop dependence on gdalutils.
+   oprojlib <- Sys.getenv("PROJ_LIB")
+     if(rasterPrepSettings$setProjLib){
+       Sys.setenv(PROJ_LIB = rasterPrepSettings$projLib )
+       on.exit(Sys.setenv(PROJ_LIB = oprojlib))
+     }
+    gdalUtils::gdal_rasterize(src_datasource = polyFile,
+                            dst_filename = tempfile,
                             burn = burn,
                             te = c(xmin, ymin, xmax, ymax),
                             tr = c(cellsize, cellsize),
                             ot = "byte",
-                            a_nodata = 2^8 -1)
+                            a_nodata = 2^8 -1,
+                           # a_srs = wkt.file,   # force output projection : failed to help in March 2020
+                            # verbose = TRUE  # for debugging
+                            )
+
+    gdalUtils::gdal_translate(tempfile, destination, a_srs = wkt.file, verbose = TRUE)
+    deleteTif(tempfile)
+    file.remove(wkt.file)
 
 }
 

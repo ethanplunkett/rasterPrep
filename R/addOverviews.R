@@ -51,6 +51,14 @@ addOverviews <- function(x, clean = TRUE, compression = "LZW", method = "nearest
     command <- paste0(command, " -clean")
 
   cat("Adding overviews with system command:\n", command, "\n")
+
+  # Temporarily reset the PROJ_LIB environmental setting for system call (if indicated by settings)
+  oprojlib <- Sys.getenv("PROJ_LIB")
+  if(rasterPrepSettings$setProjLib){
+    Sys.setenv(PROJ_LIB = rasterPrepSettings$projLib )
+    on.exit(Sys.setenv(PROJ_LIB = oprojlib))
+  }
+
   a <- system(command = command, intern = TRUE, wait = TRUE)
 }
 

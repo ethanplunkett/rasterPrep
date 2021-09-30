@@ -5,8 +5,15 @@
 \title{This function is for setting up a reference grid from a polygon file
 containing a focal area boundary.}
 \usage{
-makeReference(polyFile, destination, cellsize, burn = 1,
-  alignTo = "origin", reference, nestingCellsize = cellsize)
+makeReference(
+  polyFile,
+  destination,
+  cellsize,
+  burn = 1,
+  alignTo = "origin",
+  reference,
+  nestingCellsize = cellsize
+)
 }
 \arguments{
 \item{polyFile}{(character) path to a polygon shapefile (with .shp extension)

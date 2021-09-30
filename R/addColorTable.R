@@ -98,9 +98,18 @@ addColorTable <- function(x, table){
   # Create and modify the VRT file
   #--------------------------------------------------------------------------------------------------#
 
+  # Temporarily reset the PROJ_LIB environmental setting for system call (if indicated by settings)
+  oprojlib <- Sys.getenv("PROJ_LIB")
+  if(rasterPrepSettings$setProjLib){
+    Sys.setenv(PROJ_LIB = rasterPrepSettings$projLib )
+    on.exit(Sys.setenv(PROJ_LIB = oprojlib))
+  }
 
   # Make vrt file to use as templace
   gdalUtils::gdal_translate(x, vrt.file, of = "VRT")
+
+  if(rasterPrepSettings$setProjLib)
+    Sys.setenv(PROJ_LIB = oprojlib)
 
   # Read in template vrt file
   vrt <- readLines(vrt.file)

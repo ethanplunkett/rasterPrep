@@ -4,8 +4,7 @@
 \alias{addOverviews}
 \title{Function to add overviews to an image file}
 \usage{
-addOverviews(x, clean = TRUE, compression = "LZW",
-  method = "nearest")
+addOverviews(x, clean = TRUE, compression = "LZW", method = "nearest")
 }
 \arguments{
 \item{x}{(character) the path to a tif or other raster file}

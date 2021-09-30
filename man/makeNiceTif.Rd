@@ -5,9 +5,16 @@
 \title{Function to compress and possibly reformat a tif with options to build
 overviews and vat}
 \usage{
-makeNiceTif(source, destination, type, overwrite = FALSE,
-  buildOverviews = TRUE, overviewResample = "nearest", vat = FALSE,
-  stats = TRUE)
+makeNiceTif(
+  source,
+  destination,
+  type,
+  overwrite = FALSE,
+  buildOverviews = TRUE,
+  overviewResample = "nearest",
+  vat = FALSE,
+  stats = TRUE
+)
 }
 \arguments{
 \item{source}{(character) path to a raster file readable by gdal.}
@@ -62,6 +69,7 @@ type is currently passed to gdal_translate which will reset the
  call to do the type conversion for you.  For now if you want to change the
  type you can do so safely in a call to warpToReference prior to using this
  function.
+
 
 This is a wrapper to \code{gdaltranslate} coupled with
 \code{\link{addOverviews}} and \code{\link{addVat}}.  For finer control over

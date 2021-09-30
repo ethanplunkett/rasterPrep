@@ -42,7 +42,7 @@ string as the category label. Generally it works best if you recode your
 raster to have values 0 to N-1, or 1 to N.
 My workflow is generally:
 
-\enumerate{
+ \enumerate{
  \item \code{addColorTable()}   create .vrt alongside existing .tif
  \item \code{\link{makeNiceTif}}  called directly on the .vrt to create a .tif
  with embedded color table, tiled data, stats, and overviews.

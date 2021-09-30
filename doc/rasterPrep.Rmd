@@ -45,8 +45,8 @@ library(gdalUtils)  # for ogr2ogr() used to reproject vector Shapefiles
 library(rgdal)  # for GDALinfo()
 
 # Note because I'm pulling data from one read-only directory and writing to a
-# a second I'm defining complete paths here.  Often it's easier to set a working
-# directory then use file names when calling the functions.
+# a temporary directory I'm defining complete paths here.  Often it's easier
+# to set a working directory then use file names when calling the functions.
 
 # Set paths for retrieving input data included with this package
 inPaths <- list(
@@ -79,7 +79,7 @@ It is in Mass Mainland mass state plain projection  ([EPSG:26986](https://epsg.i
 This defines our study area and output projection.
 
 2. "slope.tif": A raster clipped from https://scholarworks.umass.edu/data/17/ with 
-the original projection and cell alignment preserved.  It is in the USA Contiguous Albers Equal Area Conic Projection([ESRI:202003](https://epsg.io/102003)).
+the original projection and cell alignment preserved.  It is in the USA Contiguous Albers Equal Area Conic Projection([ESRI:102003](https://epsg.io/102003)).  EPSG:5070
 
 3. "roads.shp": A Shapefile containing vector roads, originally from Open Street map but with small roads removed and clipped to Amherst.  It's in the same projection as 2. 
 

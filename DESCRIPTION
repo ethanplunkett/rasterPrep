@@ -1,7 +1,7 @@
 Package: rasterPrep
 Type: Package
 Title: Package to prepare raster datasets for analysis or viewing
-Version: 0.1.4
+Version: 0.1.5
 Author: Ethan Plunkett
 Maintainer: Ethan Plunkett <eplunkett@eco.umass.edu>
 Description: A package for preparing raster data for analysis and viewing. 
@@ -12,7 +12,7 @@ License: GPL-2
 Encoding: UTF-8
 Language: en-US
 LazyData: true
-RoxygenNote: 6.1.1
+RoxygenNote: 7.1.2
 Imports:
   gdalUtils,
   grDevices,

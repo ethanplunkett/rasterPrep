@@ -93,8 +93,19 @@ makeNiceTif <- function(source, destination,  type, overwrite = FALSE,
   if(stats)
     command <- paste0(command, "-stats ")
 
+  # Temporarily reset the PROJ_LIB environmental setting for system call (if indicated by settings)
+  oprojlib <- Sys.getenv("PROJ_LIB")
+  if(rasterPrepSettings$setProjLib){
+    Sys.setenv(PROJ_LIB = rasterPrepSettings$projLib )
+    on.exit(Sys.setenv(PROJ_LIB = oprojlib))
+  }
+
   cat("Compressing with system command:\n", command, "\n")
   a <- system(command = command, intern = TRUE, wait = TRUE)
+
+  if(rasterPrepSettings$setProjLib)
+    Sys.setenv(PROJ_LIB = oprojlib)
+
 
   stopifnot(file.exists(destination))
 

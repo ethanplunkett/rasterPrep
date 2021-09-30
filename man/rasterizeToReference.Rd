@@ -4,8 +4,18 @@
 \alias{rasterizeToReference}
 \title{Function to rasterize vector data}
 \usage{
-rasterizeToReference(source, destination, reference, burn, attribute, init,
-  type = "Byte", allTouched = FALSE, checkCRS = TRUE)
+rasterizeToReference(
+  source,
+  destination,
+  reference,
+  burn,
+  attribute,
+  init,
+  type = "Byte",
+  allTouched = FALSE,
+  checkCRS = TRUE,
+  sql
+)
 }
 \arguments{
 \item{source}{(character) path to a vector GIS file (such as a shapefile)
@@ -37,6 +47,9 @@ see "-at" flag description for gdal_rasterize: \url{http://www.gdal.org/gdal_ras
 Coordinate Reference Systems (CRS) of the source matches that of the reference.
 Only use FALSE if you think that your CRSs are equivalent but you are getting
  an error that they don't match.}
+
+\item{sql}{(optional, character) An SQL statement to be applied to the data
+source.  This can be used to filter or sort the data prior to burning.}
 }
 \value{
 This function creates a new raster or writes values to an existing raster

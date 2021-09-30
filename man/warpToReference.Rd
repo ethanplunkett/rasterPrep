@@ -4,8 +4,18 @@
 \alias{warpToReference}
 \title{warp raster data to match a reference raster file.}
 \usage{
-warpToReference(source, destination, reference, clip, method = "near",
-  overwrite = TRUE, overlay = FALSE, type)
+warpToReference(
+  source,
+  destination,
+  reference,
+  clip,
+  method = "near",
+  overwrite = TRUE,
+  overlay = FALSE,
+  type,
+  usegdalUtils = TRUE,
+  verbose = TRUE
+)
 }
 \arguments{
 \item{source}{(character) path to a raster file containing data to be warped
@@ -38,7 +48,9 @@ be used to combine tiled rasters into a single grid (likely with a separate
 no data value in the destination file will match the values in the source
 file.  If set then the data will be encoded with the selected type and the
 no data value will be set to the lowest possible value for signed types and
-the highest possible value for unsigned types.}
+the highest possible value for unsigned types.
+@param usegdalUtils (optional, logical) if TRUE (the default)  the function
+will call gdalUtils::gdalwarp. Otherwise it will launch via a system call.}
 }
 \value{
 \code{warpToReference} creates a new raster file at destination
@@ -63,6 +75,6 @@ is because gdalwarp may be masking based on the center of the source pixels
 rather than the destination pixels.  For that reason if you are both
 reprojecting/resampling and clipping to a polygon I recommend calling this function
 twice. In the first call omit the \code{clip} argument.  It will reproject
-and resample. Than in the second call pass in the output of first and supply
+and resample. Then in the second call pass in the output of first and supply
 the \code{clip} argument.
 }
