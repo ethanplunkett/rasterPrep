@@ -12,9 +12,7 @@ warpToReference(
   method = "near",
   overwrite = TRUE,
   overlay = FALSE,
-  type,
-  usegdalUtils = TRUE,
-  verbose = TRUE
+  type
 )
 }
 \arguments{
@@ -48,9 +46,7 @@ be used to combine tiled rasters into a single grid (likely with a separate
 no data value in the destination file will match the values in the source
 file.  If set then the data will be encoded with the selected type and the
 no data value will be set to the lowest possible value for signed types and
-the highest possible value for unsigned types.
-@param usegdalUtils (optional, logical) if TRUE (the default)  the function
-will call gdalUtils::gdalwarp. Otherwise it will launch via a system call.}
+the highest possible value for unsigned types.}
 }
 \value{
 \code{warpToReference} creates a new raster file at destination
@@ -70,7 +66,7 @@ the options.
 
 Clipping and reprojecting in a single step may result in slight imperfections
 in the NA footprint in the final grid; some cells along the edge may end up
-with NA despite being centered within the polygon or vice versa.  I think this
+with NA despite being centered within the polygon or vice +versa.  I think this
 is because gdalwarp may be masking based on the center of the source pixels
 rather than the destination pixels.  For that reason if you are both
 reprojecting/resampling and clipping to a polygon I recommend calling this function

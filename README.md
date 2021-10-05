@@ -52,6 +52,16 @@ See the [vignette](http://htmlpreview.github.io/?https://github.com/ethanplunket
 
 ## Change log
 
+October 5, 2021 (v 0.1.6)
+I replaced the few calls to gdalUtils with system calls.  At one point I had thought about migrating all calls to gdalUtils but it's easier to manage the PROJ_LIB problem (see Sept 30 updates) with direct system calls. Consequently rasterPrep package no longer depends on the gdalUtils package. 
+
+I streamlined rasterizeToReference which had some code that looks like it was added to correct the problem fixed in 0.1.5 before I fully understood the problem.
+
+I've started eliminating all calls to rgdal, sp, and raster using terra and sf instead. Still pending:
+  addVat uses raster::freq, need to replace with terra.
+  the vignette still uses gdalUtils and rgdal 
+  addColor table still uses rgdal::GDALinfo
+
 September 30, 2021 (V 0.1.5)
 
 rasterPrep now by default sets the system environment setting  PROJ_LIB to  "" before invoking system calls. This behavior can be controlled with a new function rasterPrepOptions(). The current options are setProjLib and projLib which determine whether PROJ_LIB is set and what it's set to.  In all cases after running the system call the PROJ_LIB enviroment value is reset to its original value. All of this is in response to a problem discussed here:  https://github.com/r-spatial/discuss/issues/31 where rgdal sets PROJ_LIB to point to its own installation within the package directory and consequently calls to gdal utilities installed on the system (perhaps a newer or older version) also use rgdal's proj library instead of the system's.  This mismatch sometimes results in clear errors but other times result in opaque errors or output that looks OK but is missing the spatial reference. 

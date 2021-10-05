@@ -17,7 +17,7 @@ makeReference(
 }
 \arguments{
 \item{polyFile}{(character) path to a polygon shapefile (with .shp extension)
-containing the boundaries of the focal area.}
+containing the boundaries of the focal area in the desired projection.}
 
 \item{destination}{(character) path to a .tif file where the reference grid
 will be created.}
@@ -38,7 +38,7 @@ resolution of the reference raster, but the extent is still taken from
 
 \item{reference}{(optional, character) if \code{alignTo} is set to "reference" than
 this should be the path to an existing raster file who's cell alignment
-we would like to match.}
+we would like to match. Its projection should match that of the polyFile}
 
 \item{nestingCellsize}{(numeric) This is optional and likely not needed.  If
 \code{nestingCellsize} is provided it must be a multiple of \code{cellsize} and

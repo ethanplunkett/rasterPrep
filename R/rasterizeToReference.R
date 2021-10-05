@@ -32,13 +32,13 @@ if(FALSE){
 #' that supports fewer values such as \code{"Byte"}.
 #'
 #' When creating a new file
-#' the CRS of the source must match that of the reference and this is checked
-#' with \code{\link[raster]{compareCRS}}. In some cases the same CRS may be represented
-#' in different ways and fail the comparison even though they are equivalent.  In
-#' those cases you may want to set \code{checkCRS} to \code{FALSE}. In contrast
-#' if you are overlaying data on an existing file then the underlying gdal_rasterize
-#' function will reproject while rasterizing and this function will always skip
-#' the CRS check.
+#' the CRS of the source must match that of the reference and this used to be checked
+#' with \code{\link[raster]{compareCRS}} but with updates to the proj library and the
+#' switch to WKT representations I don't currently have a good way to check if two
+#' projections are equivallent. Its now up to the user to make sure that they are.
+#'
+#'  In contrast if you are overlaying data on an existing file then the underlying gdal_rasterize
+#' function will reproject while rasterizing.
 #'
 #'
 #' @param source (character) path to a vector GIS file (such as a shapefile)
@@ -54,10 +54,6 @@ if(FALSE){
 #' \code{"Int16"}, \code{"UInt32"}, \code{"Int32"}, \code{"Float32"},
 #' \code{"Float64"} or for convenience you may
 #' also use the raster package's designations: \code{\link[raster]{dataType}}.
-#' @param checkCRS (logical) if FALSE skip the check that verifies the
-#' Coordinate Reference Systems (CRS) of the source matches that of the reference.
-#' Only use FALSE if you think that your CRSs are equivalent but you are getting
-#'  an error that they don't match.
 #' @param allTouched (optional, logical) defaults to FALSE.  If TRUE
 #'   "all pixels touched by lines or polygons will be updated, not just those on
 #'   the line render path, or whose center point is within the polygon"
@@ -69,7 +65,7 @@ if(FALSE){
 #'  at the destination.  It does not return anything.
 #' @export
 rasterizeToReference <- function(source, destination, reference, burn, attribute,  init,
-                           type = "Byte", allTouched = FALSE, checkCRS=TRUE, sql){
+                           type = "Byte", allTouched = FALSE, sql){
 
   if(missing(burn) & missing(attribute))
     stop("You must specify either burn or attribute for rasterization to work.")
@@ -83,14 +79,13 @@ rasterizeToReference <- function(source, destination, reference, burn, attribute
 
   if(!file.exists(source)) stop("source file ", source, " doesn't exist")
 
-  source.dir <- dirname(source)
-  source.layer <- basename(source)
-  source.layer <- gsub("\\.[Ss][Hh][Pp]$", "", source.layer)
-  src.proj <- rgdal::OGRSpatialRef(dsn = source.dir, layer = source.layer)
-  #   src.wkt <- attributes(src.proj)$comment
-  #oi <- ogrInfo(dsn = source.dir, layer = source.layer)
-  if(is.na(src.proj) || src.proj == ""){
-    "Stop source file must have a defined projection"
+  # In switching away from rgdal I can't find a way to check the projection information of
+  # a vector data file without reading it
+  # eg crs(st_read(source)) would work but is a really bad idea of the file is big.
+  # here I'm just checking to make sure if it's a shape file that it also has a .prj file
+  if(grep("\\.shp$", source)){
+    if(!file.exists(gsub("\\.shp$", ".prj", source)))
+      stop('Source file is missing projection information.')
   }
 
   dest.exists <- file.exists(destination)
@@ -98,22 +93,35 @@ rasterizeToReference <- function(source, destination, reference, burn, attribute
   if(!dest.exists){
     if(!file.exists(reference)) stop("reference file ", reference, " doesn't exist.")
     # Reference info is only used if the grid doesn't already exist
-    ref.info <- rgdal::GDALinfo(reference, OVERRIDE_PROJ_DATUM_WITH_TOWGS84 = FALSE)
-    ref.proj <- attr(ref.info, "projection")
+    # ref.info <- rgdal::GDALinfo(reference, OVERRIDE_PROJ_DATUM_WITH_TOWGS84 = FALSE)
+    # ref.proj <- attr(ref.info, "projection")
+    ref.info <- terra::rast(reference)
+    ref.proj <- terra::crs(ref.info)
     if(is.na(ref.proj) || ref.proj == ""){
       "Stop reference file must have a defined projection"
     }
-    if(checkCRS && !raster::compareCRS(src.proj, ref.proj)){
-      stop("When creating a new raster file the source vector coordinate reference system (CRS) must match the reference CRS.  Reproject source to your reference projection.")
-    }
-    ref.rows <- ref.info[1]
-    ref.cols <- ref.info[2]
-    ref.xll <- ref.info[4]
-    ref.yll <- ref.info[5]
-    ref.resx <- ref.info[6]
-    ref.resy <- ref.info[7]
-    ref.xmax <-  ref.xll + ref.cols * ref.resx
-    ref.ymax <- ref.yll + ref.rows * ref.resy
+
+    # terra based code:
+    ref.ext <- terra::ext(ref.info) # temporary
+    ref.rows <- terra::nrow(ref.info)
+    ref.cols <- terra::ncol(ref.info)
+    ref.xll <- as.numeric(ref.ext$xmin)
+    ref.yll <- as.numeric(ref.ext$ymin)
+    ref.resx <- terra::xres(ref.info)
+    ref.resy <- terra::yres(ref.info)
+    ref.xmax <- as.numeric(ref.ext$xmax)
+    ref.ymax <- as.numeric(ref.ext$ymax)
+    rm(ref.ext)
+
+    # # Old rgdal code:
+    # ref.rows <- ref.info[1]
+    # ref.cols <- ref.info[2]
+    # ref.xll <- ref.info[4]
+    # ref.yll <- ref.info[5]
+    # ref.resx <- ref.info[6]
+    # ref.resy <- ref.info[7]
+    # ref.xmax <-  ref.xll + ref.cols * ref.resx
+    # ref.ymax <- ref.yll + ref.rows * ref.resy
   }
 
 
@@ -121,8 +129,6 @@ rasterizeToReference <- function(source, destination, reference, burn, attribute
   if(!dest.exists){
     # Note if the destination file exists this function will update it (as long as overwrite = FALSE)
     command <- paste0( command,
-                       #  "-a_srs ", shQuote(ref.proj), " ",  # old
-                        #  "-a_srs ", shQuote(reference), " ",   # new 10/28/2020
                        "-te ", ref.xll, " ", ref.yll, " ", ref.xmax, " ", ref.ymax, " ",
                        "-tr ", ref.resx, " ", ref.resy, " ",
                        ifelse(missing(type), "", paste0("-ot ", type, " ")),

@@ -43,11 +43,6 @@ also use the raster package's designations: \code{\link[raster]{dataType}}.}
 the line render path, or whose center point is within the polygon"
 see "-at" flag description for gdal_rasterize: \url{http://www.gdal.org/gdal_rasterize.html}}
 
-\item{checkCRS}{(logical) if FALSE skip the check that verifies the
-Coordinate Reference Systems (CRS) of the source matches that of the reference.
-Only use FALSE if you think that your CRSs are equivalent but you are getting
- an error that they don't match.}
-
 \item{sql}{(optional, character) An SQL statement to be applied to the data
 source.  This can be used to filter or sort the data prior to burning.}
 }
@@ -72,11 +67,11 @@ if you are only writing a few values you may want to set \code{type} to somethin
 that supports fewer values such as \code{"Byte"}.
 
 When creating a new file
-the CRS of the source must match that of the reference and this is checked
-with \code{\link[raster]{compareCRS}}. In some cases the same CRS may be represented
-in different ways and fail the comparison even though they are equivalent.  In
-those cases you may want to set \code{checkCRS} to \code{FALSE}. In contrast
-if you are overlaying data on an existing file then the underlying gdal_rasterize
-function will reproject while rasterizing and this function will always skip
-the CRS check.
+the CRS of the source must match that of the reference and this used to be checked
+with \code{\link[raster]{compareCRS}} but with updates to the proj library and the
+switch to WKT representations I don't currently have a good way to check if two
+projections are equivallent. Its now up to the user to make sure that they are.
+
+ In contrast if you are overlaying data on an existing file then the underlying gdal_rasterize
+function will reproject while rasterizing.
 }
