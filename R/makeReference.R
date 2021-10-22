@@ -85,6 +85,8 @@ makeReference <- function(polyFile, destination, cellsize,  burn = 1,
   #  At some future date it might make sense to test if gdal_translate is behaving again and save
   # creating an extra copy.
 
+  if(file.exists(destination))
+    stop(destination, "already exists")
 
   # based on terra
   if(!missing(reference)){
@@ -99,27 +101,15 @@ makeReference <- function(polyFile, destination, cellsize,  burn = 1,
     }
   }
 
-
-
   stopifnot(nestingCellsize %% cellsize == 0)   # nestingCellsize must be the same or an integer multiple of cellsize
   stopifnot(alignTo %in% c("origin", "reference"))
-
-  #layer <- gsub("\\.[Ss][Hh][Pp]$", "", basename(polyFile))
-  # poly <- rgdal::readOGR(dsn = dirname(polyFile), layer = layer)
-  # proj <- wkt(poly)
-  # bbox <- poly@bbox
 
   poly <- sf::st_read(polyFile)
   proj <- sf::st_crs(poly)$wkt
   bbox <- sf::st_bbox(poly)
 
-  wkt.file <- tempfile(fileext = ".txt")
-  cat(proj,  file = wkt.file, append = FALSE)
-
   # Find the extent that contains the polygon and where the cell edges fall
   # neatly on multiples of the cellsize.
-
-
   if(alignTo == "origin"){
     yoffset <- xoffset <- 0
   }  else {  #  ( alignTo == "reference")
@@ -141,12 +131,6 @@ makeReference <- function(polyFile, destination, cellsize,  burn = 1,
       stop("The cellsize is incompatible with the reference cellsize")
 
     # calculate the (positive) offset of the 1'st vertical cell edge from the origin.
-
-  # rgdal code:
-  #  xoffset <- refinfo$ll.x %% nestingCellsize
-  #  yoffset <- refinfo$ll.y %% nestingCellsize
-
-  # terra based code:
     xoffset <- terra::ext(refinfo)[1] %% nestingCellsize  # xmin
     yoffset <- terra::ext(refinfo)[3] %% nestingCellsize  # ymin
   }
@@ -181,6 +165,7 @@ makeReference <- function(polyFile, destination, cellsize,  burn = 1,
   )
 
   stopifnot(grepl(".tif$", destination, ignore.case = TRUE))
+  intermediatefile <- gsub(".tif$", "_tempzzz.tif", destination, ignore.case = TRUE)
 
   command <- "gdal_rasterize"
   command <- paste0(command, " -burn ", burn, " -te ", xmin, " ", ymin, " ", xmax, " ", ymax)
@@ -191,9 +176,14 @@ makeReference <- function(polyFile, destination, cellsize,  burn = 1,
 
   # Temporarily reset the PROJ_LIB environmental setting for system call (if indicated by settings)
   oprojlib <- Sys.getenv("PROJ_LIB")
-  if(rasterPrepSettings$setProjLib){
+  ogdaldata <- Sys.getenv("GDAL_DATA")
+  if(rasterPrepSettings$resetLibs){
     Sys.setenv(PROJ_LIB = rasterPrepSettings$projLib )
-    on.exit(Sys.setenv(PROJ_LIB = oprojlib))
+    Sys.setenv(GDAL_DATA = rasterPrepSettings$gdalData)
+    on.exit({
+      Sys.setenv(PROJ_LIB = oprojlib)
+      Sys.setenv(GDAL_DATA = ogdaldata)
+    })
   }
 
   cat("Rasterizing polygon to new extent with system command:\n", command, "\n")
@@ -202,10 +192,13 @@ makeReference <- function(polyFile, destination, cellsize,  burn = 1,
   if(!grepl("- done.[[:blank:]]*$", a[length(a)]) ){
     stop("An error might have occured.  The function returned: ", a)
   }
+  if(!file.exists(destination))
+    stop("gdal_rasterize failed to produce a file. Function returned: ", a)
 
   if(!file.exists(destination))
     stop("Output file", destination, "was not created. System call returned: ", a)
 
-  stopifnot(file.exists(destination))
+  d <- terra::rast(destination)
+  if(terra::crs(d) == "") stop("Final file was created without projection information")
 }
 

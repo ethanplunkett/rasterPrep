@@ -13,7 +13,6 @@ rasterizeToReference(
   init,
   type = "Byte",
   allTouched = FALSE,
-  checkCRS = TRUE,
   sql
 )
 }

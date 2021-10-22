@@ -65,7 +65,7 @@ if(FALSE){
 #'  at the destination.  It does not return anything.
 #' @export
 rasterizeToReference <- function(source, destination, reference, burn, attribute,  init,
-                           type = "Byte", allTouched = FALSE, sql){
+                                 type = "Byte", allTouched = FALSE, sql){
 
   if(missing(burn) & missing(attribute))
     stop("You must specify either burn or attribute for rasterization to work.")
@@ -88,6 +88,7 @@ rasterizeToReference <- function(source, destination, reference, burn, attribute
       stop('Source file is missing projection information.')
   }
 
+
   dest.exists <- file.exists(destination)
 
   if(!dest.exists){
@@ -100,6 +101,8 @@ rasterizeToReference <- function(source, destination, reference, burn, attribute
     if(is.na(ref.proj) || ref.proj == ""){
       "Stop reference file must have a defined projection"
     }
+    # wkt.file <- tempfile(fileext = ".txt")
+    #cat(ref.proj,  file = wkt.file, append = FALSE)
 
     # terra based code:
     ref.ext <- terra::ext(ref.info) # temporary
@@ -113,15 +116,10 @@ rasterizeToReference <- function(source, destination, reference, burn, attribute
     ref.ymax <- as.numeric(ref.ext$ymax)
     rm(ref.ext)
 
-    # # Old rgdal code:
-    # ref.rows <- ref.info[1]
-    # ref.cols <- ref.info[2]
-    # ref.xll <- ref.info[4]
-    # ref.yll <- ref.info[5]
-    # ref.resx <- ref.info[6]
-    # ref.resy <- ref.info[7]
-    # ref.xmax <-  ref.xll + ref.cols * ref.resx
-    # ref.ymax <- ref.yll + ref.rows * ref.resy
+    stopifnot(grepl(".tif$", destination, ignore.case = TRUE))
+    intermediatefile <- gsub(".tif$", "_tempzzz.tif", destination, ignore.case = TRUE)
+
+
   }
 
 
@@ -154,18 +152,36 @@ rasterizeToReference <- function(source, destination, reference, burn, attribute
 
   # Temporarily reset the PROJ_LIB environmental setting for system call (if indicated by settings)
   oprojlib <- Sys.getenv("PROJ_LIB")
-  if(rasterPrepSettings$setProjLib){
+  ogdaldata <- Sys.getenv("GDAL_DATA")
+  if(rasterPrepSettings$resetLibs){
     Sys.setenv(PROJ_LIB = rasterPrepSettings$projLib )
-    on.exit(Sys.setenv(PROJ_LIB = oprojlib))
+    Sys.setenv(GDAL_DATA = rasterPrepSettings$gdalData)
+    on.exit({
+      Sys.setenv(PROJ_LIB = oprojlib)
+      Sys.setenv(GDAL_DATA = ogdaldata)
+    })
   }
-
-  command <- paste0( command, shQuote(source), " ", shQuote(destination))
+  command <- paste0( command, shQuote(source), " ")
+  command <- paste0(command, shQuote(destination))
 
   cat("Rasterizing with:\n", command, "\n")
   a <- system(command = command, intern = TRUE, wait = TRUE)
 
-  if(!file.exists(destination)){
-    print(a)
-    stop("Output file wasn't created. Something went wrong.")
+
+  a <-  gsub("[[:blank:]]", " ", a)
+  if(!grepl("- done.[[:blank:]]*$", a[length(a)]) ){
+    stop("An error might have occured.  The function returned: ", a)
   }
+
+
+  #  file.remove(wkt.file)
+
+
+if(!file.exists(destination))
+  stop("Output file", destination, "was not created. System call returned: ", a)
+
+if(terra::crs(terra::rast(destination)) == "")
+  stop("Output was created but lacks a coordinate reference system")
+
+
 }

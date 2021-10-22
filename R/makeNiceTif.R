@@ -95,19 +95,29 @@ makeNiceTif <- function(source, destination,  type, overwrite = FALSE,
 
   # Temporarily reset the PROJ_LIB environmental setting for system call (if indicated by settings)
   oprojlib <- Sys.getenv("PROJ_LIB")
-  if(rasterPrepSettings$setProjLib){
+  ogdaldata <- Sys.getenv("GDAL_DATA")
+  if(rasterPrepSettings$resetLibs){
     Sys.setenv(PROJ_LIB = rasterPrepSettings$projLib )
-    on.exit(Sys.setenv(PROJ_LIB = oprojlib))
+    Sys.setenv(GDAL_DATA = rasterPrepSettings$gdalData)
+    on.exit({
+      Sys.setenv(PROJ_LIB = oprojlib)
+      Sys.setenv(GDAL_DATA = ogdaldata)
+    })
   }
 
   cat("Compressing with system command:\n", command, "\n")
   a <- system(command = command, intern = TRUE, wait = TRUE)
 
-  if(rasterPrepSettings$setProjLib)
+
+  if(!file.exists(destination))
+    stop("Output file", destination, "was not created. System call returned: ", a)
+
+
+  if(rasterPrepSettings$resetLibs){
     Sys.setenv(PROJ_LIB = oprojlib)
+    Sys.setenv(GDAL_DATA = ogdaldata)
+  }
 
-
-  stopifnot(file.exists(destination))
 
   if(buildOverviews){
    addOverviews(x = destination, method = overviewResample)
@@ -117,5 +127,9 @@ makeNiceTif <- function(source, destination,  type, overwrite = FALSE,
     cat("building vat")
     addVat(destination)
   }
+
+  if(terra::crs(terra::rast(destination)) == "")
+    stop("Output was created but lacks a coordinate reference system")
+
 
 }

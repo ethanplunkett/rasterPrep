@@ -55,6 +55,13 @@ addVat <- function(x, attributes, skipCount = FALSE){
     ft <- raster::freq(raster::raster(x))  # SLOW!
     ft <- data.frame(VALUE = ft[, 1], COUNT = ft[, 2])
     ft <- ft[!is.na(ft$VALUE), ]
+
+    # Attempt to switch to terra package threw an immediate error on call to terra::freq() on my first test.
+    # xr <- terra::rast(x)
+    # ft <- terra::freq(xr)
+
+
+
     if(has.att){
       stopifnot(all(ft$VALUE %in% attributes$VALUE))
       mv <- match(ft$VALUE, attributes$VALUE)

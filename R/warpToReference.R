@@ -84,12 +84,6 @@ warpToReference <- function( source, destination, reference, clip, method = "nea
   if(!file.exists(reference)) stop("reference file ", reference, " doesn't exist.")
   if(!file.exists(source)) stop("source file ", source, " doesn't exist")
 
-  # rgdal based code:
-  # src.proj <- rgdal::GDALSpatialRef(source, OVERRIDE_PROJ_DATUM_WITH_TOWGS84 = FALSE)
-  # if(is.na(src.proj) || src.proj == ""){
-  #   "Stop source file must have a defined projection"
-  # }
-
   # terra based code:
   src.info <- terra::rast(source)
   src.proj <- terra::crs(src.info)
@@ -103,14 +97,10 @@ warpToReference <- function( source, destination, reference, clip, method = "nea
     # clip.info <- ogrInfo(clip)  # could do some checks on the clipping window
   }
 
-  # rgdal based code
-#  ref.info <- rgdal::GDALinfo(reference, OVERRIDE_PROJ_DATUM_WITH_TOWGS84 = FALSE)
-#  ref.proj <- wkt(CRS(attr(ref.info, "projection")))
-# wkt.file <- tempfile(fileext = ".txt")  #  write well know text file with projection information
-#  cat(ref.proj,  file = wkt.file)
-
   ref.info <- terra::rast(reference)
   ref.proj <- terra::crs(ref.info)
+  wkt.file <- tempfile(fileext = ".txt")
+  cat(ref.proj,  file = wkt.file, append = FALSE)
 
   if(is.na(ref.proj) || ref.proj == ""){
     "Stop reference file must have a defined projection"
@@ -122,12 +112,12 @@ warpToReference <- function( source, destination, reference, clip, method = "nea
   # with gdalTranslate
   type.specified <- !missing(type)
 
-# Note I think this isn't needed because we only use type if it's specified
+  # Note I think this isn't needed because we only use type if it's specified
   #if(!type.specified){
-    # a <- rgdal::GDALinfo(source)
-    # df <- attr(a, "df")
-    # type <- as.character(df$GDType)
-    # type <- paste(type, collapse ="/")
+  # a <- rgdal::GDALinfo(source)
+  # df <- attr(a, "df")
+  # type <- as.character(df$GDType)
+  # type <- paste(type, collapse ="/")
   #}
 
   # terra based code:
@@ -149,7 +139,7 @@ warpToReference <- function( source, destination, reference, clip, method = "nea
   # ref.yll <- ref.info[5]
   # ref.resx <- ref.info[6]
   # ref.resy <- ref.info[7]
-  # ref.xmax <-  ref.xll + ref.cols * ref.resx
+  # ref.xmax <-  ref.xll + ref.cols * ref.resxa
   # ref.ymax <- ref.yll + ref.rows * ref.resy
 
   # Notes on warp arguments:
@@ -184,7 +174,7 @@ warpToReference <- function( source, destination, reference, clip, method = "nea
   if(!overlay){  # these are only needed if we aren't adding to an existing dataset
     command <- paste0( command,
                        "-co TFW=YES ",
-                       "-t_srs ", shQuote(ref.proj), " ",
+                       "-t_srs ", shQuote(wkt.file), " ",
                        ifelse(overwrite, " -overwrite ", ""),
                        "-te ", ref.xll, " ", ref.yll, " ", ref.xmax, " ", ref.ymax, " ",
                        "-tr ", ref.resx, " ", ref.resy, " "
@@ -202,12 +192,16 @@ warpToReference <- function( source, destination, reference, clip, method = "nea
                      "-r ", method, " ",
                      shQuote(source), " ", shQuote(destination))
 
-
   # Temporarily reset the PROJ_LIB environmental setting for system call (if indicated by settings)
   oprojlib <- Sys.getenv("PROJ_LIB")
-  if(rasterPrepSettings$setProjLib){
+  ogdaldata <- Sys.getenv("GDAL_DATA")
+  if(rasterPrepSettings$resetLibs){
     Sys.setenv(PROJ_LIB = rasterPrepSettings$projLib )
-    on.exit(Sys.setenv(PROJ_LIB = oprojlib))
+    Sys.setenv(GDAL_DATA = rasterPrepSettings$gdalData)
+    on.exit({
+      Sys.setenv(PROJ_LIB = oprojlib)
+      Sys.setenv(GDAL_DATA = ogdaldata)
+    })
   }
 
   cat("Warping with system command:\n", command, "\n")
@@ -217,14 +211,17 @@ warpToReference <- function( source, destination, reference, clip, method = "nea
     stop("An error might have occured.  The function returned: ", a)
   }
 
+
+
+
   if(!file.exists(destination))
     stop("Output file", destination, "was not created. System call returned: ", a)
 
-
+  if(terra::crs(terra::rast(destination)) == "")
+    stop("Output was created but lacks a coordinate reference system")
 
   cat("Done warping output at:", destination, "\n")
-
-
+  file.remove(wkt.file)
 }
 
 

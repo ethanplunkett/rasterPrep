@@ -43,17 +43,22 @@ addColorTable <- function(x, table){
   stopifnot(c("value", "color") %in% names(table))
   add.categories <- "category" %in% names(table)
 
+  # Check that input file is a single band
+  r <- terra::rast(x)
+  if(!dim(r)[3] == 1)
+    stop("addColorTable only works with byte encoded single band files. ", x, " appears to have more than one band.")
 
-  # Check that input file is a single band file with byte (INT1U) data storage
-  gi <- rgdal::GDALinfo(x)
-  df <- attributes(gi)$df
-  stopifnot(nrow(df) == 1)
-  stopifnot(df$GDType == "Byte")
+  # And that the storage Type is byte
+  d <- terra::describe(x)
+  d <- d[grep("^Band 1", d)]
+  d <- gsub("^.*Type=", "", d)
+  d <- gsub("[^[:alpha:]].*$", "", d)
+  if(tolower(d) != "byte")
+    stop("addColorTable only works with byte encoded files.", x, " appears to have a diffent type.")
 
   # Identify the maximum value in attributes
   max.val <-  max(table$value)
   all.values <- 0:max.val
-
 
   # vrt file will be the same as the input tiff but with .vrt extension
   vrt.file <- gsub("\\.tif$", ".vrt",x,  ignore.case = TRUE)
@@ -100,16 +105,32 @@ addColorTable <- function(x, table){
 
   # Temporarily reset the PROJ_LIB environmental setting for system call (if indicated by settings)
   oprojlib <- Sys.getenv("PROJ_LIB")
-  if(rasterPrepSettings$setProjLib){
+  ogdaldata <- Sys.getenv("GDAL_DATA")
+  if(rasterPrepSettings$resetLibs){
     Sys.setenv(PROJ_LIB = rasterPrepSettings$projLib )
-    on.exit(Sys.setenv(PROJ_LIB = oprojlib))
+    Sys.setenv(GDAL_DATA = rasterPrepSettings$gdalData)
+    on.exit({
+      Sys.setenv(PROJ_LIB = oprojlib)
+      Sys.setenv(GDAL_DATA = ogdaldata)
+    })
   }
 
   # Make vrt file to use as templace
-  gdalUtils::gdal_translate(x, vrt.file, of = "VRT")
+  # gdalUtils::gdal_translate(x, vrt.file, of = "VRT")
 
-  if(rasterPrepSettings$setProjLib)
-    Sys.setenv(PROJ_LIB = oprojlib)
+  # Gdal translate while assigning projection
+  command <- "gdal_translate"
+  command <- paste0(command, " ",
+                    shQuote(x), " ", shQuote(vrt.file),
+                    " -of VRT")
+  cat("Creating .vrt file with system command:\n", command, "\n")
+
+  a <- system(command = command, intern = TRUE, wait = TRUE)
+  a <-  gsub("[[:blank:]]", " ", a)
+  if(!file.exists(vrt.file)){
+    print(a)
+    stop("The vrt file was not created. The function returned: ", a)
+  }
 
   # Read in template vrt file
   vrt <- readLines(vrt.file)

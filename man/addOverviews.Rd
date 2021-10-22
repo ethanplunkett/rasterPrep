@@ -41,7 +41,6 @@ lossy compression in the overviews you may change the compression to
 
 #' This is a convenience wrapper to the
 \href{https://www.gdal.org/gdaladdo.html}{gdaladdo}  command line utility.
-\code{\link[gdalUtils:gdaladdo]{gdaladdo}} provides full control over all parameters.
 \code{addOverviews} sets reasonable defaults, only some of
 which can be overridden.
 }

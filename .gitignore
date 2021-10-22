@@ -12,3 +12,5 @@ inst/doc
 .DS_Store
 # Ignore editpad pro __history folders
 __history/
+/doc/
+/Meta/

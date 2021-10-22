@@ -1,7 +1,7 @@
 Package: rasterPrep
 Type: Package
 Title: Package to prepare raster datasets for analysis or viewing
-Version: 0.1.6
+Version: 0.1.7
 Author: Ethan Plunkett
 Maintainer: Ethan Plunkett <eplunkett@eco.umass.edu>
 Description: A package for preparing raster data for analysis and viewing. 
@@ -14,15 +14,15 @@ Language: en-US
 LazyData: true
 RoxygenNote: 7.1.2
 Imports:
-  gdalUtils,
   grDevices,
   foreign,
   raster,
-  terra,
   rgdal,
+  terra,
   sf
 Suggests: knitr,
-    rmarkdown
+    rmarkdown,
+    gdalUtilities
 VignetteBuilder: knitr
 URL: https://github.com/ethanplunkett/rasterPrep
 BugReports: https://github.com/ethanplunkett/rasterPrep/issues

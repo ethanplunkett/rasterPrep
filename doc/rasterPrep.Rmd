@@ -41,12 +41,12 @@ Overview:
 ```{r, echo = TRUE, message = FALSE, warning = FALSE}
 # Load packages
 library(rasterPrep)
-library(gdalUtils)  # for ogr2ogr() used to reproject vector Shapefiles
-library(rgdal)  # for GDALinfo()
+library(gdalUtilities)  # for ogr2ogr() used to reproject vector Shapefiles
+library(terra)  # for crs() and rast() 
 
 # Note because I'm pulling data from one read-only directory and writing to a
-# a temporary directory I'm defining complete paths here.  Often it's easier
-# to set a working directory then use file names when calling the functions.
+# a second I'm defining complete paths here.  Often it's easier to set a working
+# directory then use file names when calling the functions.
 
 # Set paths for retrieving input data included with this package
 inPaths <- list(
@@ -64,10 +64,20 @@ outPaths <- list(
   ref = file.path(outDir, "reference.tif"),        # Our reference grid
   slopeTemp = file.path(outDir, "slopeTemp.tif"),  # Intermediate raster file
   slope = file.path(outDir, "slope.tif"),          # Slope raster
-  roadLines = file.path(outDir, "roadsLines.shp"), # Reprojected vector roads
+  roadLines = file.path(outDir, "roadLines.shp"), # Reprojected vector roads
   roadsTemp = file.path(outDir, "roads1.tif"),     # Intermediate raster file
   roads  = file.path(outDir, "roads.tif"),         # Binary Roads raster
   roadClass  = file.path(outDir, "roadClass.tif") )# Road class raster
+
+# Delete output so rerunning doesn't cause problems
+if(file.exists(outPaths$roadLines))
+  file.remove(list.files(outDir, "roadLines", full.names = TRUE))
+
+for(a in setdiff(names(outPaths), "roadLines")){
+  if(file.exists(outPaths[[a]]))
+    deleteTif(outPaths[[a]])
+}
+
 
 ```
 
@@ -79,7 +89,7 @@ It is in Mass Mainland mass state plain projection  ([EPSG:26986](https://epsg.i
 This defines our study area and output projection.
 
 2. "slope.tif": A raster clipped from https://scholarworks.umass.edu/data/17/ with 
-the original projection and cell alignment preserved.  It is in the USA Contiguous Albers Equal Area Conic Projection([ESRI:102003](https://epsg.io/102003)).  EPSG:5070
+the original projection and cell alignment preserved.  It is in the USA Contiguous Albers Equal Area Conic Projection([ESRI:202003](https://epsg.io/102003)).
 
 3. "roads.shp": A Shapefile containing vector roads, originally from Open Street map but with small roads removed and clipped to Amherst.  It's in the same projection as 2. 
 
@@ -130,13 +140,16 @@ Here we will first reproject the vector roads to our output projection and then
 use the result to create a roads raster that matches the reference raster.
 
 To reproject the vector roads we are going to use the 'ogr2ogr()' function within the
-gdalUtils R package.  You could also use sp; or sf package to read in the vector data, reproject, and write out to a new Shapefile. 
+gdalUtilities R package.  You could also use sf package to read in the vector data, 
+reproject, and write out to a new Shapefile, but it woud be less efficient.
 
 ```{r, echo = TRUE, message = FALSE, warning = FALSE, results = FALSE}
 
 # Reproject vector to reference projection
-ref.proj <- GDALSpatialRef(outPaths$ref)  
-ogr2ogr(inPaths$roads, outPaths$roadLines, t_srs = ref.proj)
+refProj <- terra::crs(terra::rast(outPaths$ref))  #  well known text of projection
+projFile <- file.path(outDir, "refproj.txt")
+cat(refProj, file = projFile)   #well known text in file
+gdalUtilities::ogr2ogr(inPaths$roads, outPaths$roadLines, t_srs = projFile)
 
 ```
 
@@ -188,6 +201,14 @@ cat("Files created here:\n\t",
     normalizePath(outPaths$slope), " slope."
     )
 
+# Confirm that projections information is there for all files
+# Not required but changes in R's handling of spatial data have broken this in the past
+refcrs <- terra::crs(terra::rast(outPaths$ref))  # wkt of refrence grid we created
+if(refcrs == "") stop("Reference grid doesn't have projection information")
+for(file in c("slope", "roads", "roadClass")){
+  filecrs <- terra::crs(terra::rast(outPaths[[file]]))
+  stopifnot(filecrs == refcrs)
+}
 
 ```
 
