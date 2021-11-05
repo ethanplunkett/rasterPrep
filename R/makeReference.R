@@ -192,11 +192,9 @@ makeReference <- function(polyFile, destination, cellsize,  burn = 1,
   if(!grepl("- done.[[:blank:]]*$", a[length(a)]) ){
     stop("An error might have occured.  The function returned: ", a)
   }
-  if(!file.exists(destination))
-    stop("gdal_rasterize failed to produce a file. Function returned: ", a)
 
   if(!file.exists(destination))
-    stop("Output file", destination, "was not created. System call returned: ", a)
+    stop("gdal_rasterize failed to produce a file:", destination, " System call returned: ", a)
 
   d <- terra::rast(destination)
   if(terra::crs(d) == "") stop("Final file was created without projection information")

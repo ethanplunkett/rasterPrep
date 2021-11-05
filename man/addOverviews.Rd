@@ -4,12 +4,13 @@
 \alias{addOverviews}
 \title{Function to add overviews to an image file}
 \usage{
-addOverviews(x, clean = TRUE, compression = "LZW", method = "nearest")
+addOverviews(x, clean = FALSE, compression = "LZW", method = "nearest")
 }
 \arguments{
 \item{x}{(character) the path to a tif or other raster file}
 
-\item{clean}{(logical) if TRUE prior overviews are removed}
+\item{clean}{(logical) defaults to FALSE; if TRUE overviews are removed
+instead of added}
 
 \item{compression}{(character) the style of compression used in the overviews
 options are: "LZW" (the default), "DEFLATE", and "JPEG"}

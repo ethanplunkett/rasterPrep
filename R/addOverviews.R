@@ -19,7 +19,8 @@
 #' which can be overridden.
 #'
 #' @param x (character) the path to a tif or other raster file
-#' @param clean (logical) if TRUE prior overviews are removed
+#' @param clean (logical) defaults to FALSE; if TRUE overviews are removed
+#'   instead of added
 #' @param compression (character) the style of compression used in the overviews
 #'  options are: "LZW" (the default), "DEFLATE", and "JPEG"
 #' @param method (character) the resampling method one of nearest,
@@ -30,7 +31,7 @@
 #' @return this function creates an additional ".orv" file alongside \code{x} with
 #'  overview information.  It does not return anything.
 #' @export
-addOverviews <- function(x, clean = TRUE, compression = "LZW", method = "nearest"){
+addOverviews <- function(x, clean = FALSE, compression = "LZW", method = "nearest"){
 
   # Note gdalwarp uses "near" while gdaladdo uses "nearest"
   # this allows addOverviews function to use either

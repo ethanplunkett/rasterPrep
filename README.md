@@ -53,8 +53,10 @@ See the [vignette](http://htmlpreview.github.io/?https://github.com/ethanplunket
 
 ## Change log
 
+Oct 28, 2021 (v. 0.1.8) addOverviews now defaults to clean = FALSE. With clean = TRUE it just deleted overviews.
+
 Oct 21, 2021 (v. 0.1.7)
- The two functions that use gdal_rasterize (rasterizeToRefence() and makeReference()) were failing to retain the CRS. I tracked this down to the GDAL_DATA envirnomental variable that rgdal is setting on load.  I was suprised to see that sf package also sets GDAL_DATA when it loads - to a yet different path. This problem was subtle as gdal_translate ran cleanly without error but silently dropped the projection. I now set both environmental variables (GDAL_DATA and PROJ_LIB) before system calls and then set both back to prior values right after each call.  This is all controlled thorugh rasterPrepOptions.
+ The two functions that use gdal_rasterize (rasterizeToRefence() and makeReference()) were failing to retain the CRS. I tracked this down to the GDAL_DATA envirnomental variable that rgdal is setting on load.  I was suprised to see that sf package also sets GDAL_DATA when it loads - to a yet different path. This problem was subtle as gdal_translate ran cleanly without error but silently dropped the projection. I now set both environmental variables (GDAL_DATA and PROJ_LIB) before system calls and then set both back to prior values right after each call.  This is all controlled thorugh rasterPrepOptions.  Note when I later tried to create a reproducable minimal example demonstrating side-effects from GDAL_DATA I couldn't; so I no longer feel certain that GDAL_DATA is a problem but I'm leaving code to reset it in just in case as I feel like the GDAL_DATA should be set to the directory on the system not those in the package installations of GDAL while executing system commands.
 
 makeReference, warpToReference, rasterizeToReference, and makeNiceTif now all throw a errors if the destination file they create lacks a CRS.  
 
