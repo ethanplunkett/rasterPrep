@@ -53,6 +53,8 @@ See the [vignette](http://htmlpreview.github.io/?https://github.com/ethanplunket
 
 ## Change log
 
+Jan 6. 2021 (v. 0.1.9) makeNiceTif now calls gdalinfo with -stats -hist flags when the stats argument is TRUE. This forces calculation of a histogram as well as the statistics. Previously I used the -stats flag in gdal_translate which only did the stats.
+
 Oct 28, 2021 (v. 0.1.8) addOverviews now defaults to clean = FALSE. With clean = TRUE it just deleted overviews.
 
 Oct 21, 2021 (v. 0.1.7)

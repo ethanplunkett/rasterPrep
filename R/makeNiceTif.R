@@ -112,6 +112,13 @@ makeNiceTif <- function(source, destination,  type, overwrite = FALSE,
   if(!file.exists(destination))
     stop("Output file", destination, "was not created. System call returned: ", a)
 
+  if(stats){
+    # Make a call to gdalinfo to add both stats and a histogram
+    # the histogram isn't added by gdal_translate even if -stats flag is set
+    command <- paste0("gdalinfo -stats -hist ",
+                      shQuote(destination))
+    b <- system(command = command, intern = TRUE, wait = TRUE)
+  }
 
   if(rasterPrepSettings$resetLibs){
     Sys.setenv(PROJ_LIB = oprojlib)
