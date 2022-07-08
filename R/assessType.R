@@ -6,8 +6,8 @@
 #' by the raster package (See \code{\link[raster]{dataType}}), standardizes them
 #' to work with gdal and returns the type, a logical indicating if it's a signed
 #' byte, and the no data value which should be used with that type. No data
-#' values used here are not consistent with the text in the
-#' \code{\link[raster]{dataType}} for signed integer types (values here are one
+#' values used here are now consistent with the text in the
+#' \code{\link[raster]{dataType}} for signed integer types (previously values here were one
 #' less).
 #'
 #' SignedBytes are special case in gdal and are written as bytes with an
@@ -52,9 +52,9 @@ assessType <- function(type){
                     no.data.value = c(
                      -2^7,        #  Signed byte
                       2^8 -1,  #"Byte",
-                      -2^15,# "Int16",
+                      -2^15+1,# "Int16",
                       2^16 - 1, # "UInt16",
-                      -2^31 -1 , #"Int32", Note this is one less than the theor
+                      -2^31+1 , #"Int32",
                       2^32-1, #"UInt32",
                       -3.4E+38,# "Float32",
                       -1.7E+308), # "Float64"

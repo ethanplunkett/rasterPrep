@@ -53,6 +53,8 @@ See the [vignette](http://htmlpreview.github.io/?https://github.com/ethanplunket
 
 ## Change log
 
+July 8, 2022 (v.0.1.10) assessType now returns values consistent with the raster package's default no data types for Int16 and Int32. Previously these returned smaller values that were theoretically the smallest value an integer could hold, however, in practice it seemed to trip up some GIS software.
+
 Jan 6. 2021 (v. 0.1.9) makeNiceTif now calls gdalinfo with -stats -hist flags when the stats argument is TRUE. This forces calculation of a histogram as well as the statistics. Previously I used the -stats flag in gdal_translate which only did the stats.
 
 Oct 28, 2021 (v. 0.1.8) addOverviews now defaults to clean = FALSE. With clean = TRUE it just deleted overviews.

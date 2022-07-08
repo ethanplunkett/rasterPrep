@@ -27,8 +27,8 @@ This function accepts type strings as used by gdal_translate and gdal_warp:
 by the raster package (See \code{\link[raster]{dataType}}), standardizes them
 to work with gdal and returns the type, a logical indicating if it's a signed
 byte, and the no data value which should be used with that type. No data
-values used here are not consistent with the text in the
-\code{\link[raster]{dataType}} for signed integer types (values here are one
+values used here are now consistent with the text in the
+\code{\link[raster]{dataType}} for signed integer types (previously values here were one
 less).
 }
 \details{
