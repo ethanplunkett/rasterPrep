@@ -2,12 +2,12 @@
 #' function to create a VAT for a raster file
 #'
 #'
-#' This function creates a new sidecar file next to \code{x} which contains a
+#' This function creates a new sidecar file next to `x` which contains a
 #' value attribute table (VAT).  A VAT is used by ESRI GIS software to encode
 #' additional information about each value in a classified integer raster.
 #'
-#' It calls \code{\link[raster]{freq}} to generate a table of values and
-#' frequencies from the raster \code{x} which can take a long time for large
+#' It calls [raster::freq()] to generate a table of values and
+#' frequencies from the raster `x` which can take a long time for large
 #' files.  It should only be called on integer encoded files.
 #'
 #' A VAT is a a dbf file with "VALUE" and "COUNT" fields containing all the unique
@@ -15,17 +15,17 @@
 #' name will be the name of the image file with ".vat.dbf" appended; for a tif
 #' this means the file will end in ".tif.vat.dbf". The column names in a .dbf
 #' file are restricted to 11 characters and cannot contain periods; for detailed
-#' limitations see \code{\link[foreign]{write.dbf}} which is used to write the
+#' limitations see [foreign::write.dbf()] which is used to write the
 #' VAT.
 #'
 #'
 #' @param x the path to a tif file; this function may work with other raster
 #'   files but that is untested.
-#' @param attributes a \code{data.frame} with a column \code{VALUE} (case insensitive) along with
+#' @param attributes a `data.frame` with a column `VALUE` (case insensitive) along with
 #'   any other data that should be added to the VAT. Column names should not
 #'   contain periods and are limited to 11 characters.
 #' @param skipCount if TRUE then this function will assume that all values in
-#'   the grid are represented in \code{attributes} and will not calculate the
+#'   the grid are represented in `attributes` and will not calculate the
 #'   frequency of each class. This speeds things up tremendously but means the
 #'   VAT will not have a COUNT field. In tests these files display in ArcGIS and
 #'   allow for identification of cells and their attributes; but it does not

@@ -1,6 +1,6 @@
 #' Function to snap a coordinate to the edge of a cell.
 #'
-#' This function is primarily for internal use by \code{\link{makeReference}}
+#' This function is primarily for internal use by [makeReference()]
 #'
 #' If offset is 0 it will snap to cells aligned with the origin, otherwise
 #' offset should be the positive offset from the origin to the first cell
@@ -12,8 +12,8 @@
 #'  it is snapped down.
 #' @param offset the distance up from the origin to the first cell boundary.
 #'
-#' @return a vector of number close to \code{x} that fall on cell boundaries if \code{up}
-#'  is TRUE they will be equal to or higher than corresponding values in \code{x} is FALSE they will be
+#' @return a vector of number close to `x` that fall on cell boundaries if `up`
+#'  is TRUE they will be equal to or higher than corresponding values in `x` is FALSE they will be
 #'  the equal or lower.
 #' @export
 #' @keywords internal

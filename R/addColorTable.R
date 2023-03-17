@@ -3,11 +3,11 @@
 #' This allows adding a color table to a byte encoded categorical raster in
 #' which each value is assigned a unique color and, optionally, a category label.
 #'
-#' The \code{addColorTable} function creates a .vrt file alongside a raster
+#' The `addColorTable` function creates a .vrt file alongside a raster
 #' that references the raster and includes the color table.  .vrt is a GDAL
 #' virtual format file that describes a dataset to be composed of other
 #' datasets.  The .vrt can be read directly by ESRI GIS software or can be
-#' passed to \code{\link{makeNiceTif}} (or GDAL translate directly) in which
+#' passed to [makeNiceTif()] (or GDAL translate directly) in which
 #' case the data and symbology will be united in an output tif.
 #'
 #' Note: The key will include all values between 0 and the maximum value in the
@@ -19,20 +19,20 @@
 #' My workflow is generally:
 #'
 #'  \enumerate{
-#'  \item \code{addColorTable()}   create .vrt alongside existing .tif
-#'  \item \code{\link{makeNiceTif}}  called directly on the .vrt to create a .tif
+#'  \item `addColorTable()`   create .vrt alongside existing .tif
+#'  \item [makeNiceTif()]  called directly on the .vrt to create a .tif
 #'  with embedded color table, tiled data, stats, and overviews.
-#'  \item optionally call \code{\link{addVat}} to build a value attribute table.
+#'  \item optionally call [addVat()] to build a value attribute table.
 #'  }
 #'
 #' @param x (character) the path to raster file containing categorical data, must be a
 #'   single band byte encoded file.
-#' @param table a  \code{data.frame}  with two or three columns:
+#' @param table a  `data.frame`  with two or three columns:
 #' \describe{
 #'   \item{value}{(numeric) raster cell values.}
 #'   \item{color}{(character) the color to assign each value. Typically a
 #'      hexadecimal color in #rrggbb format. It will be passed to
-#'      \code{\link[grDevices]{col2rgb}} so any format that function accepts will work.}
+#'      [grDevices::col2rgb()] so any format that function accepts will work.}
 #'   \item{category}{(optional, character) text describing the class.  If
 #'      present this will be used in the map legend.}
 #' }

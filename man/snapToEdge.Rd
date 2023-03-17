@@ -18,11 +18,11 @@ it is snapped down.}
 }
 \value{
 a vector of number close to \code{x} that fall on cell boundaries if \code{up}
- is TRUE they will be equal to or higher than corresponding values in \code{x} is FALSE they will be
- the equal or lower.
+is TRUE they will be equal to or higher than corresponding values in \code{x} is FALSE they will be
+the equal or lower.
 }
 \description{
-This function is primarily for internal use by \code{\link{makeReference}}
+This function is primarily for internal use by \code{\link[=makeReference]{makeReference()}}
 }
 \details{
 If offset is 0 it will snap to cells aligned with the origin, otherwise

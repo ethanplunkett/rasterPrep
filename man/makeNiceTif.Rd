@@ -22,10 +22,10 @@ makeNiceTif(
 \item{destination}{(character) path to a .tif file to be created for viewing with GIS software}
 
 \item{type}{(character) NOT CURRENTLY SUPPORTED! In the future if supplied
- the output may be converted to this type.
-  Should be one of \code{"Byte"}, \code{"UInt16"}, \code{"Int16"},
-  \code{"UInt32"}, \code{"Int32"}, \code{"Float32"}, \code{"Float64"} or for convenience you may
-also use the raster package's designations: \code{\link[raster]{dataType}}.}
+the output may be converted to this type.
+Should be one of \code{"Byte"}, \code{"UInt16"}, \code{"Int16"},
+\code{"UInt32"}, \code{"Int32"}, \code{"Float32"}, \code{"Float64"} or for convenience you may
+also use the raster package's designations: \code{\link[raster:dataType]{raster::dataType()}}.}
 
 \item{overwrite}{(logical) if \code{TRUE} any existing file will be overwritten}
 
@@ -37,8 +37,8 @@ also use the raster package's designations: \code{\link[raster]{dataType}}.}
 
 \item{vat}{(logical) if \code{TRUE} an ESRI Value Attribute Table (VAT) sidecar file will be
 created containing all the unique values in the grid and
- their associated count of cells. This is only recommended for categorical
-  data and can be slow but will speed up setting up symbology of that data in ArcGIS.}
+their associated count of cells. This is only recommended for categorical
+data and can be slow but will speed up setting up symbology of that data in ArcGIS.}
 
 \item{stats}{(logical) if \code{TRUE} than statistics are generated and saved; this helps GIS software transform continuous data (e.g. make a standard deviation color ramp)}
 }
@@ -57,24 +57,23 @@ software.
 This function is intended to be called after analysis to prepare result
 rasters so they can be viewed easily in GIS software. Because it creates
 tiled .tif files it is not a good idea to run on files in preparation for
- analysis with the raster package as that package reads by lines.
+analysis with the raster package as that package reads by lines.
 
 type is currently passed to gdal_translate which will reset the
- type to the desired value but will NOT update NA values appropriately.
- This may still work out if you (1) are not converting between signed and
- unsigned types and (2) are moving to a smaller bit depth. For example
- moving from an Int32 to and Int16 should work because the NA value from Int32
- will be out of range and truncated to the highest value in the Int16 which
- is the appropriate NA value for Int16. In the future I might add an internal
- call to do the type conversion for you.  For now if you want to change the
- type you can do so safely in a call to warpToReference prior to using this
- function.
-
+type to the desired value but will NOT update NA values appropriately.
+This may still work out if you (1) are not converting between signed and
+unsigned types and (2) are moving to a smaller bit depth. For example
+moving from an Int32 to and Int16 should work because the NA value from Int32
+will be out of range and truncated to the highest value in the Int16 which
+is the appropriate NA value for Int16. In the future I might add an internal
+call to do the type conversion for you.  For now if you want to change the
+type you can do so safely in a call to warpToReference prior to using this
+function.
 
 This is a wrapper to \code{gdaltranslate} coupled with
-\code{\link{addOverviews}} and \code{\link{addVat}}.  For finer control over
-translation see \code{\link[gdalUtils]{gdal_translate}}.
+\code{\link[=addOverviews]{addOverviews()}} and \code{\link[=addVat]{addVat()}}.  For finer control over
+translation see \code{\link[gdalUtils:gdal_translate]{gdalUtils::gdal_translate()}}.
 
 If you intend to create a color table for a categorical raster first call
-\code{\link{addColorTable}} and then pass the .vrt file it creates to this function.
+\code{\link[=addColorTable]{addColorTable()}} and then pass the .vrt file it creates to this function.
 }
