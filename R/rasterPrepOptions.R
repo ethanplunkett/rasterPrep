@@ -54,12 +54,9 @@ rasterPrepSettings$gdalData <- ""
 #'
 #' @param ... Arguments should be settings to reset with their value the new setting.
 #'  If called with no arguments nothing is changed but the current settings are printed.
-#'
-#' @return
 #' @export
 #' @return a list of the current settings is returned if the function is called with no
 #' arguments.
-
 rasterPrepOptions <- function(...){
 
   # This function allows changing raster prep settings

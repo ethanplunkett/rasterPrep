@@ -7,7 +7,7 @@
 #'
 #' This is a convenience wrapper to gdalwarp that facilitates making raster data
 #' align with other raster data while attempting to set many options to sensible
-#' defaults.  [gdalUtils::gdalwarp()] provides direct access to all
+#' defaults.  [gdalUtilities::gdalwarp()] provides direct access to all
 #' the options.
 #'
 #' Clipping and reprojecting in a single step may result in slight imperfections

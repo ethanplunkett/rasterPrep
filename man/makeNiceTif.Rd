@@ -70,9 +70,9 @@ call to do the type conversion for you.  For now if you want to change the
 type you can do so safely in a call to warpToReference prior to using this
 function.
 
-This is a wrapper to \code{gdaltranslate} coupled with
+This is a wrapper to the \code{gdaltranslate} command line utility coupled with
 \code{\link[=addOverviews]{addOverviews()}} and \code{\link[=addVat]{addVat()}}.  For finer control over
-translation see \code{\link[gdalUtils:gdal_translate]{gdalUtils::gdal_translate()}}.
+translation see \code{\link[gdalUtilities:gdal_translate]{gdalUtilities::gdal_translate()}}.
 
 If you intend to create a color table for a categorical raster first call
 \code{\link[=addColorTable]{addColorTable()}} and then pass the .vrt file it creates to this function.
