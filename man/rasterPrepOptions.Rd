@@ -11,8 +11,6 @@ rasterPrepOptions(...)
 If called with no arguments nothing is changed but the current settings are printed.}
 }
 \value{
-
-
 a list of the current settings is returned if the function is called with no
 arguments.
 }
