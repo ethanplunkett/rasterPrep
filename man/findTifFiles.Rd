@@ -17,7 +17,7 @@ a vector of files associated with x
 }
 \description{
 This is primarily intended for internal use and is called by
-\code{\link{copyTif}},\code{\link{deleteTif}}, and \code{\link{renameTif}}.
+\code{\link[=copyTif]{copyTif()}},\code{\link[=deleteTif]{deleteTif()}}, and \code{\link[=renameTif]{renameTif()}}.
 }
 \details{
 Given the path to a .tif file return the path to all the files associated with

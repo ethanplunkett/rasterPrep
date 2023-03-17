@@ -35,7 +35,7 @@ prior to rasterizing.  init can only be used if the destination does not already
 \item{type}{the type of grid to create. Should be one of \code{"Byte"}, \code{"UInt16"},
 \code{"Int16"}, \code{"UInt32"}, \code{"Int32"}, \code{"Float32"},
 \code{"Float64"} or for convenience you may
-also use the raster package's designations: \code{\link[raster]{dataType}}.}
+also use the raster package's designations: \code{\link[raster:dataType]{raster::dataType()}}.}
 
 \item{allTouched}{(optional, logical) defaults to FALSE.  If TRUE
 "all pixels touched by lines or polygons will be updated, not just those on
@@ -47,7 +47,7 @@ source.  This can be used to filter or sort the data prior to burning.}
 }
 \value{
 This function creates a new raster or writes values to an existing raster
- at the destination.  It does not return anything.
+at the destination.  It does not return anything.
 }
 \description{
 This function rasterizes vector data into a file that coincides (same extent,
@@ -67,10 +67,10 @@ that supports fewer values such as \code{"Byte"}.
 
 When creating a new file
 the CRS of the source must match that of the reference and this used to be checked
-with \code{\link[raster]{compareCRS}} but with updates to the proj library and the
+with \code{\link[raster:compareCRS]{raster::compareCRS()}} but with updates to the proj library and the
 switch to WKT representations I don't currently have a good way to check if two
 projections are equivallent. Its now up to the user to make sure that they are.
 
- In contrast if you are overlaying data on an existing file then the underlying gdal_rasterize
+In contrast if you are overlaying data on an existing file then the underlying gdal_rasterize
 function will reproject while rasterizing.
 }

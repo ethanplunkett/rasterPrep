@@ -19,19 +19,19 @@ options are: "LZW" (the default), "DEFLATE", and "JPEG"}
 average, gauss, cubic, cubicspline, lanczos,
 average_mp, average_magphase, or mode. It is passed to
 \href{http://www.gdal.org/gdaladdo.html}{gdaladdo} check there for details.
- \code{"near"} is also accepted and silently converted to, \code{"nearest"}.}
+\code{"near"} is also accepted and silently converted to, \code{"nearest"}.}
 }
 \value{
 this function creates an additional ".orv" file alongside \code{x} with
- overview information.  It does not return anything.
+overview information.  It does not return anything.
 }
 \description{
 This function creates overviews (aka pyramids) with compressed copies
- of the data from a raster at multiple coarser resolutions. They are saved in
- a side car file with the extension ".orv" appended to the original file's
- full name (e.g. "dem.tif.orv" would contain the overviews for "dem.tif").
- Overview are used by GIS software to display the raster file more quickly
- when zoomed out. They are especially useful for large files.
+of the data from a raster at multiple coarser resolutions. They are saved in
+a side car file with the extension ".orv" appended to the original file's
+full name (e.g. "dem.tif.orv" would contain the overviews for "dem.tif").
+Overview are used by GIS software to display the raster file more quickly
+when zoomed out. They are especially useful for large files.
 }
 \details{
 Generally the default arguments are good but you may want to change the method

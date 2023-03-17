@@ -1,13 +1,13 @@
 #' function to find all the files associated with a .tif file.
 #'
 #' This is primarily intended for internal use and is called by
-#' \code{\link{copyTif}},\code{\link{deleteTif}}, and \code{\link{renameTif}}.
+#' [copyTif()],[deleteTif()], and [renameTif()].
 #'
 #' Given the path to a .tif file return the path to all the files associated with
 #' it including the original .tif.  Any file that includes the full name (with
 #' .tif extension and some additional extension  e.g. .tif.orv) a world
 #' file which has the same base name but .twf instead of .tif and if
-#' \code{includeVrt} is TRUE a .vrt file with the same name.
+#' `includeVrt` is TRUE a .vrt file with the same name.
 #'
 #' @param x (character) the path to a single .tif file
 #' @param includeVrt (logical) if TRUE consider a .vrt with the same base name

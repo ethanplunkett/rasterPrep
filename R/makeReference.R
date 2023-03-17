@@ -23,14 +23,14 @@ if(FALSE){
 #'This function is for setting up a reference grid from a polygon file
 #'containing a focal area boundary.
 #'
-#'\code{makeReference} creates a raster file large enough to contain the polygon
+#'`makeReference` creates a raster file large enough to contain the polygon
 #'with pixels that are either aligned to the origin (default) or aligned to
 #'pixels in another raster.
 #'
 #'The new extent will be large enough to contain all the pixels within the
 #'polygon. By default it will contain pixels aligned to the origin with the
-#'pixels edges that are even multiple of the \code{cellsize}.  However, if
-#'\code{alignTo} is set to \code{"reference"} and the \code{reference} argument
+#'pixels edges that are even multiple of the `cellsize`.  However, if
+#'`alignTo` is set to `"reference"` and the `reference` argument
 #'is the path to an existing raster file than the pixels will align with the
 #'pixels in that file.
 #'
@@ -54,21 +54,21 @@ if(FALSE){
 #' @param alignTo (character) either "origin", the default, which causes cells to
 #'   align to the origin of the projection such that cell boundaries fall on
 #'   integer multiples of the cellsize; or "reference" in which case cells will
-#'   be aligned with cells in the \code{reference} raster. If \code{alignTo} is
-#'   set to "reference" than \code{cellsize} is optional and defaults to the
+#'   be aligned with cells in the `reference` raster. If `alignTo` is
+#'   set to "reference" than `cellsize` is optional and defaults to the
 #'   resolution of the reference raster, but the extent is still taken from
-#'   \code{polyFile}.
-#' @param reference (optional, character) if \code{alignTo} is set to "reference" than
+#'   `polyFile`.
+#' @param reference (optional, character) if `alignTo` is set to "reference" than
 #'   this should be the path to an existing raster file who's cell alignment
 #'   we would like to match. Its projection should match that of the polyFile
 #' @param nestingCellsize (numeric) This is optional and likely not needed.  If
-#' \code{nestingCellsize} is provided it must be a multiple of \code{cellsize} and
+#' `nestingCellsize` is provided it must be a multiple of `cellsize` and
 #'  the extent will be expanded out to match the extent that would be
 #'  needed by this larger cellsize. This facilitates multi-scale analysis with
 #'  identical extents for all scales.
 #'
 #' @return This function is called for the side effect of creating a reference
-#'   tif at the \code{destination} path. It does not return anything.
+#'   tif at the `destination` path. It does not return anything.
 #' @export
 makeReference <- function(polyFile, destination, cellsize,  burn = 1,
                           alignTo = "origin", reference,  nestingCellsize = cellsize){

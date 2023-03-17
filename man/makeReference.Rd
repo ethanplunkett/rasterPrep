@@ -42,13 +42,13 @@ we would like to match. Its projection should match that of the polyFile}
 
 \item{nestingCellsize}{(numeric) This is optional and likely not needed.  If
 \code{nestingCellsize} is provided it must be a multiple of \code{cellsize} and
- the extent will be expanded out to match the extent that would be
- needed by this larger cellsize. This facilitates multi-scale analysis with
- identical extents for all scales.}
+the extent will be expanded out to match the extent that would be
+needed by this larger cellsize. This facilitates multi-scale analysis with
+identical extents for all scales.}
 }
 \value{
 This function is called for the side effect of creating a reference
-  tif at the \code{destination} path. It does not return anything.
+tif at the \code{destination} path. It does not return anything.
 }
 \description{
 \code{makeReference} creates a raster file large enough to contain the polygon

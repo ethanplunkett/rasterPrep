@@ -1,13 +1,13 @@
 #' warp raster data to match a reference raster file.
 #'
-#' Function to reproject or resample the data in \code{source} into a new file
-#' at \code{destination} with the same extent, projection, cellsize, and
-#' alignment as \code{reference}, and (optionally) with cells outside the
-#' polygons within \code{clip} set to no data.
+#' Function to reproject or resample the data in `source` into a new file
+#' at `destination` with the same extent, projection, cellsize, and
+#' alignment as `reference`, and (optionally) with cells outside the
+#' polygons within `clip` set to no data.
 #'
 #' This is a convenience wrapper to gdalwarp that facilitates making raster data
 #' align with other raster data while attempting to set many options to sensible
-#' defaults.  \code{\link[gdalUtils]{gdalwarp}} provides direct access to all
+#' defaults.  [gdalUtils::gdalwarp()] provides direct access to all
 #' the options.
 #'
 #' Clipping and reprojecting in a single step may result in slight imperfections
@@ -16,9 +16,9 @@
 #' is because gdalwarp may be masking based on the center of the source pixels
 #' rather than the destination pixels.  For that reason if you are both
 #' reprojecting/resampling and clipping to a polygon I recommend calling this function
-#' twice. In the first call omit the \code{clip} argument.  It will reproject
+#' twice. In the first call omit the `clip` argument.  It will reproject
 #' and resample. Then in the second call pass in the output of first and supply
-#' the \code{clip} argument.
+#' the `clip` argument.
 #'
 #' @param source (character) path to a raster file containing data to be warped
 #'   (reprojected and or resampled)
@@ -31,20 +31,20 @@
 #' @param method (Character) the resampling method one of "near", "bilinear",
 #'   "cubic", "cubicspline", "lanczos", "average", "mode", "max", "min", "med",
 #'   "q1", or "q3" passed to gdalwarp see  see:
-#'   \url{http://www.gdal.org/gdalwarp.html} for more details.
+#'   <http://www.gdal.org/gdalwarp.html> for more details.
 #' @param overwrite (optional, logical) if TRUE (the default) than a preexisting
 #'   destination file be overwritten.  If FALSE it will throw an error if
 #'   the file already exists.
 #' @param overlay (optional, logical) if TRUE then add the data in source to a
 #'   preexisting destination grid in which case reference is ignored.  This can
 #'   be used to combine tiled rasters into a single grid (likely with a separate
-#'   \code{clip} file for each tile).
+#'   `clip` file for each tile).
 #' @param type (optional, character) if not set than both the data type and the
 #'   no data value in the destination file will match the values in the source
 #'   file.  If set then the data will be encoded with the selected type and the
 #'   no data value will be set to the lowest possible value for signed types and
 #'   the highest possible value for unsigned types.
-#' @return \code{warpToReference} creates a new raster file at destination
+#' @return `warpToReference` creates a new raster file at destination
 #'   matching the extent and cellsize of reference but returns nothing.
 #' @export
 warpToReference <- function( source, destination, reference, clip, method = "near",

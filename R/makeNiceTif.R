@@ -23,30 +23,30 @@
 #'  function.
 #'
 #'
-#' This is a wrapper to \code{gdaltranslate} coupled with
-#' \code{\link{addOverviews}} and \code{\link{addVat}}.  For finer control over
-#' translation see \code{\link[gdalUtils]{gdal_translate}}.
+#' This is a wrapper to `gdaltranslate` coupled with
+#' [addOverviews()] and [addVat()].  For finer control over
+#' translation see [gdalUtils::gdal_translate()].
 #'
 #' If you intend to create a color table for a categorical raster first call
-#' \code{\link{addColorTable}} and then pass the .vrt file it creates to this function.
+#' [addColorTable()] and then pass the .vrt file it creates to this function.
 #
 #' @param source (character) path to a raster file readable by gdal.
 #' @param destination (character) path to a .tif file to be created for viewing with GIS software
 #' @param type (character) NOT CURRENTLY SUPPORTED! In the future if supplied
 #'  the output may be converted to this type.
-#'   Should be one of \code{"Byte"}, \code{"UInt16"}, \code{"Int16"},
-#'   \code{"UInt32"}, \code{"Int32"}, \code{"Float32"}, \code{"Float64"} or for convenience you may
-#' also use the raster package's designations: \code{\link[raster]{dataType}}.
-#' @param overwrite (logical) if \code{TRUE} any existing file will be overwritten
-#' @param buildOverviews (logical) if \code{TRUE} overviews (AKA pyramids) will be built
-#' @param overviewResample (character) one of  \code{"nearest"},
-#'  \code{"average"}, \code{"gauss"}, \code{"cubic"}, \code{"cubicspline"},
-#'  \code{"lanczos"}, \code{"average_mp"}, \code{"average_magphase"}, \code{"mode"} see \href{https://www.gdal.org/gdaladdo.html}{gdaladdo} for details. For convenience \code{"near"} is silently updated to \code{"nearest"}
-#' @param vat (logical) if \code{TRUE} an ESRI Value Attribute Table (VAT) sidecar file will be
+#'   Should be one of `"Byte"`, `"UInt16"`, `"Int16"`,
+#'   `"UInt32"`, `"Int32"`, `"Float32"`, `"Float64"` or for convenience you may
+#' also use the raster package's designations: [raster::dataType()].
+#' @param overwrite (logical) if `TRUE` any existing file will be overwritten
+#' @param buildOverviews (logical) if `TRUE` overviews (AKA pyramids) will be built
+#' @param overviewResample (character) one of  `"nearest"`,
+#'  `"average"`, `"gauss"`, `"cubic"`, `"cubicspline"`,
+#'  `"lanczos"`, `"average_mp"`, `"average_magphase"`, `"mode"` see [gdaladdo](https://www.gdal.org/gdaladdo.html) for details. For convenience `"near"` is silently updated to `"nearest"`
+#' @param vat (logical) if `TRUE` an ESRI Value Attribute Table (VAT) sidecar file will be
 #'   created containing all the unique values in the grid and
 #'    their associated count of cells. This is only recommended for categorical
 #'     data and can be slow but will speed up setting up symbology of that data in ArcGIS.
-#' @param stats (logical) if \code{TRUE} than statistics are generated and saved; this helps GIS software transform continuous data (e.g. make a standard deviation color ramp)
+#' @param stats (logical) if `TRUE` than statistics are generated and saved; this helps GIS software transform continuous data (e.g. make a standard deviation color ramp)
 #' @return This function creates a copy of the source raster at the destination
 #' path that is formatted to facilitate viewing in GIS software. It does not return
 #' anything.

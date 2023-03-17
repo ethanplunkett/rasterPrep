@@ -31,7 +31,7 @@ value attribute table (VAT).  A VAT is used by ESRI GIS software to encode
 additional information about each value in a classified integer raster.
 }
 \details{
-It calls \code{\link[raster]{freq}} to generate a table of values and
+It calls \code{\link[raster:freq]{raster::freq()}} to generate a table of values and
 frequencies from the raster \code{x} which can take a long time for large
 files.  It should only be called on integer encoded files.
 
@@ -40,6 +40,6 @@ values and their associated frequency in the raster file. The VAT file's
 name will be the name of the image file with ".vat.dbf" appended; for a tif
 this means the file will end in ".tif.vat.dbf". The column names in a .dbf
 file are restricted to 11 characters and cannot contain periods; for detailed
-limitations see \code{\link[foreign]{write.dbf}} which is used to write the
+limitations see \code{\link[foreign:write.dbf]{foreign::write.dbf()}} which is used to write the
 VAT.
 }

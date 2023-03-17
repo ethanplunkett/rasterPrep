@@ -12,12 +12,12 @@ single band byte encoded file.}
 
 \item{table}{a  \code{data.frame}  with two or three columns:
 \describe{
-  \item{value}{(numeric) raster cell values.}
-  \item{color}{(character) the color to assign each value. Typically a
-     hexadecimal color in #rrggbb format. It will be passed to
-     \code{\link[grDevices]{col2rgb}} so any format that function accepts will work.}
-  \item{category}{(optional, character) text describing the class.  If
-     present this will be used in the map legend.}
+\item{value}{(numeric) raster cell values.}
+\item{color}{(character) the color to assign each value. Typically a
+hexadecimal color in #rrggbb format. It will be passed to
+\code{\link[grDevices:col2rgb]{grDevices::col2rgb()}} so any format that function accepts will work.}
+\item{category}{(optional, character) text describing the class.  If
+present this will be used in the map legend.}
 }}
 }
 \value{
@@ -32,7 +32,7 @@ The \code{addColorTable} function creates a .vrt file alongside a raster
 that references the raster and includes the color table.  .vrt is a GDAL
 virtual format file that describes a dataset to be composed of other
 datasets.  The .vrt can be read directly by ESRI GIS software or can be
-passed to \code{\link{makeNiceTif}} (or GDAL translate directly) in which
+passed to \code{\link[=makeNiceTif]{makeNiceTif()}} (or GDAL translate directly) in which
 case the data and symbology will be united in an output tif.
 
 Note: The key will include all values between 0 and the maximum value in the
@@ -42,10 +42,10 @@ string as the category label. Generally it works best if you recode your
 raster to have values 0 to N-1, or 1 to N.
 My workflow is generally:
 
- \enumerate{
- \item \code{addColorTable()}   create .vrt alongside existing .tif
- \item \code{\link{makeNiceTif}}  called directly on the .vrt to create a .tif
- with embedded color table, tiled data, stats, and overviews.
- \item optionally call \code{\link{addVat}} to build a value attribute table.
- }
+\enumerate{
+\item \code{addColorTable()}   create .vrt alongside existing .tif
+\item \code{\link[=makeNiceTif]{makeNiceTif()}}  called directly on the .vrt to create a .tif
+with embedded color table, tiled data, stats, and overviews.
+\item optionally call \code{\link[=addVat]{addVat()}} to build a value attribute table.
+}
 }

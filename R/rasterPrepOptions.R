@@ -10,15 +10,15 @@ rasterPrepSettings$gdalData <- ""
 #'
 #' Currently there are three settings:
 #'
-#' \code{resetLibs} -  controls whether raster prep should attempt to reset
+#' `resetLibs` -  controls whether raster prep should attempt to reset
 #' the system environmental settings for PROJ_LIB and GDAL_DATA prior to executing system
 #' calls it defaults to TRUE.
 #'
-#' \code{projLib} - is what the PROJ_LIB environental setting should be set to orior to the calls.
-#'   It defaults to an empty string (\code{""}).
+#' `projLib` - is what the PROJ_LIB environental setting should be set to orior to the calls.
+#'   It defaults to an empty string (`""`).
 #'
-#'\code{gdalData} - is what the GDAL_DATA environemental variable should be set to prior to
-#'  system calls (if resetsLibs is TRUE). It defaults to an empty string (\code{""}).
+#'`gdalData` - is what the GDAL_DATA environemental variable should be set to prior to
+#'  system calls (if resetsLibs is TRUE). It defaults to an empty string (`""`).
 #'
 #' On my system in a clean R session Sys.getenv("PROJ_LIB") will return "" but
 #' after rgdal or sp are loaded it will be "C:/Users/user/Documents/R/win-library/4.0/rgdal/proj"
@@ -36,8 +36,8 @@ rasterPrepSettings$gdalData <- ""
 #' rasterPrep will change the PROJ_LIB and GDAL_DATA enviromental setting  to "" before making a
 #'system call.
 #'
-#' This can be turned off with \code{rasterPrepOptions(resetLibs = FALSE)} or changed to
-#' to different location with for example \code{rasterPrepOptions(projLib = "C:/Proj/")}
+#' This can be turned off with `rasterPrepOptions(resetLibs = FALSE)` or changed to
+#' to different location with for example `rasterPrepOptions(projLib = "C:/Proj/")`
 #' or some appropriate for your system.
 #'
 #' The package will always reset the PROJ_LIB and GDAL_DATA variables to the original value after

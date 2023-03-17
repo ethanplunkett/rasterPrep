@@ -26,3 +26,4 @@ Suggests: knitr,
 VignetteBuilder: knitr
 URL: https://github.com/ethanplunkett/rasterPrep
 BugReports: https://github.com/ethanplunkett/rasterPrep/issues
+Roxygen: list(markdown = TRUE)

@@ -50,7 +50,7 @@ the highest possible value for unsigned types.}
 }
 \value{
 \code{warpToReference} creates a new raster file at destination
-  matching the extent and cellsize of reference but returns nothing.
+matching the extent and cellsize of reference but returns nothing.
 }
 \description{
 Function to reproject or resample the data in \code{source} into a new file
@@ -61,7 +61,7 @@ polygons within \code{clip} set to no data.
 \details{
 This is a convenience wrapper to gdalwarp that facilitates making raster data
 align with other raster data while attempting to set many options to sensible
-defaults.  \code{\link[gdalUtils]{gdalwarp}} provides direct access to all
+defaults.  \code{\link[gdalUtils:gdalwarp]{gdalUtils::gdalwarp()}} provides direct access to all
 the options.
 
 Clipping and reprojecting in a single step may result in slight imperfections

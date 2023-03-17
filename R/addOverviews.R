@@ -11,11 +11,11 @@
 #'to "average" for continuous raster files and possibly to "mode" for categorical
 #'files. For continuous files, especially imagery, if you are OK with
 #' lossy compression in the overviews you may change the compression to
-#' \code{"JPEG"} which should result in smaller files.
+#' `"JPEG"` which should result in smaller files.
 #'
 #'#' This is a convenience wrapper to the
-#' \href{https://www.gdal.org/gdaladdo.html}{gdaladdo}  command line utility.
-#' \code{addOverviews} sets reasonable defaults, only some of
+#' [gdaladdo](https://www.gdal.org/gdaladdo.html)  command line utility.
+#' `addOverviews` sets reasonable defaults, only some of
 #' which can be overridden.
 #'
 #' @param x (character) the path to a tif or other raster file
@@ -26,9 +26,9 @@
 #' @param method (character) the resampling method one of nearest,
 #'   average, gauss, cubic, cubicspline, lanczos,
 #'   average_mp, average_magphase, or mode. It is passed to
-#'   \href{http://www.gdal.org/gdaladdo.html}{gdaladdo} check there for details.
-#'    \code{"near"} is also accepted and silently converted to, \code{"nearest"}.
-#' @return this function creates an additional ".orv" file alongside \code{x} with
+#'   [gdaladdo](http://www.gdal.org/gdaladdo.html) check there for details.
+#'    `"near"` is also accepted and silently converted to, `"nearest"`.
+#' @return this function creates an additional ".orv" file alongside `x` with
 #'  overview information.  It does not return anything.
 #' @export
 addOverviews <- function(x, clean = FALSE, compression = "LZW", method = "nearest"){

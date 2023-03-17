@@ -25,15 +25,15 @@ the system environmental settings for PROJ_LIB and GDAL_DATA prior to executing 
 calls it defaults to TRUE.
 
 \code{projLib} - is what the PROJ_LIB environental setting should be set to orior to the calls.
-  It defaults to an empty string (\code{""}).
+It defaults to an empty string (\code{""}).
 
 \code{gdalData} - is what the GDAL_DATA environemental variable should be set to prior to
- system calls (if resetsLibs is TRUE). It defaults to an empty string (\code{""}).
+system calls (if resetsLibs is TRUE). It defaults to an empty string (\code{""}).
 
 On my system in a clean R session Sys.getenv("PROJ_LIB") will return "" but
 after rgdal or sp are loaded it will be "C:/Users/user/Documents/R/win-library/4.0/rgdal/proj"
 GDAL_DATA is similarly changed.  Also note if sf is loaded it changes the GDAL_DATA variable to
- something else.
+something else.
 
 Unfortunately that means that when you try to run any  of the gdal utilities via a system call
 they don't use the co-installed proj library but instead use rgdal's version.
