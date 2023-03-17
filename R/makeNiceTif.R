@@ -23,9 +23,9 @@
 #'  function.
 #'
 #'
-#' This is a wrapper to `gdaltranslate` coupled with
+#' This is a wrapper to the `gdaltranslate` command line utility coupled with
 #' [addOverviews()] and [addVat()].  For finer control over
-#' translation see [gdalUtils::gdal_translate()].
+#' translation see [gdalUtilities::gdal_translate()].
 #'
 #' If you intend to create a color table for a categorical raster first call
 #' [addColorTable()] and then pass the .vrt file it creates to this function.
