@@ -55,6 +55,7 @@
 makeNiceTif <- function(source, destination,  type, overwrite = FALSE,
                         buildOverviews = TRUE, overviewResample = "nearest",
                         vat = FALSE, stats = TRUE ){
+  verbose <- rasterPrepOptions()$verbose
   if(!file.exists(source)) stop("input file", source, "is missing.")
   if(file.exists(destination)){
    if(overwrite){
@@ -68,7 +69,8 @@ makeNiceTif <- function(source, destination,  type, overwrite = FALSE,
   is.signed.byte <- FALSE
 
   if(!missing(type)){
-    warning("Type conversion will work in some cases but in others will not properly conserve NA encoding. Use with caution.  I might fix this someday.")
+    if(verbose)
+      cat("Type conversion will work in some cases but in others will not properly conserve NA encoding. Use with caution.  I might fix this someday.")
     has.type <- TRUE
     a <- assessType(type)
     type <- a$type
@@ -104,8 +106,8 @@ makeNiceTif <- function(source, destination,  type, overwrite = FALSE,
       Sys.setenv(GDAL_DATA = ogdaldata)
     })
   }
-
-  cat("Compressing with system command:\n", command, "\n")
+  if(verbose)
+    cat("Compressing with system command:\n", command, "\n")
   a <- system(command = command, intern = TRUE, wait = TRUE)
 
 
@@ -131,7 +133,8 @@ makeNiceTif <- function(source, destination,  type, overwrite = FALSE,
   }
 
   if(vat){
-    cat("building vat")
+    if(verbose)
+      cat("building vat")
     addVat(destination)
   }
 

@@ -1,3 +1,10 @@
+# rasterPrep 0.1.12.9002
+
+* Added verbose setting that defaults to FALSE and can be turned on with `rasterPrepOptions(verbose = TRUE)`.  This means that the default behavior is 
+not to print any messages to the screen.
+
+* All cat() and print() statements are now conditional on verbose setting.
+
 # rasterPrep 0.1.12.9001
 
 * rasterInfo(), a new function migrated from gridio returns a nested list with

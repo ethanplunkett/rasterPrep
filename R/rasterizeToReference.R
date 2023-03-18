@@ -67,6 +67,8 @@ if(FALSE){
 rasterizeToReference <- function(source, destination, reference, burn, attribute,  init,
                                  type = "Byte", allTouched = FALSE, sql){
 
+  verbose <- rasterPrepOptions()$verbose
+
   if(missing(burn) & missing(attribute))
     stop("You must specify either burn or attribute for rasterization to work.")
 
@@ -164,7 +166,8 @@ rasterizeToReference <- function(source, destination, reference, burn, attribute
   command <- paste0( command, shQuote(source), " ")
   command <- paste0(command, shQuote(destination))
 
-  cat("Rasterizing with:\n", command, "\n")
+  if(verbose)
+    cat("Rasterizing with:\n", command, "\n")
   a <- system(command = command, intern = TRUE, wait = TRUE)
 
 

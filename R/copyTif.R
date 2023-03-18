@@ -15,6 +15,7 @@ copyTif <- function(from, to, includeVrt = TRUE, overwrite = FALSE){
   a <- gsub(".tif$", "", from, ignore.case = TRUE)
   b <- gsub(".tif$", "", to, ignore.case = TRUE)
   new <- gsub(a, b, targets, ignore.case = TRUE)
-  print(data.frame(from=targets, to = new))
+  if(rasterPrepOptions()$verbose)
+    print(data.frame(from=targets, to = new))
   file.copy(from = targets, to=new, overwrite = overwrite)
 }

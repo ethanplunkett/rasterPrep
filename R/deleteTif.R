@@ -21,7 +21,8 @@ deleteTif <- function(x, includeVrt = TRUE){
   stopifnot(all(grepl("\\.tif$", x, ignore.case = TRUE)))
   for(i in seq_along(x)){
     targets <- findTifFiles(x[i], includeVrt = includeVrt)
-    cat("Deleting:\n\t\t", paste(targets, collapse ="\n\t\t"), "\n", sep = "")
+    if(rasterPrepOptions()$verbose)
+      cat("Deleting:\n\t\t", paste(targets, collapse ="\n\t\t"), "\n", sep = "")
     file.remove(targets)
   }
 }

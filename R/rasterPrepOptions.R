@@ -3,60 +3,66 @@ rasterPrepSettings <- new.env()
 rasterPrepSettings$resetLibs <- TRUE
 rasterPrepSettings$projLib <- ""
 rasterPrepSettings$gdalData <- ""
+rasterPrepSettings$verbose <- FALSE
 
-#' Function to change rasterPrep package settings
+#'change rasterPrep package settings
 #'
-#' This functions allows the user to print or change the settings for the rasterPrep package
+#'This function allows the user to retrieve or change the settings for the
+#'rasterPrep package
 #'
-#' Currently there are three settings:
+#'Currently there are four settings:
 #'
-#' `resetLibs` -  controls whether raster prep should attempt to reset
-#' the system environmental settings for PROJ_LIB and GDAL_DATA prior to executing system
-#' calls it defaults to TRUE.
+#'`resetLibs` -  controls whether raster prep should attempt to reset the system
+#'environmental settings for PROJ_LIB and GDAL_DATA prior to executing system
+#'calls it defaults to TRUE.
 #'
-#' `projLib` - is what the PROJ_LIB environental setting should be set to orior to the calls.
-#'   It defaults to an empty string (`""`).
+#'`projLib` - is what the PROJ_LIB environmental setting should be set to prior
+#'to the calls. It defaults to an empty string (`""`).
 #'
-#'`gdalData` - is what the GDAL_DATA environemental variable should be set to prior to
-#'  system calls (if resetsLibs is TRUE). It defaults to an empty string (`""`).
+#'`gdalData` - is what the GDAL_DATA environmental variable should be set to
+#'prior to system calls (if resetsLibs is TRUE). It defaults to an empty string
+#'(`""`).
 #'
-#' On my system in a clean R session Sys.getenv("PROJ_LIB") will return "" but
-#' after rgdal or sp are loaded it will be "C:/Users/user/Documents/R/win-library/4.0/rgdal/proj"
-#' GDAL_DATA is similarly changed.  Also note if sf is loaded it changes the GDAL_DATA variable to
-#'  something else.
+#'`verbose` - defaults to FALSE.  If TRUE than progress and command structure
+#'will be printed to the console.
 #'
-#' Unfortunately that means that when you try to run any  of the gdal utilities via a system call
-#' they don't use the co-installed proj library but instead use rgdal's version.
-#' If the versions match this may not be a problem but if they don't things may go wrong
-#' in sometimes obvious and sometimes very subtle ways.  gdal_utilities gets around this
-#' by using GDAL installed with sf but doesn't support all of the utilities I use here - gdaladdo
-#' is missing.
+#'On my system in a clean R session Sys.getenv("PROJ_LIB") will return "" but
+#'after rgdal or sp are loaded it will be
+#'"C:/Users/user/Documents/R/win-library/4.0/rgdal/proj" GDAL_DATA is similarly
+#'changed.  Also note if sf is loaded it changes the GDAL_DATA variable to
+#'something else.
 #'
-#' With the default values
-#' rasterPrep will change the PROJ_LIB and GDAL_DATA enviromental setting  to "" before making a
-#'system call.
+#'Unfortunately that means that when you try to run any  of the gdal utilities
+#'via a system call they don't use the co-installed proj library but instead use
+#'rgdal's version. If the versions match this may not be a problem but if they
+#'don't things may go wrong in sometimes obvious and sometimes very subtle ways.
+#'gdal_utilities gets around this by using GDAL installed with sf but doesn't
+#'support all of the utilities I use here - gdaladdo is missing.
 #'
-#' This can be turned off with `rasterPrepOptions(resetLibs = FALSE)` or changed to
-#' to different location with for example `rasterPrepOptions(projLib = "C:/Proj/")`
-#' or some appropriate for your system.
+#'With the default values rasterPrep will change the PROJ_LIB and GDAL_DATA
+#'enviromental setting  to "" before making a system call.
 #'
-#' The package will always reset the PROJ_LIB and GDAL_DATA variables to the original value after
-#' each the system call so subsequent rgdal, sp, and sf functions will  find them set as expected
-#' or at least as it was (there seem to be dueling settings!).
+#'This can be turned off with `rasterPrepOptions(resetLibs = FALSE)` or changed
+#'to to different location with for example `rasterPrepOptions(projLib =
+#'"C:/Proj/")` or some appropriate for your system.
 #'
-#' Also, note all the changes made by rgdal, sp, sf, and this package are just for the r session not
-#' for the computer as a whole.
+#'The package will always reset the PROJ_LIB and GDAL_DATA variables to the
+#'original value after each the system call so subsequent rgdal, sp, and sf
+#'functions will  find them set as expected or at least as it was (there seem to
+#'be dueling settings!).
 #'
-#' See:   https://github.com/r-spatial/discuss/issues/31 for a discussion of this issue.
+#'Also, note all the changes made by rgdal, sp, sf, and this package are just
+#'for the r session not for the computer as a whole.
 #'
+#'See:   https://github.com/r-spatial/discuss/issues/31 for a discussion of this
+#'issue.
 #'
-#'
-#'
-#' @param ... Arguments should be settings to reset with their value the new setting.
-#'  If called with no arguments nothing is changed but the current settings are printed.
-#' @export
-#' @return a list of the current settings is returned if the function is called with no
-#' arguments.
+#'@param ... Arguments should be settings to reset with their value the new
+#'  setting. If called with no arguments nothing is changed but the current
+#'  settings are printed.
+#'@export
+#'@return a list of the current settings is returned if the function is called
+#'  with no arguments.
 rasterPrepOptions <- function(...){
 
   # This function allows changing raster prep settings
@@ -88,7 +94,15 @@ rasterPrepOptions <- function(...){
       stop("gdalData should be a character string" )
     rasterPrepSettings$gdalData <- a
   }
-  if(length(args) == 0) print(as.list(rasterPrepSettings))
+
+  if("verbose" %in% names(args)){
+    verbose <- args$verbose
+    if(!is.logical(verbose) || length(verbose) != 1 || is.na(verbose))
+      stop("verbose should be TRUE or FALSE")
+    rasterPrepSettings$verbose <- verbose
+  }
+
+  if(length(args) == 0) return(as.list(rasterPrepSettings))
 
 
 }

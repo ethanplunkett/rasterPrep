@@ -73,6 +73,7 @@ if(FALSE){
 makeReference <- function(polyFile, destination, cellsize,  burn = 1,
                           alignTo = "origin", reference,  nestingCellsize = cellsize){
 
+
   # Note in March 2020 with current GDAL and PROJ I couldn't get gdal_rasterize to honor the projection
   # of the input file.  Prior functionality and documentation represent that the projection information
   # is retained from the polygon file used but I found that not to be the case. I also found that
@@ -84,6 +85,8 @@ makeReference <- function(polyFile, destination, cellsize,  burn = 1,
   # the temp file and then wkt file that specified the projection.
   #  At some future date it might make sense to test if gdal_translate is behaving again and save
   # creating an extra copy.
+
+  verbose <- rasterPrepOptions()$verbose
 
   if(file.exists(destination))
     stop(destination, "already exists")
@@ -185,8 +188,8 @@ makeReference <- function(polyFile, destination, cellsize,  burn = 1,
       Sys.setenv(GDAL_DATA = ogdaldata)
     })
   }
-
-  cat("Rasterizing polygon to new extent with system command:\n", command, "\n")
+  if(verbose)
+    cat("Rasterizing polygon to new extent with system command:\n", command, "\n")
   a <- system(command = command, intern = TRUE, wait = TRUE)
   a <-  gsub("[[:blank:]]", " ", a)
   if(!grepl("- done.[[:blank:]]*$", a[length(a)]) ){

@@ -33,6 +33,9 @@
 #' @export
 addOverviews <- function(x, clean = FALSE, compression = "LZW", method = "nearest"){
 
+  verbose <- rasterPrepOptions()$verbose
+
+
   # Note gdalwarp uses "near" while gdaladdo uses "nearest"
   # this allows addOverviews function to use either
   if(method == "near") method <- "nearest"
@@ -50,7 +53,8 @@ addOverviews <- function(x, clean = FALSE, compression = "LZW", method = "neares
   if(clean)
     command <- paste0(command, " -clean")
 
-  cat("Adding overviews with system command:\n", command, "\n")
+  if(verbose)
+    cat("Adding overviews with system command:\n", command, "\n")
 
   # Temporarily reset the PROJ_LIB environmental setting for system call (if indicated by settings)
   oprojlib <- Sys.getenv("PROJ_LIB")

@@ -85,6 +85,8 @@ warpToReference <- function( source, destination, reference, clip, method = "nea
   #
   #
   #   Added handling of no data values 12/1/17 with code copied from warptoextent
+  verbose <- rasterPrepOptions()$verbose
+
   if(!missing(compression))
     stopifnot(compression %in% c("LZW", "DEFLATE"))
 
@@ -216,7 +218,8 @@ warpToReference <- function( source, destination, reference, clip, method = "nea
     })
   }
 
-  cat("Warping with system command:\n", command, "\n")
+  if(verbose)
+    cat("Warping with system command:\n", command, "\n")
   a <- system(command = command, intern = TRUE, wait = TRUE)
   a <-  gsub("[[:blank:]]", " ", a)
   if(!grepl("- done.[[:blank:]]*$", a[length(a)]) ){
@@ -232,7 +235,8 @@ warpToReference <- function( source, destination, reference, clip, method = "nea
   if(terra::crs(terra::rast(destination)) == "")
     stop("Output was created but lacks a coordinate reference system")
 
-  cat("Done warping output at:", destination, "\n")
+  if(verbose)
+    cat("Done warping output at:", destination, "\n")
   file.remove(wkt.file)
 }
 
