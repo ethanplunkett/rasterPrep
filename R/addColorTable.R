@@ -40,6 +40,8 @@
 #' @export
 addColorTable <- function(x, table){
 
+  verbose <- rasterPrepOptions()$verbose
+
   stopifnot(c("value", "color") %in% names(table))
   add.categories <- "category" %in% names(table)
 
@@ -123,7 +125,8 @@ addColorTable <- function(x, table){
   command <- paste0(command, " ",
                     shQuote(x), " ", shQuote(vrt.file),
                     " -of VRT")
-  cat("Creating .vrt file with system command:\n", command, "\n")
+  if(verbose)
+    cat("Creating .vrt file with system command:\n", command, "\n")
 
   a <- system(command = command, intern = TRUE, wait = TRUE)
   a <-  gsub("[[:blank:]]", " ", a)

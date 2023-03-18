@@ -13,6 +13,7 @@ renameTif <- function(from, to, includeVrt = TRUE){
   a <- gsub(".tif$", "", from, ignore.case = TRUE)
   b <- gsub(".tif$", "", to, ignore.case = TRUE)
   new <- gsub(a, b, targets)
-  print(data.frame(from=targets, to = new))
+  if(rasterPrepOptions()$verbose)
+    print(data.frame(from=targets, to = new))
   file.rename(targets, new)
 }

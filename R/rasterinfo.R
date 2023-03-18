@@ -97,7 +97,7 @@ rasterInfo <- function(x){
 
 
   raw <- l
-  # cat(l, sep ="\n")
+
   result <- list(path = x,
                  driver = NA,
                  type = NA,
@@ -501,7 +501,6 @@ print.rasterInfo <- function(x, all = FALSE, raw = FALSE, ...){
     return()
   }
 
-
   x$raw  <- "[not printed]"
 
   if(!all){
@@ -511,7 +510,6 @@ print.rasterInfo <- function(x, all = FALSE, raw = FALSE, ...){
       x$files <- "[Not printed]"
     if(!is.na(x$attributetable[1]))
       x$attributetable <- "[Not printed]"
-
   }
 
   printnestedlist(x)
