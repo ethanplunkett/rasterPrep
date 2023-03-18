@@ -7,7 +7,7 @@ rasterPrepSettings$verbose <- FALSE
 
 #'change rasterPrep package settings
 #'
-#'This functions allows the user to retreive or change the settings for the
+#'This function allows the user to retrieve or change the settings for the
 #'rasterPrep package
 #'
 #'Currently there are four settings:
@@ -16,10 +16,10 @@ rasterPrepSettings$verbose <- FALSE
 #'environmental settings for PROJ_LIB and GDAL_DATA prior to executing system
 #'calls it defaults to TRUE.
 #'
-#'`projLib` - is what the PROJ_LIB environental setting should be set to orior
+#'`projLib` - is what the PROJ_LIB environmental setting should be set to prior
 #'to the calls. It defaults to an empty string (`""`).
 #'
-#'`gdalData` - is what the GDAL_DATA environemental variable should be set to
+#'`gdalData` - is what the GDAL_DATA environmental variable should be set to
 #'prior to system calls (if resetsLibs is TRUE). It defaults to an empty string
 #'(`""`).
 #'
