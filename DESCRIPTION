@@ -12,6 +12,7 @@ License: GPL-2
 Encoding: UTF-8
 Language: en-US
 LazyData: true
+Roxygen: list(markdown = TRUE)
 RoxygenNote: 7.2.3
 Imports:
   grDevices,
@@ -26,4 +27,3 @@ Suggests: knitr,
 VignetteBuilder: knitr
 URL: https://github.com/ethanplunkett/rasterPrep
 BugReports: https://github.com/ethanplunkett/rasterPrep/issues
-Roxygen: list(markdown = TRUE)

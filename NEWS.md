@@ -10,6 +10,10 @@ object nicely (or at least better than the default list printing).
 * Added a `NEWS.md` file to track changes to the packag and moved old items from
 the change log to NEWS.md
 
+* Converted to ROxygen with markdown support
+
+* Used roxygen2md to update documentation (from old .Rd formatting to markdown)
+
 ## July 8, 2022 (v.0.1.10) 
 
 assessType now returns values consistent with the raster package's default no data types for Int16 and Int32. Previously these returned smaller values that were theoretically the smallest value an integer could hold, however, in practice it seemed to trip up some GIS software.

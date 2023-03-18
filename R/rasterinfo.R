@@ -75,13 +75,6 @@
 #'   `NA`.
 #'
 #' @references  https://gdal.org/programs/gdalinfo.html
-#' @seealso
-#' - [griddescribe()] is the standard way of describing raster
-#' files  and mosaics used with the gridio package.
-#' - [arcdescribe()] uses ArcPy to describe the pixel type and no
-#' data value of a band in a raster file.  It's slow but for some  grids reports
-#' different values than `rasterInfo`.
-#'
 rasterInfo <- function(x){
 
   use <- NA
