@@ -38,7 +38,7 @@
 #'  \item{origin}{the coordinates of the origin of the file (this seems to be the upper left corner). Note, gdal
 #'    may report more digits than R can represent. Look at raw output to see the text as reported by gdal}
 #'  \item{approx.coords}{the approximate coordinates of the corners and center. This is reported by `gdalinfo` but appears to be rounded, thus the "approx"}
-#'  \item{extent}{A list with items `xll`, `yll`, `nrow`, `ncol`, `cellsize`. If cells are square these are calculated from  `origin`, `rows`, `cols` and `cellsize`. This format matches the way grid extents are defined in \pkg{gridio} so can be used with functions such as [coincide()]  or [checkcellalignment()].}
+#'  \item{extent}{A list with items `xll`, `yll`, `nrow`, `ncol`, `cellsize`. If cells are square these are calculated from  `origin`, `rows`, `cols` and `cellsize`. This format matches the way grid extents are defined in \pkg{gridio}.}
 #'  \item{nbands}{The number of bands in the file.}
 #'  \item{bands}{A list  of lists (one per band); inner list has items \describe{
 #'    \item{id}{assigned, 1:`nbands`}
