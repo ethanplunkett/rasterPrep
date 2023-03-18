@@ -30,7 +30,7 @@
 #'   assigned NA.
 #' @param method (Character) the resampling method one of "near", "bilinear",
 #'   "cubic", "cubicspline", "lanczos", "average", "mode", "max", "min", "med",
-#'   "q1", or "q3" passed to gdalwarp see  see:
+#'   "q1", or "q3" passed to gdalwarp see:
 #'   <http://www.gdal.org/gdalwarp.html> for more details.
 #' @param overwrite (optional, logical) if TRUE (the default) than a preexisting
 #'   destination file be overwritten.  If FALSE it will throw an error if
@@ -44,11 +44,20 @@
 #'   file.  If set then the data will be encoded with the selected type and the
 #'   no data value will be set to the lowest possible value for signed types and
 #'   the highest possible value for unsigned types.
+#' @param compression (optional, character) can be set to 'LZW' or 'DEFLATE'
+#'   in which case the gdal_warp creation option -co compress=(compression) will
+#'   be used if creating a new file.
+#' @param bigtiff (optioanal) defaults to FALSE, can be set to TRUE, 'YES', 'NO',
+#'    'IF_NEEDED', or 'IF_SAFER' and is passed to the gdalwarp BIGTIFF
+#'    creation option. See \url{https://gdal.org/drivers/raster/gtiff.html.}
+#'    TRUE and FALSE are mapped to 'YES' and 'NO' respectively. This argument
+#'    is only relevant when creating new files.
 #' @return `warpToReference` creates a new raster file at destination
 #'   matching the extent and cellsize of reference but returns nothing.
 #' @export
 warpToReference <- function( source, destination, reference, clip, method = "near",
-                             overwrite = TRUE, overlay = FALSE, type){
+                             overwrite = TRUE, overlay = FALSE, type, compression,
+                             bigtiff = FALSE){
   # Function to call gdal warp to create a new version of the data in source at destination with the same
   # extent, projection, and cellsize as reference, and possibly clipped to the extent of polygons
   # in a shapefile at the clip location.
@@ -76,6 +85,8 @@ warpToReference <- function( source, destination, reference, clip, method = "nea
   #
   #
   #   Added handling of no data values 12/1/17 with code copied from warptoextent
+  if(!missing(compression))
+    stopifnot(compression %in% c("LZW", "DEFLATE"))
 
   reference <- normalizePath(reference, mustWork = TRUE, winslash = "/")
   source <- normalizePath(source, mustWork = TRUE, winslash = "/")
@@ -132,21 +143,6 @@ warpToReference <- function( source, destination, reference, clip, method = "nea
   ref.ymax <- as.numeric(ref.ext$ymax)
   rm(ref.ext)
 
-  # # rgdal based code
-  # ref.rows <- ref.info[1]
-  # ref.cols <- ref.info[2]
-  # ref.xll <- ref.info[4]
-  # ref.yll <- ref.info[5]
-  # ref.resx <- ref.info[6]
-  # ref.resy <- ref.info[7]
-  # ref.xmax <-  ref.xll + ref.cols * ref.resxa
-  # ref.ymax <- ref.yll + ref.rows * ref.resy
-
-  # Notes on warp arguments:
-  # -te xmin ymin xmax ymax: sets target extent by default in target srs
-  # -tr xres yres:  set output file resolution (in target georeferenced units)
-  # -tr xres yres: set output file resolution (in target georeferenced units)
-
   # Note gdalwarp uses "near" while gdaladdo uses "nearest"
   # this allows this function to use either
   if(method == "nearest") method <- "near"
@@ -158,7 +154,15 @@ warpToReference <- function( source, destination, reference, clip, method = "nea
     stop("resampling method '", method, "' isn't recognized", "use one of '" ,
          paste(valid.methods, collapse = "' '"), "'", sep = "")
 
-
+  # validate big tiff argument
+  if(is.logical(bigtiff)){
+    if(!bigtiff %in% c(TRUE, FALSE)){
+      stop("bigtiff must be TRUE, FALSE, 'IF_NEEDED', 'IF_SAFER', 'YES', 'NO'")
+    }
+    bigtiff <- ifelse(bigtiff, "YES", "NO")
+  }
+  bigtiff <- toupper(bigtiff)
+  stopifnot(bigtiff %in% c('IF_NEEDED', 'IF_SAFER', 'YES', 'NO'))
 
   is.signed.byte <- FALSE
   if(type.specified){
@@ -186,7 +190,15 @@ warpToReference <- function( source, destination, reference, clip, method = "nea
       command <- paste0(command,
                         "-ot ", type, " ",
                         "-dstnodata ", no.data.value, " ")
+    if(!missing(compression))
+      command <- paste0(command,
+                        "-co compress=", compression, " ")
+
+    command <- paste0(command, "-co BIGTIFF=", bigtiff, " ")
+
   }
+
+
   command <- paste0( command,
                      ifelse(missing(clip), "", paste0( "-cutline ", shQuote(clip), " ")),
                      "-r ", method, " ",

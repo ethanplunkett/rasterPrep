@@ -1,4 +1,4 @@
-# rasterPrep 0.1.1.9001
+# rasterPrep 0.1.12.9001
 
 * rasterInfo(), a new function migrated from gridio returns a nested list with
 parsed output from gdalinfo via [sf::sf::gdal_utils()] 
@@ -14,9 +14,29 @@ the change log to NEWS.md
 
 * Used roxygen2md to update documentation (from old .Rd formatting to markdown)
 
+
+## Nov 17, 2022 (v.0.1.12) 
+`warpToReference()` now has `bigtiff` argument to request BigTIFF geoTIFF 
+output. BigTIFF is an extension of TIFF that allows files 
+over 5 GiB. When writing compressed TIFFs, the new default since v.0.1.11, 
+GDAL no longer automatically generates BigTIFF as needed. The new argument 
+allows the user to force the output to be BigTIFF. If you get an error along 
+the lines of:
+'TIFFFetchDirectory:  path/file.tif: Can not read TIFF directory count 
+(GDAL error 1)', 
+'TIFFReadDirectory:Failed to read directory at offset 4294967234 
+(GDAL error 1)', or
+ 'TIFFAppendToStrip:Maximum TIFF file size exceeded'  
+Than you may need to use bigtiff = TRUE
+
+## Oct 8, 2022 (v.0.1.11) 
+
+* added `compression` argument to warpToReference which allows specifying LZW 
+or DEFLATE compression.
+
 ## July 8, 2022 (v.0.1.10) 
 
-assessType now returns values consistent with the raster package's default no data types for Int16 and Int32. Previously these returned smaller values that were theoretically the smallest value an integer could hold, however, in practice it seemed to trip up some GIS software.
+* assessType now returns values consistent with the raster package's default no data types for Int16 and Int32. Previously these returned smaller values that were theoretically the smallest value an integer could hold, however, in practice it seemed to trip up some GIS software.
 
 ## Jan 6. 2021 (v. 0.1.9) 
 * makeNiceTif now calls gdalinfo with -stats -hist flags when the stats argument 

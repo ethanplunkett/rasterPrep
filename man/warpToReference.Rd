@@ -12,7 +12,9 @@ warpToReference(
   method = "near",
   overwrite = TRUE,
   overlay = FALSE,
-  type
+  type,
+  compression,
+  bigtiff = FALSE
 )
 }
 \arguments{
@@ -30,7 +32,7 @@ assigned NA.}
 
 \item{method}{(Character) the resampling method one of "near", "bilinear",
 "cubic", "cubicspline", "lanczos", "average", "mode", "max", "min", "med",
-"q1", or "q3" passed to gdalwarp see  see:
+"q1", or "q3" passed to gdalwarp see:
 \url{http://www.gdal.org/gdalwarp.html} for more details.}
 
 \item{overwrite}{(optional, logical) if TRUE (the default) than a preexisting
@@ -47,6 +49,16 @@ no data value in the destination file will match the values in the source
 file.  If set then the data will be encoded with the selected type and the
 no data value will be set to the lowest possible value for signed types and
 the highest possible value for unsigned types.}
+
+\item{compression}{(optional, character) can be set to 'LZW' or 'DEFLATE'
+in which case the gdal_warp creation option -co compress=(compression) will
+be used if creating a new file.}
+
+\item{bigtiff}{(optioanal) defaults to FALSE, can be set to TRUE, 'YES', 'NO',
+'IF_NEEDED', or 'IF_SAFER' and is passed to the gdalwarp BIGTIFF
+creation option. See \url{https://gdal.org/drivers/raster/gtiff.html.}
+TRUE and FALSE are mapped to 'YES' and 'NO' respectively. This argument
+is only relevant when creating new files.}
 }
 \value{
 \code{warpToReference} creates a new raster file at destination
