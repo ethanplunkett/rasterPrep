@@ -22,14 +22,14 @@ average_mp, average_magphase, or mode. It is passed to
 \code{"near"} is also accepted and silently converted to, \code{"nearest"}.}
 }
 \value{
-this function creates an additional ".orv" file alongside \code{x} with
+this function creates an additional ".ovr" file alongside \code{x} with
 overview information.  It does not return anything.
 }
 \description{
 This function creates overviews (aka pyramids) with compressed copies
 of the data from a raster at multiple coarser resolutions. They are saved in
-a side car file with the extension ".orv" appended to the original file's
-full name (e.g. "dem.tif.orv" would contain the overviews for "dem.tif").
+a side car file with the extension ".ovr" appended to the original file's
+full name (e.g. "dem.tif.ovr" would contain the overviews for "dem.tif").
 Overview are used by GIS software to display the raster file more quickly
 when zoomed out. They are especially useful for large files.
 }
@@ -42,6 +42,6 @@ lossy compression in the overviews you may change the compression to
 
 #' This is a convenience wrapper to the
 \href{https://www.gdal.org/gdaladdo.html}{gdaladdo}  command line utility.
-\code{addOverviews} sets reasonable defaults, only some of
+\code{addOverviews()} sets reasonable defaults, only some of
 which can be overridden.
 }

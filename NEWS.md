@@ -1,3 +1,7 @@
+# rasterPrep 0.1.12.9003
+
+* Fixed spelling in addOverviews. Fixes #5.
+
 # rasterPrep 0.1.12.9002
 
 * Added verbose setting that defaults to FALSE and can be turned on with `rasterPrepOptions(verbose = TRUE)`.  This means that the default behavior is 
