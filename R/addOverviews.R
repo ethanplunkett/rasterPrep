@@ -2,8 +2,8 @@
 #'
 #' This function creates overviews (aka pyramids) with compressed copies
 #'  of the data from a raster at multiple coarser resolutions. They are saved in
-#'  a side car file with the extension ".orv" appended to the original file's
-#'  full name (e.g. "dem.tif.orv" would contain the overviews for "dem.tif").
+#'  a side car file with the extension ".ovr" appended to the original file's
+#'  full name (e.g. "dem.tif.ovr" would contain the overviews for "dem.tif").
 #'  Overview are used by GIS software to display the raster file more quickly
 #'  when zoomed out. They are especially useful for large files.
 #'
@@ -15,7 +15,7 @@
 #'
 #'#' This is a convenience wrapper to the
 #' [gdaladdo](https://www.gdal.org/gdaladdo.html)  command line utility.
-#' `addOverviews` sets reasonable defaults, only some of
+#' `addOverviews()` sets reasonable defaults, only some of
 #' which can be overridden.
 #'
 #' @param x (character) the path to a tif or other raster file
@@ -28,7 +28,7 @@
 #'   average_mp, average_magphase, or mode. It is passed to
 #'   [gdaladdo](http://www.gdal.org/gdaladdo.html) check there for details.
 #'    `"near"` is also accepted and silently converted to, `"nearest"`.
-#' @return this function creates an additional ".orv" file alongside `x` with
+#' @return this function creates an additional ".ovr" file alongside `x` with
 #'  overview information.  It does not return anything.
 #' @export
 addOverviews <- function(x, clean = FALSE, compression = "LZW", method = "nearest"){
