@@ -1,6 +1,22 @@
+# rasterPrep 0.1.12.9004
+
+* On load rasterPrep now looks for an environmental variable `RASTERPREP_PROJ` 
+  and if it exists calls `rasterPrepOptions(projLib = value)` with the result.
+
+  This allows setting the environmental variable projlib in a consistent way 
+  regardless of whether sp or rgdal is loaded in the session 
+  (they change `PROJ_LIB`).  
+
+  Ultimately, I'd like to switch to using the wrappers to gdalutilities that are
+  in **sf** so that we don't need to mess with system variables.
+
+* `makeNiceTif()` gains new argument `noDataValue` that allows controlling the
+  no data value assigned to the output grid. Cell values are not udpated.
+
 # rasterPrep 0.1.12.9003
 
 * Fixed spelling in addOverviews. Fixes #5.
+
 
 # rasterPrep 0.1.12.9002
 
