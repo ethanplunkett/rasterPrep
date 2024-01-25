@@ -21,9 +21,13 @@ Imports:
   rgdal,
   terra,
   sf
-Suggests: knitr,
+Suggests: 
+    knitr,
     rmarkdown,
-    gdalUtilities
+    gdalUtilities,
+    testthat (>= 3.0.0), 
+    withr
 VignetteBuilder: knitr
 URL: https://github.com/ethanplunkett/rasterPrep
 BugReports: https://github.com/ethanplunkett/rasterPrep/issues
+Config/testthat/edition: 3
