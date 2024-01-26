@@ -13,7 +13,8 @@ makeNiceTif(
   buildOverviews = TRUE,
   overviewResample = "nearest",
   vat = FALSE,
-  stats = TRUE
+  stats = TRUE,
+  noDataValue
 )
 }
 \arguments{
@@ -21,11 +22,11 @@ makeNiceTif(
 
 \item{destination}{(character) path to a .tif file to be created for viewing with GIS software}
 
-\item{type}{(character) NOT CURRENTLY SUPPORTED! In the future if supplied
-the output may be converted to this type.
-Should be one of \code{"Byte"}, \code{"UInt16"}, \code{"Int16"},
+\item{type}{(character) If the \code{type} is used the output will be converted
+to it. It should be one of \code{"Byte"}, \code{"UInt16"}, \code{"Int16"},
 \code{"UInt32"}, \code{"Int32"}, \code{"Float32"}, \code{"Float64"} or for convenience you may
-also use the raster package's designations: \code{\link[raster:dataType]{raster::dataType()}}.}
+also use the raster package's designations: \code{\link[raster:dataType]{raster::dataType()}}. See
+cautionary section below on no data problems while reassigning type.}
 
 \item{overwrite}{(logical) if \code{TRUE} any existing file will be overwritten}
 
@@ -40,7 +41,18 @@ created containing all the unique values in the grid and
 their associated count of cells. This is only recommended for categorical
 data and can be slow but will speed up setting up symbology of that data in ArcGIS.}
 
-\item{stats}{(logical) if \code{TRUE} than statistics are generated and saved; this helps GIS software transform continuous data (e.g. make a standard deviation color ramp)}
+\item{stats}{(logical) if \code{TRUE} than statistics are generated and saved;
+this helps GIS software transform continuous data
+(e.g. make a standard deviation color ramp)}
+
+\item{noDataValue}{Only used if \code{type} is not missing. Setting this affects
+the no data value set in the output TIFF but does not reassign existing no
+data cell values to it. If the existing no data value is not in the range
+of values supported by \code{type} then they will end up with the value in range
+that is closest to the existing value. If this argument isn't supplied and
+\code{type} is used `noDataValue`` will be assigned based on the output of
+\code{\link{assessType()}} which often but not always picks an appropriate
+value.}
 }
 \value{
 This function creates a copy of the source raster at the destination
@@ -58,17 +70,30 @@ This function is intended to be called after analysis to prepare result
 rasters so they can be viewed easily in GIS software. Because it creates
 tiled .tif files it is not a good idea to run on files in preparation for
 analysis with the raster package as that package reads by lines.
+\subsection{No Data values and changes in type}{
 
-type is currently passed to gdal_translate which will reset the
-type to the desired value but will NOT update NA values appropriately.
-This may still work out if you (1) are not converting between signed and
-unsigned types and (2) are moving to a smaller bit depth. For example
-moving from an Int32 to and Int16 should work because the NA value from Int32
-will be out of range and truncated to the highest value in the Int16 which
-is the appropriate NA value for Int16. In the future I might add an internal
-call to do the type conversion for you.  For now if you want to change the
-type you can do so safely in a call to warpToReference prior to using this
-function.
+\code{type} is currently passed to gdal_translate which will reset the
+type to the desired value but will \strong{NOT} update no data values of cells.
+One of two things will happen. If the existing no data value is within the
+values supported by the output type they will retain that value. Otherwise
+they will be assigned the closest supported value in the output type.
+
+Thus changing type may still work out if you (1) are not converting between
+signed and unsigned types and (2) are moving to a smaller bit depth.
+\code{makeNiceTif} will attempt to select a new no data value that works out.
+For example moving from an Int32 to and Int16 will probably work if the
+initial NA value is high because it will will be truncated to the highest
+value in the Int16 and which is what the new no data value will be set to.
+The default \code{noDataValue} of the output when using \code{type} and not
+specifying the \code{noDataValue} is determied by \code{\link{assessType}}.
+
+If you use \code{type} and your ouput raster ends up with values cells that were
+originally no data you might be able to remedy this by setting
+\code{noDataValue} to that value.
+
+If you want to change the type you can do so safely in a call to
+warpToReference prior to using this function as gdalWarp can reset the type
+and reset the values of the NA cell to the new noDataValue.
 
 This is a wrapper to the \code{gdaltranslate} command line utility coupled with
 \code{\link[=addOverviews]{addOverviews()}} and \code{\link[=addVat]{addVat()}}.  For finer control over
@@ -76,4 +101,5 @@ translation see \code{\link[gdalUtilities:gdal_translate]{gdalUtilities::gdal_tr
 
 If you intend to create a color table for a categorical raster first call
 \code{\link[=addColorTable]{addColorTable()}} and then pass the .vrt file it creates to this function.
+}
 }

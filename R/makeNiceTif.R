@@ -11,16 +11,30 @@
 #' tiled .tif files it is not a good idea to run on files in preparation for
 #'  analysis with the raster package as that package reads by lines.
 #'
-#' type is currently passed to gdal_translate which will reset the
-#'  type to the desired value but will NOT update NA values appropriately.
-#'  This may still work out if you (1) are not converting between signed and
-#'  unsigned types and (2) are moving to a smaller bit depth. For example
-#'  moving from an Int32 to and Int16 should work because the NA value from Int32
-#'  will be out of range and truncated to the highest value in the Int16 which
-#'  is the appropriate NA value for Int16. In the future I might add an internal
-#'  call to do the type conversion for you.  For now if you want to change the
-#'  type you can do so safely in a call to warpToReference prior to using this
-#'  function.
+#'  ## No Data values and changes in type
+#'
+#' `type` is currently passed to gdal_translate which will reset the
+#'  type to the desired value but will **NOT** update no data values of cells.
+#'  One of two things will happen. If the existing no data value is within the
+#'  values supported by the output type they will retain that value. Otherwise
+#'  they will be assigned the closest supported value in the output type.
+#'
+#'  Thus changing type may still work out if you (1) are not converting between
+#'   signed and unsigned types and (2) are moving to a smaller bit depth.
+#'  `makeNiceTif` will attempt to select a new no data value that works out.
+#'   For example moving from an Int32 to and Int16 will probably work if the
+#'   initial NA value is high because it will will be truncated to the highest
+#'    value in the Int16 and which is what the new no data value will be set to.
+#'    The default `noDataValue` of the output when using `type` and not
+#'    specifying the `noDataValue` is determied by \code{\link{assessType}}.
+#'
+#'  If you use `type` and your ouput raster ends up with values cells that were
+#'  originally no data you might be able to remedy this by setting
+#'  `noDataValue` to that value.
+#'
+#'  If you want to change the type you can do so safely in a call to
+#'  warpToReference prior to using this function as gdalWarp can reset the type
+#'  and reset the values of the NA cell to the new noDataValue.
 #'
 #'
 #' This is a wrapper to the `gdaltranslate` command line utility coupled with
@@ -32,11 +46,11 @@
 #
 #' @param source (character) path to a raster file readable by gdal.
 #' @param destination (character) path to a .tif file to be created for viewing with GIS software
-#' @param type (character) NOT CURRENTLY SUPPORTED! In the future if supplied
-#'  the output may be converted to this type.
-#'   Should be one of `"Byte"`, `"UInt16"`, `"Int16"`,
+#' @param type (character) If the `type` is used the output will be converted
+#' to it. It should be one of `"Byte"`, `"UInt16"`, `"Int16"`,
 #'   `"UInt32"`, `"Int32"`, `"Float32"`, `"Float64"` or for convenience you may
-#' also use the raster package's designations: [raster::dataType()].
+#' also use the raster package's designations: [raster::dataType()]. See
+#' cautionary section below on no data problems while reassigning type.
 #' @param overwrite (logical) if `TRUE` any existing file will be overwritten
 #' @param buildOverviews (logical) if `TRUE` overviews (AKA pyramids) will be built
 #' @param overviewResample (character) one of  `"nearest"`,
@@ -46,15 +60,25 @@
 #'   created containing all the unique values in the grid and
 #'    their associated count of cells. This is only recommended for categorical
 #'     data and can be slow but will speed up setting up symbology of that data in ArcGIS.
-#' @param stats (logical) if `TRUE` than statistics are generated and saved; this helps GIS software transform continuous data (e.g. make a standard deviation color ramp)
+#' @param stats (logical) if `TRUE` than statistics are generated and saved;
+#'    this helps GIS software transform continuous data
+#'    (e.g. make a standard deviation color ramp)
+#' @param noDataValue Only used if `type` is not missing. Setting this affects
+#'   the no data value set in the output TIFF but does not reassign existing no
+#'   data cell values to it. If the existing no data value is not in the range
+#'   of values supported by `type` then they will end up with the value in range
+#'   that is closest to the existing value. If this argument isn't supplied and
+#'   `type` is used `noDataValue`` will be assigned based on the output of
+#'   \code{\link{assessType()}} which often but not always picks an appropriate
+#'   value.
 #' @return This function creates a copy of the source raster at the destination
 #' path that is formatted to facilitate viewing in GIS software. It does not return
 #' anything.
 #'
 #' @export
-makeNiceTif <- function(source, destination,  type, overwrite = FALSE,
+makeNiceTif <- function(source, destination, type, overwrite = FALSE,
                         buildOverviews = TRUE, overviewResample = "nearest",
-                        vat = FALSE, stats = TRUE ){
+                        vat = FALSE, stats = TRUE, noDataValue){
   verbose <- rasterPrepOptions()$verbose
   if(!file.exists(source)) stop("input file", source, "is missing.")
   if(file.exists(destination)){
@@ -69,13 +93,24 @@ makeNiceTif <- function(source, destination,  type, overwrite = FALSE,
   is.signed.byte <- FALSE
 
   if(!missing(type)){
+
     if(verbose)
       cat("Type conversion will work in some cases but in others will not properly conserve NA encoding. Use with caution.  I might fix this someday.")
     has.type <- TRUE
     a <- assessType(type)
     type <- a$type
     is.signed.byte <- a$isSignedByte
-    no.data.value <- a$noDataValue
+    if (missing(noDataValue)) {
+      noDataValue <- a$noDataValue
+    }
+    stopifnot(is.numeric(noDataValue),
+              !is.na(noDataValue),
+              length(noDataValue) == 1)
+
+  } else { # missing type
+
+  if(!missing(noDataValue))
+    warning("noDataValue will be ignored. Set type to use noDataValue.")
   }
 
   qc <- '"'
@@ -85,7 +120,7 @@ makeNiceTif <- function(source, destination,  type, overwrite = FALSE,
   if(has.type)
     command <- paste0(command,
                       " -ot ", type, " ",
-                      " -a_nodata ", no.data.value, " "  # NOTE
+                      " -a_nodata ", noDataValue, " "  # NOTE
                  )
 
   if(is.signed.byte)

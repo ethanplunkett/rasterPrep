@@ -17,7 +17,8 @@ rasterPrepSettings$usesf <- TRUE
 #'calls it defaults to TRUE.
 #'
 #'`projLib` - is what the PROJ_LIB environmental setting should be set to prior
-#'to the calls. It defaults to an empty string (`""`).
+#'to the calls. It defaults to the system environment variable "RASTERPREP_PROJ"
+#'or if that's not set to an empty string (`""`).
 #'
 #'`gdalData` - is what the GDAL_DATA environmental variable should be set to
 #'prior to system calls (if resetsLibs is TRUE). It defaults to an empty string
