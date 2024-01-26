@@ -16,20 +16,20 @@ rasterPrepSettings$usesf <- TRUE
 #'environmental settings for PROJ_LIB and GDAL_DATA prior to executing system
 #'calls it defaults to TRUE.
 #'
-#'`projLib` - is what the PROJ_LIB environmental setting should be set to prior
-#'to the calls. It defaults to the system environment variable "RASTERPREP_PROJ"
-#'or if that's not set to an empty string (`""`).
+#'`projLib` - is what the PROJ_LIB environmental setting should be when making
+#' shell calls to gdal utilities. It defaults to the system environment
+#' variable "RASTERPREP_PROJ" or if that's not set to an empty string (`""`).
 #'
 #'`gdalData` - is what the GDAL_DATA environmental variable should be set to
-#'prior to system calls (if resetsLibs is TRUE). It defaults to an empty string
-#'(`""`).
+#' during shell calls (if `resetsLibs` is `TRUE`). It defaults to an empty
+#' string (`""`).
 #'
 #'`verbose` - defaults to FALSE.  If TRUE than progress and command structure
 #'will be printed to the console.
 #'
 #'`usesf` - If TRUE use the sf package.  Otherwise use shell to call gdal
-#' utilties on the command line. This is a temporary option to faciliate
-#' the transition to **sf** and will be dropped when the transtion is complete.
+#' utilties on the command line. This is a temporary option to facilitate
+#' the transition to **sf** and will be dropped when the transition is complete.
 #'
 #'On my system in a clean R session Sys.getenv("PROJ_LIB") will return "" but
 #'after rgdal or sp are loaded it will be
