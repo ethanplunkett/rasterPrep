@@ -12,7 +12,7 @@ test_that("rasterizeToReference  works", {
   # ID_2 is an integer column with unique values for each polygon
   #  (uniqueness isn't required)
   expect_no_error(
-    rasterizeToReference(shp, regions, reference = ref, attribute = "ID_2", )
+    rasterizeToReference(shp, regions, reference = ref, attribute = "ID_2")
   )
 
   expect_true(file.exists(regions))
@@ -24,6 +24,7 @@ test_that("rasterizeToReference  works", {
     terra::plot(r)
     p <- sf::st_read(shp, quiet = TRUE)
     plot(p[, 1], add= TRUE, col = NA)
+
   }
 
   expect_snapshot(table(terra::values(r)))
@@ -56,6 +57,5 @@ test_that("rasterizeToReference  works", {
   # Meaningful error when neither burn nor attribute is used
   expect_error(rasterizeToReference(shp, regions2, reference = ref),
                "specify either burn or attribute ")
-
 
 })
