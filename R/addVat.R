@@ -1,12 +1,11 @@
 
-#' function to create a VAT for a raster file
-#'
+#' Create a VAT for a raster file
 #'
 #' This function creates a new sidecar file next to `x` which contains a
 #' value attribute table (VAT).  A VAT is used by ESRI GIS software to encode
 #' additional information about each value in a classified integer raster.
 #'
-#' It calls [raster::freq()] to generate a table of values and
+#' It calls [terra::freq()] to generate a table of values and
 #' frequencies from the raster `x` which can take a long time for large
 #' files.  It should only be called on integer encoded files.
 #'
@@ -19,8 +18,8 @@
 #' VAT.
 #'
 #'
-#' @param x the path to a tif file; this function may work with other raster
-#'   files but that is untested.
+#' @param x the path to a geoTIFF file; use with other raster formats
+#'   is untested.
 #' @param attributes a `data.frame` with a column `VALUE` (case insensitive) along with
 #'   any other data that should be added to the VAT. Column names should not
 #'   contain periods and are limited to 11 characters.
@@ -51,25 +50,26 @@ addVat <- function(x, attributes, skipCount = FALSE){
       stop("attributes required if skipCount is TRUE")
     a <- attributes[order(attributes$VALUE), ]
   } else {
-    # Use raster package to tabulate unique values and their frequencies
-    ft <- raster::freq(raster::raster(x))  # SLOW!
-    ft <- data.frame(VALUE = ft[, 1], COUNT = ft[, 2])
-    ft <- ft[!is.na(ft$VALUE), ]
 
+    if(FALSE){
+      # Use raster package to tabulate unique values and their frequencies
+      ft <- raster::freq(raster::raster(x))  # SLOW!
+      ft <- data.frame(VALUE = ft[, 1], COUNT = ft[, 2])
+      ft <- ft[!is.na(ft$VALUE), ]
+    }
     # Attempt to switch to terra package threw an immediate error on call to terra::freq() on my first test.
-    # xr <- terra::rast(x)
-    # ft <- terra::freq(xr)
-
-
+    ft <- terra::freq(terra::rast(x))
+    valueCol <- names(ft)[which(tolower(names(ft)) == "value")]
+    countCol <- names(ft)[which(tolower(names(ft)) == "count")]
+    ft <- data.frame(VALUE = ft[[valueCol]], COUNT = ft[[countCol]])
 
     if(has.att){
       stopifnot(all(ft$VALUE %in% attributes$VALUE))
       mv <- match(ft$VALUE, attributes$VALUE)
-      ft <- cbind(ft, attributes[mv, !names(attributes) == "VALUE"])
+      ft <- cbind(ft, attributes[mv, !names(attributes) == "VALUE",
+                                 drop = FALSE])
     }
   }
-
-
 
   foreign::write.dbf(ft, paste0(x, ".vat.dbf"), factor2char = TRUE,
                      max_nchar = 254)

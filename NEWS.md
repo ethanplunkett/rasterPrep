@@ -1,3 +1,30 @@
+#64-bit branch 
+
+## Breaking Changes
+
+  * Fix bug in addVat that caused it to replace tje second 
+  attribute column name with "attributes" when there were only two columns.
+  For example if the input names where  "VALUE", and "class" the output 
+  previously would have had columns  "VALUE", "COUNT", and "attributes", 
+  but will now have "VALUE", "COUNT", and "class". Although this fixes a bug it
+  may break existing code that expect the old behavior.
+
+## Updates
+  * Drop **raster** package in favor of **terra** this was 95% done in prior 
+  version.  The last holdout was a call to `raster::freq()` that works fine 
+  now with `terra::freq()` but apparently didn't the last time I tried.
+  
+  * Add Unit testing for all functions that call gdal utilties.
+  
+  * Switch from using shell commands to gdal utilities installed in the OS. To
+  calling gdal utilities through **sf** package. This means the user doesn't 
+  need to install anything other than **sf** and this package; and that issues
+  arrising from weird GDAL configurations shouldn't occur - and if they do it 
+  will probably be an issue for **sf**.
+
+## Updates
+
+
 # rasterPrep 0.1.12.9004
 
 * On load rasterPrep now looks for an environmental variable `RASTERPREP_PROJ` 
@@ -16,7 +43,6 @@
 # rasterPrep 0.1.12.9003
 
 * Fixed spelling in addOverviews. Fixes #5.
-
 
 # rasterPrep 0.1.12.9002
 

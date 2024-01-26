@@ -43,15 +43,11 @@ test_that("addVat() works", {
 
   expect_equal(cbind(v, at[, -1]), v2, ignore_attr = TRUE)
 
-  # Failed test:  when there's only one column its name is lost
+  # Only one new attribute column (previously it's name was lost)
   at2 <- at[ , -3]
   file.remove(vat)
   expect_no_error(addVat(classed, attributes = at2))
   v3 <- foreign::read.dbf(vat, as.is = TRUE)
-  expect_equal(names(v3), c("VALUE", "COUNT", names(at)[2]))  # FAILS
-
-  # Probably dimensions are dropped somewhere in addVat
-  # fix in a separate commit and document in NEWS because
-  # existing code might assume the erronious names
+  expect_equal(names(v3), c("VALUE", "COUNT", names(at)[2]))
 
 })
