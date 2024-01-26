@@ -79,21 +79,22 @@
 makeNiceTif <- function(source, destination, type, overwrite = FALSE,
                         buildOverviews = TRUE, overviewResample = "nearest",
                         vat = FALSE, stats = TRUE, noDataValue){
+
   verbose <- rasterPrepOptions()$verbose
   if(!file.exists(source)) stop("input file", source, "is missing.")
   if(file.exists(destination)){
-   if(overwrite){
-     deleteTif(destination)
-   } else {
-    stop("destination file already exists: ", destination)
-   }
+    if(overwrite){
+      deleteTif(destination)
+    } else {
+      stop("destination file already exists: ", destination)
+    }
   }
 
   has.type <- FALSE
   is.signed.byte <- FALSE
+  usesf <- rasterPrepOptions()$usesf
 
   if(!missing(type)){
-
     if(verbose)
       cat("Type conversion will work in some cases but in others will not properly conserve NA encoding. Use with caution.  I might fix this someday.")
     has.type <- TRUE
@@ -106,65 +107,82 @@ makeNiceTif <- function(source, destination, type, overwrite = FALSE,
     stopifnot(is.numeric(noDataValue),
               !is.na(noDataValue),
               length(noDataValue) == 1)
-
   } else { # missing type
-
-  if(!missing(noDataValue))
-    warning("noDataValue will be ignored. Set type to use noDataValue.")
+    if(!missing(noDataValue))
+      warning("noDataValue will be ignored. Set type to use noDataValue.")
   }
 
-  qc <- '"'
-  command <- paste0("gdal_translate -stats -co compress=LZW -co TFW=YES -co TILED=YES ",
-                    qc, source, qc, " ", qc, destination, qc, " ")
+  if(usesf){
 
-  if(has.type)
-    command <- paste0(command,
-                      " -ot ", type, " ",
-                      " -a_nodata ", noDataValue, " "  # NOTE
-                 )
+    opts <- character(0)
+    opts <- c(opts,
+              "-stats",
+              "-co", "compress=LZW",
+              "-co", "TFW=YES",
+              "-co", "TILED=YES")
+    if(has.type)
+      opts <- c(opts,
+                "-ot", type,
+                " -a_nodata", noDataValue)
+    if(is.signed.byte)
+      opts <- c(opts, "-co", "PIXELTYPE=SIGNEDBYTE")
+    if(stats)
+      opts <- c(opts, "-stats")
 
-  if(is.signed.byte)
-    command <- paste0(command,
-                      " -co  PIXELTYPE=SIGNEDBYTE ")
+    args = list(util = "translate",
+                source = source,
+                destination = destination,
+                options = opts)
 
-  if(stats)
-    command <- paste0(command, "-stats ")
+    if(verbose){
+      cat("Calling sf::gdal_utils with arguments:\n")
+      print(str(args))
+    }
 
-  # Temporarily reset the PROJ_LIB environmental setting for system call (if indicated by settings)
-  oprojlib <- Sys.getenv("PROJ_LIB")
-  ogdaldata <- Sys.getenv("GDAL_DATA")
-  if(rasterPrepSettings$resetLibs){
-    Sys.setenv(PROJ_LIB = rasterPrepSettings$projLib )
-    Sys.setenv(GDAL_DATA = rasterPrepSettings$gdalData)
-    on.exit({
-      Sys.setenv(PROJ_LIB = oprojlib)
-      Sys.setenv(GDAL_DATA = ogdaldata)
-    })
-  }
-  if(verbose)
-    cat("Compressing with system command:\n", command, "\n")
-  a <- system(command = command, intern = TRUE, wait = TRUE)
+    do.call(sf::gdal_utils, args = args)
 
+  } else {
+    # Execute with shell commands
+
+    qc <- '"'
+    command <- paste0("gdal_translate -stats -co compress=LZW -co TFW=YES -co TILED=YES ",
+                      qc, source, qc, " ", qc, destination, qc, " ")
+
+    if(has.type)
+      command <- paste0(command,
+                        " -ot ", type, " ",
+                        " -a_nodata ", noDataValue, " "  # NOTE
+      )
+
+    if(is.signed.byte)
+      command <- paste0(command,
+                        " -co  PIXELTYPE=SIGNEDBYTE ")
+
+    if(stats)
+      command <- paste0(command, "-stats ")
+
+    # Temporarily reset the PROJ_LIB environmental setting for system call (if indicated by settings)
+    oprojlib <- Sys.getenv("PROJ_LIB")
+    ogdaldata <- Sys.getenv("GDAL_DATA")
+    if(rasterPrepSettings$resetLibs){
+      Sys.setenv(PROJ_LIB = rasterPrepSettings$projLib )
+      Sys.setenv(GDAL_DATA = rasterPrepSettings$gdalData)
+      on.exit({
+        Sys.setenv(PROJ_LIB = oprojlib)
+        Sys.setenv(GDAL_DATA = ogdaldata)
+      })
+    }
+    if(verbose)
+      cat("Compressing with system command:\n", command, "\n")
+    a <- system(command = command, intern = TRUE, wait = TRUE)
+
+  } # end  use shell command (!usesf)
 
   if(!file.exists(destination))
     stop("Output file", destination, "was not created. System call returned: ", a)
 
-  if(stats){
-    # Make a call to gdalinfo to add both stats and a histogram
-    # the histogram isn't added by gdal_translate even if -stats flag is set
-    command <- paste0("gdalinfo -stats -hist ",
-                      shQuote(destination))
-    b <- system(command = command, intern = TRUE, wait = TRUE)
-  }
-
-  if(rasterPrepSettings$resetLibs){
-    Sys.setenv(PROJ_LIB = oprojlib)
-    Sys.setenv(GDAL_DATA = ogdaldata)
-  }
-
-
   if(buildOverviews){
-   addOverviews(x = destination, method = overviewResample)
+    addOverviews(x = destination, method = overviewResample)
   }
 
   if(vat){
@@ -173,8 +191,20 @@ makeNiceTif <- function(source, destination, type, overwrite = FALSE,
     addVat(destination)
   }
 
-  if(terra::crs(terra::rast(destination)) == "")
-    stop("Output was created but lacks a coordinate reference system")
+  if(stats){
+    if(usesf){
+      # Calling for side effect of updating stats and historgrams
+      a <- sf::gdal_utils(util = "info", source = destination,
+                     options = c("-stats", "-hist"),
+                     quiet = TRUE)
 
+    } else {
+      # Make a call to gdalinfo to add both stats and a histogram
+      # the histogram isn't added by gdal_translate even if -stats flag is set
+      command <- paste0("gdalinfo -stats -hist ",
+                        shQuote(destination))
+      b <- system(command = command, intern = TRUE, wait = TRUE)
+    }
+  }
 
 }
