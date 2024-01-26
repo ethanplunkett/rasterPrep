@@ -31,7 +31,14 @@
 #' @return this function creates an additional ".ovr" file alongside `x` with
 #'  overview information.  It does not return anything.
 #' @export
-addOverviews <- function(x, clean = FALSE, compression = "LZW", method = "nearest"){
+addOverviews <- function(x,
+                         clean = FALSE,
+                         compression = "LZW",
+                         method = "nearest",
+                         overviews = c(2, 4, 8, 16, 32, 64, 128, 256),
+                         readonly = TRUE,
+                         ...){
+
 
   verbose <- rasterPrepOptions()$verbose
 
@@ -40,34 +47,55 @@ addOverviews <- function(x, clean = FALSE, compression = "LZW", method = "neares
   # this allows addOverviews function to use either
   if(method == "near") method <- "nearest"
 
-
-  valid.methods <- c("nearest","average","gauss","cubic","cubicspline","lanczos",
+  valid.methods <- c("nearest","average", "rms", "gauss","cubic",
+                     "cubicspline","lanczos",
                      "average_mp","average_magphase", "mode")
 
   if(! method %in% valid.methods)
     stop("resampling method '", method, "' isn't recognized", "use one of '" ,
          paste(valid.methods, collapse = "' '"), "'", sep = "")
 
-  command <- paste0("gdaladdo -ro ", shQuote(x), " 2 4 8 16 32 64 128 256",
-                    " --config COMPRESS_OVERVIEW ", compression, " -r ", method )
-  if(clean)
-    command <- paste0(command, " -clean")
+  validCompression <- c("LZW", "DEFLATE", "JPEG")
+  stopifnot(compression %in% validCompression)
 
-  if(verbose)
-    cat("Adding overviews with system command:\n", command, "\n")
+  usesf <- rasterPrepOptions()$usesf
 
-  # Temporarily reset the PROJ_LIB environmental setting for system call (if indicated by settings)
-  oprojlib <- Sys.getenv("PROJ_LIB")
-  ogdaldata <- Sys.getenv("GDAL_DATA")
-  if(rasterPrepSettings$resetLibs){
-    Sys.setenv(PROJ_LIB = rasterPrepSettings$projLib )
-    Sys.setenv(GDAL_DATA = rasterPrepSettings$gdalData)
-    on.exit({
-      Sys.setenv(PROJ_LIB = oprojlib)
-      Sys.setenv(GDAL_DATA = ogdaldata)
-    })
-  }
+  ############################# STOP GAP #######################################
+  usesf <- FALSE  # Waiting on: https://github.com/r-spatial/sf/pull/2323
+                  # to hit CRAN
+  ##############################################################################
 
-  a <- system(command = command, intern = TRUE, wait = TRUE)
+  if (usesf) {
+    args <- list(file = x,
+                 clean = clean,
+                 method = method,
+                 overviews = overviews,
+                 read_only = TRUE)
+
+    args$config_options <- c(COMPRESS_OVERVIEW=compression)
+    do.call(sf::gdal_addo, args = args)
+  } else {
+    # Use shell to invoke system command
+    command <- paste0("gdaladdo -ro ", shQuote(x), " 2 4 8 16 32 64 128 256",
+                      " --config COMPRESS_OVERVIEW ", compression, " -r ", method )
+    if(clean)
+      command <- paste0(command, " -clean")
+
+    if(verbose)
+      cat("Adding overviews with system command:\n", command, "\n")
+
+    # Temporarily reset the PROJ_LIB environmental setting for system call (if indicated by settings)
+    oprojlib <- Sys.getenv("PROJ_LIB")
+    ogdaldata <- Sys.getenv("GDAL_DATA")
+    if(rasterPrepSettings$resetLibs){
+      Sys.setenv(PROJ_LIB = rasterPrepSettings$projLib )
+      Sys.setenv(GDAL_DATA = rasterPrepSettings$gdalData)
+      on.exit({
+        Sys.setenv(PROJ_LIB = oprojlib)
+        Sys.setenv(GDAL_DATA = ogdaldata)
+      })
+    }
+    a <- system(command = command, intern = TRUE, wait = TRUE)
+  } # end use shell
+
 }
-
