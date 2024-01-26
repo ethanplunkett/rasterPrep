@@ -1,16 +1,16 @@
 rasterPrepSettings <- new.env()
-
 rasterPrepSettings$resetLibs <- TRUE
 rasterPrepSettings$projLib <- ""
 rasterPrepSettings$gdalData <- ""
 rasterPrepSettings$verbose <- FALSE
+rasterPrepSettings$usesf <- TRUE
 
 #'change rasterPrep package settings
 #'
 #'This function allows the user to retrieve or change the settings for the
 #'rasterPrep package
 #'
-#'Currently there are four settings:
+#'Currently there are five settings:
 #'
 #'`resetLibs` -  controls whether raster prep should attempt to reset the system
 #'environmental settings for PROJ_LIB and GDAL_DATA prior to executing system
@@ -25,6 +25,10 @@ rasterPrepSettings$verbose <- FALSE
 #'
 #'`verbose` - defaults to FALSE.  If TRUE than progress and command structure
 #'will be printed to the console.
+#'
+#'`usesf` - If TRUE use the sf package.  Otherwise use shell to call gdal
+#' utilties on the command line. This is a temporary option to faciliate
+#' the transition to **sf** and will be dropped when the transtion is complete.
 #'
 #'On my system in a clean R session Sys.getenv("PROJ_LIB") will return "" but
 #'after rgdal or sp are loaded it will be
@@ -100,6 +104,13 @@ rasterPrepOptions <- function(...){
     if(!is.logical(verbose) || length(verbose) != 1 || is.na(verbose))
       stop("verbose should be TRUE or FALSE")
     rasterPrepSettings$verbose <- verbose
+  }
+
+  if("usesf" %in% names(args)){
+    usesf <- args$usesf
+    if(!is.logical(usesf) || length(usesf) != 1 || is.na(usesf))
+      stop("usesf should be TRUE or FALSE")
+    rasterPrepSettings$usesf <- usesf
   }
 
   if(length(args) == 0) return(as.list(rasterPrepSettings))
