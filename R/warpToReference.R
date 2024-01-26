@@ -86,6 +86,8 @@ warpToReference <- function( source, destination, reference, clip, method = "nea
   #
   #   Added handling of no data values 12/1/17 with code copied from warptoextent
   verbose <- rasterPrepOptions()$verbose
+  usesf <- rasterPrepOptions()$usesf
+
 
   if(!missing(compression))
     stopifnot(compression %in% c("LZW", "DEFLATE"))
@@ -125,16 +127,7 @@ warpToReference <- function( source, destination, reference, clip, method = "nea
   # with gdalTranslate
   type.specified <- !missing(type)
 
-  # Note I think this isn't needed because we only use type if it's specified
-  #if(!type.specified){
-  # a <- rgdal::GDALinfo(source)
-  # df <- attr(a, "df")
-  # type <- as.character(df$GDType)
-  # type <- paste(type, collapse ="/")
-  #}
-
-  # terra based code:
-  ref.ext <- terra::ext(ref.info) # temporary
+  ref.ext <- terra::ext(ref.info)
   ref.rows <- terra::nrow(ref.info)
   ref.cols <- terra::ncol(ref.info)
   ref.xll <- as.numeric(ref.ext$xmin)
@@ -174,60 +167,104 @@ warpToReference <- function( source, destination, reference, clip, method = "nea
     is.signed.byte <- a$isSignedByte
   }
 
+  if(usesf){
 
-  # Assemble command for shell uage:
-  command <- paste0(shQuote("gdalwarp"), " ")
-  if(!overlay){  # these are only needed if we aren't adding to an existing dataset
+    opts <- character(0)
+
+
+    if(!overlay){
+      # New file options - don't use if writing to existing dataset
+
+      opts <- c(opts,
+                "-co", "TFW=YES",
+                "-t_srs", wkt.file)
+
+      if(overwrite)
+        opts <- c(opts, "-overwrite")
+
+      opts <- c(opts,
+                "-te", ref.xll,  ref.yll, ref.xmax, ref.ymax,
+                "-tr", ref.resx, ref.resy)
+
+      if(is.signed.byte)
+        opts <- c(opts, "-co", "PIXELTYPE=SIGNEDBYTE")
+
+      if(type.specified)
+        opts <- c(opts, "-ot", type, "-dstnodata", no.data.value)
+
+      if(!missing(compression))
+        opts <- c(opts, "-co", paste0("compress=", compression))
+
+      opts <- c(opts, "-co", paste0("BIGTIFF=", bigtiff))
+
+    } # end  new file options:  if(!overlay)
+
+    if(!missing(clip))
+      opts <- c(opts, "-cutline", clip, " ")
+
+    opts <- c(opts, "-r", method)
+
+    args <- list(util = "warp",
+                 source = source,
+                 destination = destination,
+                 options = opts)
+
+    do.call(sf::gdal_utils, args = args)
+
+  } else {
+
+    # Assemble command for shell uage:
+
+    command <- paste0(shQuote("gdalwarp"), " ")
+    if(!overlay){  # these are only needed if we aren't adding to an existing dataset
+      command <- paste0( command,
+                         "-co TFW=YES ",
+                         "-t_srs ", shQuote(wkt.file), " ",
+                         ifelse(overwrite, " -overwrite ", ""),
+                         "-te ", ref.xll, " ", ref.yll, " ", ref.xmax, " ", ref.ymax, " ",
+                         "-tr ", ref.resx, " ", ref.resy, " "
+      )
+      if(is.signed.byte)
+        command <- paste0(command,
+                          "-co  PIXELTYPE=SIGNEDBYTE ")
+      if(type.specified)
+        command <- paste0(command,
+                          "-ot ", type, " ",
+                          "-dstnodata ", no.data.value, " ")
+      if(!missing(compression))
+        command <- paste0(command,
+                          "-co compress=", compression, " ")
+
+      command <- paste0(command, "-co BIGTIFF=", bigtiff, " ")
+
+    }
+
+
     command <- paste0( command,
-                       "-co TFW=YES ",
-                       "-t_srs ", shQuote(wkt.file), " ",
-                       ifelse(overwrite, " -overwrite ", ""),
-                       "-te ", ref.xll, " ", ref.yll, " ", ref.xmax, " ", ref.ymax, " ",
-                       "-tr ", ref.resx, " ", ref.resy, " "
-    )
-    if(is.signed.byte)
-      command <- paste0(command,
-                        "-co  PIXELTYPE=SIGNEDBYTE ")
-    if(type.specified)
-      command <- paste0(command,
-                        "-ot ", type, " ",
-                        "-dstnodata ", no.data.value, " ")
-    if(!missing(compression))
-      command <- paste0(command,
-                        "-co compress=", compression, " ")
+                       ifelse(missing(clip), "", paste0( "-cutline ", shQuote(clip), " ")),
+                       "-r ", method, " ",
+                       shQuote(source), " ", shQuote(destination))
 
-    command <- paste0(command, "-co BIGTIFF=", bigtiff, " ")
+    # Temporarily reset the PROJ_LIB environmental setting for system call (if indicated by settings)
+    oprojlib <- Sys.getenv("PROJ_LIB")
+    ogdaldata <- Sys.getenv("GDAL_DATA")
+    if(rasterPrepSettings$resetLibs){
+      Sys.setenv(PROJ_LIB = rasterPrepSettings$projLib )
+      Sys.setenv(GDAL_DATA = rasterPrepSettings$gdalData)
+      on.exit({
+        Sys.setenv(PROJ_LIB = oprojlib)
+        Sys.setenv(GDAL_DATA = ogdaldata)
+      })
+    }
 
-  }
-
-
-  command <- paste0( command,
-                     ifelse(missing(clip), "", paste0( "-cutline ", shQuote(clip), " ")),
-                     "-r ", method, " ",
-                     shQuote(source), " ", shQuote(destination))
-
-  # Temporarily reset the PROJ_LIB environmental setting for system call (if indicated by settings)
-  oprojlib <- Sys.getenv("PROJ_LIB")
-  ogdaldata <- Sys.getenv("GDAL_DATA")
-  if(rasterPrepSettings$resetLibs){
-    Sys.setenv(PROJ_LIB = rasterPrepSettings$projLib )
-    Sys.setenv(GDAL_DATA = rasterPrepSettings$gdalData)
-    on.exit({
-      Sys.setenv(PROJ_LIB = oprojlib)
-      Sys.setenv(GDAL_DATA = ogdaldata)
-    })
-  }
-
-  if(verbose)
-    cat("Warping with system command:\n", command, "\n")
-  a <- system(command = command, intern = TRUE, wait = TRUE)
-  a <-  gsub("[[:blank:]]", " ", a)
-  if(!grepl("- done.[[:blank:]]*$", a[length(a)]) ){
-    stop("An error might have occured.  The function returned: ", a)
-  }
-
-
-
+    if(verbose)
+      cat("Warping with system command:\n", command, "\n")
+    a <- system(command = command, intern = TRUE, wait = TRUE)
+    a <-  gsub("[[:blank:]]", " ", a)
+    if(!grepl("- done.[[:blank:]]*$", a[length(a)]) ){
+      stop("An error might have occured.  The function returned: ", a)
+    }
+  } # end use shell commands   (!usesf)
 
   if(!file.exists(destination))
     stop("Output file", destination, "was not created. System call returned: ", a)
@@ -238,6 +275,7 @@ warpToReference <- function( source, destination, reference, clip, method = "nea
   if(verbose)
     cat("Done warping output at:", destination, "\n")
   file.remove(wkt.file)
+
 }
 
 
