@@ -48,7 +48,8 @@ addColorTable <- function(x, table){
   # Check that input file is a single band
   r <- terra::rast(x)
   if(!dim(r)[3] == 1)
-    stop("addColorTable only works with byte encoded single band files. ", x, " appears to have more than one band.")
+    stop("addColorTable only works with byte encoded single band files. ",
+         x, " appears to have more than one band.")
 
   # And that the storage Type is byte
   d <- terra::describe(x)
@@ -56,7 +57,8 @@ addColorTable <- function(x, table){
   d <- gsub("^.*Type=", "", d)
   d <- gsub("[^[:alpha:]].*$", "", d)
   if(tolower(d) != "byte")
-    stop("addColorTable only works with byte encoded files.", x, " appears to have a diffent type.")
+    stop("addColorTable only works with byte encoded files.", x,
+         " appears to have a diffent type.")
 
   # Identify the maximum value in attributes
   max.val <-  max(table$value)

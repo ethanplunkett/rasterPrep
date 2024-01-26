@@ -69,8 +69,13 @@ rasterizeToReference <- function(source, destination, reference, burn, attribute
 
   verbose <- rasterPrepOptions()$verbose
 
-  if(missing(burn) & missing(attribute))
+  if(missing(burn) && missing(attribute))
     stop("You must specify either burn or attribute for rasterization to work.")
+
+  if(!missing(burn) && !missing(attribute))
+    stop("You should use burn or attribute, not both.")
+
+
 
   a <- assessType(type)
   type <- a$type

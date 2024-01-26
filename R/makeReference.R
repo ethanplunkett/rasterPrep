@@ -107,7 +107,7 @@ makeReference <- function(polyFile, destination, cellsize,  burn = 1,
   stopifnot(nestingCellsize %% cellsize == 0)   # nestingCellsize must be the same or an integer multiple of cellsize
   stopifnot(alignTo %in% c("origin", "reference"))
 
-  poly <- sf::st_read(polyFile)
+  poly <- sf::st_read(polyFile, quiet = TRUE)
   proj <- sf::st_crs(poly)$wkt
   bbox <- sf::st_bbox(poly)
 
