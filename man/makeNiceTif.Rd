@@ -51,7 +51,7 @@ data cell values to it. If the existing no data value is not in the range
 of values supported by \code{type} then they will end up with the value in range
 that is closest to the existing value. If this argument isn't supplied and
 \code{type} is used `noDataValue`` will be assigned based on the output of
-\code{\link{assessType()}} which often but not always picks an appropriate
+\code{\link[=assessType]{assessType()}} which often but not always picks an appropriate
 value.}
 }
 \value{

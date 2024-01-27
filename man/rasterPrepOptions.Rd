@@ -20,22 +20,26 @@ This function allows the user to retrieve or change the settings for the
 rasterPrep package
 }
 \details{
-Currently there are four settings:
+Currently there are five settings:
 
 \code{resetLibs} -  controls whether raster prep should attempt to reset the system
 environmental settings for PROJ_LIB and GDAL_DATA prior to executing system
 calls it defaults to TRUE.
 
-\code{projLib} - is what the PROJ_LIB environmental setting should be set to prior
-to the calls. It defaults to the system environment variable "RASTERPREP_PROJ"
-or if that's not set to an empty string (\code{""}).
+\code{projLib} - is what the PROJ_LIB environmental setting should be when making
+shell calls to gdal utilities. It defaults to the system environment
+variable "RASTERPREP_PROJ" or if that's not set to an empty string (\code{""}).
 
 \code{gdalData} - is what the GDAL_DATA environmental variable should be set to
-prior to system calls (if resetsLibs is TRUE). It defaults to an empty string
-(\code{""}).
+during shell calls (if \code{resetsLibs} is \code{TRUE}). It defaults to an empty
+string (\code{""}).
 
 \code{verbose} - defaults to FALSE.  If TRUE than progress and command structure
 will be printed to the console.
+
+\code{usesf} - If TRUE use the sf package.  Otherwise use shell to call gdal
+utilties on the command line. This is a temporary option to facilitate
+the transition to \strong{sf} and will be dropped when the transition is complete.
 
 On my system in a clean R session Sys.getenv("PROJ_LIB") will return "" but
 after rgdal or sp are loaded it will be

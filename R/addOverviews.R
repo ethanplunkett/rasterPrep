@@ -28,6 +28,11 @@
 #'   average_mp, average_magphase, or mode. It is passed to
 #'   [gdaladdo](http://www.gdal.org/gdaladdo.html) check there for details.
 #'    `"near"` is also accepted and silently converted to, `"nearest"`.
+#' @param overviews Overview levels to use.  See
+#' [gdaladdo  <levels>](https://gdal.org/programs/gdaladdo.html#cmdoption-gdaladdo-arg-levels)
+#' @param readonly if TRUE `x` will not be modified and overviews will be written
+#' to an external file. See
+#' [gdaladdo -ro](https://gdal.org/programs/gdaladdo.html#cmdoption-gdaladdo-arg-levels)
 #' @return this function creates an additional ".ovr" file alongside `x` with
 #'  overview information.  It does not return anything.
 #' @export
@@ -36,8 +41,7 @@ addOverviews <- function(x,
                          compression = "LZW",
                          method = "nearest",
                          overviews = c(2, 4, 8, 16, 32, 64, 128, 256),
-                         readonly = TRUE,
-                         ...){
+                         readonly = TRUE){
 
 
   verbose <- rasterPrepOptions()$verbose

@@ -4,7 +4,14 @@
 \alias{addOverviews}
 \title{Function to add overviews to an image file}
 \usage{
-addOverviews(x, clean = FALSE, compression = "LZW", method = "nearest")
+addOverviews(
+  x,
+  clean = FALSE,
+  compression = "LZW",
+  method = "nearest",
+  overviews = c(2, 4, 8, 16, 32, 64, 128, 256),
+  readonly = TRUE
+)
 }
 \arguments{
 \item{x}{(character) the path to a tif or other raster file}
@@ -20,6 +27,13 @@ average, gauss, cubic, cubicspline, lanczos,
 average_mp, average_magphase, or mode. It is passed to
 \href{http://www.gdal.org/gdaladdo.html}{gdaladdo} check there for details.
 \code{"near"} is also accepted and silently converted to, \code{"nearest"}.}
+
+\item{overviews}{Overview levels to use.  See
+\href{https://gdal.org/programs/gdaladdo.html#cmdoption-gdaladdo-arg-levels}{gdaladdo  \if{html}{\out{<levels>}}}}
+
+\item{readonly}{if TRUE \code{x} will not be modified and overviews will be written
+to an external file. See
+\href{https://gdal.org/programs/gdaladdo.html#cmdoption-gdaladdo-arg-levels}{gdaladdo -ro}}
 }
 \value{
 this function creates an additional ".ovr" file alongside \code{x} with

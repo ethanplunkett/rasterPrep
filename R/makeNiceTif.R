@@ -69,7 +69,7 @@
 #'   of values supported by `type` then they will end up with the value in range
 #'   that is closest to the existing value. If this argument isn't supplied and
 #'   `type` is used `noDataValue`` will be assigned based on the output of
-#'   \code{\link{assessType()}} which often but not always picks an appropriate
+#'   [assessType()] which often but not always picks an appropriate
 #'   value.
 #' @return This function creates a copy of the source raster at the destination
 #' path that is formatted to facilitate viewing in GIS software. It does not return
@@ -136,7 +136,7 @@ makeNiceTif <- function(source, destination, type, overwrite = FALSE,
 
     if(verbose){
       cat("Calling sf::gdal_utils with arguments:\n")
-      print(str(args))
+      print(utils::str(args))
     }
 
     do.call(sf::gdal_utils, args = args)

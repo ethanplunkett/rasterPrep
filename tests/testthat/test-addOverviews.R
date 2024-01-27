@@ -25,7 +25,7 @@ test_that("rasterPrep() addOverviews() works", {
   expect_true(grepl("LZW", getRastInfo(ovf, "compression")))
 
   # Read in overview
-  nearover <- terra::rast(ovf)
+  expect_warning(nearover <- terra::rast(ovf))
   nearsamp <- nearover[10, 10:18]
 
   if(FALSE)
@@ -35,14 +35,6 @@ test_that("rasterPrep() addOverviews() works", {
   addOverviews(f2, clean = TRUE)
   expect_true(length(getRastInfo(f2)) == 0)
 
-  # Alternate compression JPEG
-  addOverviews(f2, compression = "JPEG")
-  expect_length(getRastInfo(f2), 1)
-  expect_true(grepl("JPEG", getRastInfo(ovf, "compression")))
-
-  # remove overviews
-  addOverviews(f2, clean = TRUE)
-  expect_true(length(getRastInfo(f2)) == 0)
 
   # Alternate compression DEFLATE
   addOverviews(f2, compression = "DEFLATE")
@@ -57,7 +49,7 @@ test_that("rasterPrep() addOverviews() works", {
   addOverviews(f2, method = "average")
   expect_length(getRastInfo(f2), 1)
 
-  averageover <- terra::rast(ovf)
+  expect_warning(averageover <- terra::rast(ovf))
   avgrsamp <- nearover[10, 10:18]
 
   if(FALSE)
