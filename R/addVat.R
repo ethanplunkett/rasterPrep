@@ -34,6 +34,10 @@
 #' @export
 addVat <- function(x, attributes, skipCount = FALSE){
 
+  r <- terra::rast(x)
+  if(length(r) > 1)
+    stop("addVat only works with single layer TIFF files")
+
   has.att <- !missing(attributes)
   # Pre-check attribute name length
   if(has.att){
@@ -44,33 +48,38 @@ addVat <- function(x, attributes, skipCount = FALSE){
       stop("Atribute column names are too long for dbf format:", names(attributes)[long])
   }
 
-
   if(skipCount){
     if(!has.att)
       stop("attributes required if skipCount is TRUE")
-    a <- attributes[order(attributes$VALUE), ]
+    ft <- attributes[order(attributes$VALUE), ]
   } else {
 
-    if(FALSE){
-      # Use raster package to tabulate unique values and their frequencies
-      ft <- raster::freq(raster::raster(x))  # SLOW!
-      ft <- data.frame(VALUE = ft[, 1], COUNT = ft[, 2])
-      ft <- ft[!is.na(ft$VALUE), ]
-    }
-    # Attempt to switch to terra package threw an immediate error on call to terra::freq() on my first test.
-    ft <- terra::freq(terra::rast(x))
-    valueCol <- names(ft)[which(tolower(names(ft)) == "value")]
-    countCol <- names(ft)[which(tolower(names(ft)) == "count")]
-    ft <- data.frame(VALUE = ft[[valueCol]], COUNT = ft[[countCol]])
+    ft <- terra::freq(r)
 
-    if(has.att){
-      stopifnot(all(ft$VALUE %in% attributes$VALUE))
-      mv <- match(ft$VALUE, attributes$VALUE)
-      ft <- cbind(ft, attributes[mv, !names(attributes) == "VALUE",
-                                 drop = FALSE])
+    # terra::freq() returns labels as the "value" if the raster has labels
+    # The code  below retrieves the associated values
+    if(!is.null(terra::cats(r)[[1]])){
+      names(ft)[names(ft) == "value"] <- "category"
+      cgs <- terra::cats(r)[[1]]
+      stopifnot(all(ft$category %in% cgs$category))
+      mv <- match(ft$category, cgs$category)
+      ft$value <- cgs$value[mv]
     }
+
+    names(ft)[names(ft) == "value"] <- "VALUE"
+    names(ft)[names(ft) == "count"] <- "COUNT"
+
+    ft <- ft[, c("VALUE", "COUNT"), drop = FALSE]
   }
 
-  foreign::write.dbf(ft, paste0(x, ".vat.dbf"), factor2char = TRUE,
-                     max_nchar = 254)
+  if(has.att){
+    stopifnot(all(ft$VALUE %in% attributes$VALUE))
+    mv <- match(ft$VALUE, attributes$VALUE)
+    ft <- cbind(ft, attributes[mv, !names(attributes) == "VALUE",
+                               drop = FALSE])
+  }
+
+
+foreign::write.dbf(ft, paste0(x, ".vat.dbf"), factor2char = TRUE,
+                   max_nchar = 254)
 }
