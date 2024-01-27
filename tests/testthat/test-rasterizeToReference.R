@@ -8,6 +8,7 @@ test_that("rasterizeToReference  works", {
 
   regions <- file.path(dir, "regions.tif")
   regions2 <- file.path(dir, "regions2.tif")
+  regions3 <- file.path(dir, "regions3.tif")
 
   # ID_2 is an integer column with unique values for each polygon
   #  (uniqueness isn't required)
@@ -58,4 +59,12 @@ test_that("rasterizeToReference  works", {
   expect_error(rasterizeToReference(shp, regions2, reference = ref),
                "specify either burn or attribute ")
 
+
+  # With init
+  expect_no_error(rasterizeToReference(shp, regions3, reference = ref,
+                                       init = 0, burn = 1))
+  with_init <- terra::rast(regions3)
+  expect_snapshot(
+    table(terra::values(with_init))
+  )
 })

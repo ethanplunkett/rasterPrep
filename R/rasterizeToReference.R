@@ -145,11 +145,11 @@ rasterizeToReference <- function(source, destination, reference, burn, attribute
       if(dest.exists)
         stop("The init argument can only be used when the destination file",
              "does not already exist")
-      args$options <- c(args$options, "-init ", init)
+      args$options <- c(args$options, "-init", init)
     }
 
     if(!missing(sql)){
-      args$options <- c(args$options, "-sql ", sql)
+      args$options <- c(args$options, "-sql", sql)
     }
 
     if(allTouched)
@@ -172,7 +172,7 @@ rasterizeToReference <- function(source, destination, reference, burn, attribute
                          "-te ", ref.xll, " ", ref.yll, " ", ref.xmax, " ", ref.ymax, " ",
                          "-tr ", ref.resx, " ", ref.resy, " ",
                          ifelse(missing(type), "", paste0("-ot ", type, " ")),
-                         "-a_nodata", no.data.value)
+                         "-a_nodata ", no.data.value, " ")
     }
     if(!missing(burn))
       command <- paste0(command, "-burn ", burn, " ")
