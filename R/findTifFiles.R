@@ -5,7 +5,7 @@
 #'
 #' Given the path to a .tif file return the path to all the files associated with
 #' it including the original .tif.  Any file that includes the full name (with
-#' .tif extension and some additional extension  e.g. .tif.orv) a world
+#' .tif extension and some additional extension  e.g. .tif.ovr) a world
 #' file which has the same base name but .twf instead of .tif and if
 #' `includeVrt` is TRUE a .vrt file with the same name.
 #'

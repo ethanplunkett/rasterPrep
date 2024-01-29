@@ -38,7 +38,7 @@ string (\code{""}).
 will be printed to the console.
 
 \code{usesf} - If TRUE use the sf package.  Otherwise use shell to call gdal
-utilties on the command line. This is a temporary option to facilitate
+utilities on the command line. This is a temporary option to facilitate
 the transition to \strong{sf} and will be dropped when the transition is complete.
 
 On my system in a clean R session Sys.getenv("PROJ_LIB") will return "" but
@@ -55,15 +55,14 @@ gdal_utilities gets around this by using GDAL installed with sf but doesn't
 support all of the utilities I use here - gdaladdo is missing.
 
 With the default values rasterPrep will change the PROJ_LIB and GDAL_DATA
-enviromental setting  to "" before making a system call.
+environment variables to "" before making a system call.
 
 This can be turned off with \code{rasterPrepOptions(resetLibs = FALSE)} or changed
 to to different location with for example \code{rasterPrepOptions(projLib = "C:/Proj/")} or some appropriate for your system.
 
 The package will always reset the PROJ_LIB and GDAL_DATA variables to the
-original value after each the system call so subsequent rgdal, sp, and sf
-functions will  find them set as expected or at least as it was (there seem to
-be dueling settings!).
+original value after each the system call so other functions will find
+them set as expected or at least as it was.
 
 Also, note all the changes made by rgdal, sp, sf, and this package are just
 for the r session not for the computer as a whole.

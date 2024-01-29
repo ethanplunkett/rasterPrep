@@ -43,8 +43,8 @@ raster files that coincide perfectly. That is they have identical resolutions,
 cell alignments, coordinate reference systems (crs), and extents. 
 
 Typically, the source data is a mix of raster and vector files that do not 
-coincide. This workflow demonstrates how convert disperate source data
-inot a set of coinciding TIFF files.
+coincide. This workflow demonstrates how convert disparate source data
+into a set of coinciding TIFF files.
 
 Overview:
 
@@ -209,7 +209,7 @@ plot(slope)
 
 Transform vector inputs to match the reference. 
 This code uses the 'ogr2ogr()' function within the gdalUtilities R package. 
-You could also usethe **sf** package to read in the vector data, reproject, and
+You could also use the **sf** package to read in the vector data, reproject, and
 write out to a new Shapefile.
 
 ```{r, echo = TRUE, message = FALSE, warning = FALSE, results = FALSE}
@@ -334,10 +334,10 @@ each cell value - like the name of the landcover class, or road class.
 
 Color tables allow associating a specific color with every class, and as
 such are only suitable to categorical data and make a lot of sense for
-landcover where we might use greens for natural uplands, blues for water, greys
+landcover where we might use greens for natural uplands, blues for water, grays
 and blacks for roads, etc. 
 
-There are a couple of limitations to the color tables suppported here.
+There are a couple of limitations to the color tables supported here.
 
 1. The TIFF must be byte encoded.
 2. Every value between 0 and the maximum value is going to be in the 

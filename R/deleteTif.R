@@ -6,7 +6,7 @@
 #' This will delete the files listed in `x` and all associated files,
 #' specifically: \itemize{
 #'   \item any file that includes the full name with .tif extension and an additional
-#'   extension  e.g. .../name.tif.orv.
+#'   extension  e.g. .../name.tif.ovr.
 #'   \item a world file which has the same base name but a ".twf" extension
 #'   instead of ".tif"
 #'   \item if `includeVrt` is TRUE a .vrt file with the same name.

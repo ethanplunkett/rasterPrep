@@ -85,14 +85,14 @@ For example moving from an Int32 to and Int16 will probably work if the
 initial NA value is high because it will will be truncated to the highest
 value in the Int16 and which is what the new no data value will be set to.
 The default \code{noDataValue} of the output when using \code{type} and not
-specifying the \code{noDataValue} is determied by \code{\link{assessType}}.
+specifying the \code{noDataValue} is determined by \code{\link{assessType}}.
 
-If you use \code{type} and your ouput raster ends up with values cells that were
+If you use \code{type} and your output raster ends up with values cells that were
 originally no data you might be able to remedy this by setting
 \code{noDataValue} to that value.
 
 If you want to change the type you can do so safely in a call to
-warpToReference prior to using this function as gdalWarp can reset the type
+warpToReference prior to using this function as gdalwarp can reset the type
 and reset the values of the NA cell to the new noDataValue.
 
 This is a wrapper to the \code{gdaltranslate} command line utility coupled with

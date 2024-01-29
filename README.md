@@ -29,7 +29,7 @@ On Windows I recommend you use the Open Source Geo for Windows (OSGEO4w) install
 [https://trac.osgeo.org/osgeo4w/](https://trac.osgeo.org/osgeo4w/)  Use express web 
 install and then select GDAL only.
 You will need to add the path to the osgeo4win bin directory to your system's
-PATH environmetnal variable.  On Windows it's likely something along the lines of
+PATH environment variable.  On Windows it's likely something along the lines of
  C:\OSGeo4W64\bin but please verify on your system.
 
 Once you've installed GDAL Utilities use the code below to install rasterPrep 

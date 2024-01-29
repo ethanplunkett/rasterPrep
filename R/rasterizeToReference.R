@@ -35,7 +35,7 @@ if(FALSE){
 #' the CRS of the source must match that of the reference and this used to be checked
 #' with [raster::compareCRS()] but with updates to the proj library and the
 #' switch to WKT representations I don't currently have a good way to check if two
-#' projections are equivallent. Its now up to the user to make sure that they are.
+#' projections are equivalent. Its now up to the user to make sure that they are.
 #'
 #'  In contrast if you are overlaying data on an existing file then the underlying gdal_rasterize
 #' function will reproject while rasterizing.

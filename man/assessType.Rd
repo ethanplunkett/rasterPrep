@@ -32,7 +32,7 @@ byte, and a no data value appropriate for that type.
 }
 \details{
 There is no universally accepted no data value for each type. Every
-file can have it's own no data value.  \code{rasterPrep} ues the
+file can have it's own no data value.  \code{rasterPrep} uses the
 highest possible value for unsigned integers, lowest for signed integers.
 For floating point numbers it uses values close to the lowest possible.
 These follow the defaults used by the deprecated \strong{raster} package,

@@ -26,14 +26,14 @@
 #'   initial NA value is high because it will will be truncated to the highest
 #'    value in the Int16 and which is what the new no data value will be set to.
 #'    The default `noDataValue` of the output when using `type` and not
-#'    specifying the `noDataValue` is determied by \code{\link{assessType}}.
+#'    specifying the `noDataValue` is determined by \code{\link{assessType}}.
 #'
-#'  If you use `type` and your ouput raster ends up with values cells that were
+#'  If you use `type` and your output raster ends up with values cells that were
 #'  originally no data you might be able to remedy this by setting
 #'  `noDataValue` to that value.
 #'
 #'  If you want to change the type you can do so safely in a call to
-#'  warpToReference prior to using this function as gdalWarp can reset the type
+#'  warpToReference prior to using this function as gdalwarp can reset the type
 #'  and reset the values of the NA cell to the new noDataValue.
 #'
 #'

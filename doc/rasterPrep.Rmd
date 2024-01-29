@@ -93,7 +93,7 @@ the original projection and cell alignment preserved.  It is in the USA Contiguo
 
 3. "roads.shp": A Shapefile containing vector roads, originally from Open Street map but with small roads removed and clipped to Amherst.  It's in the same projection as 2. 
 
-4. "roadClassKey.csv": A csv file with columns "value" , "category", and "color", representing integer values, associated road class names, and a hexadecimal color that should be used for rendering (#rrggbb).
+4. "roadClassKey.csv": A CSV file with columns "value" , "category", and "color", representing integer values, associated road class names, and a hexadecimal color that should be used for rendering (#rrggbb).
 
 ### 2. Create a reference raster
 

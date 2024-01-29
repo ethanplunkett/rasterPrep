@@ -6,7 +6,7 @@
 #'
 #' This is a work in progress. The information returned by gdalinfo depends on
 #' the file type described and I've developed this while working primarily with
-#' single band ArcInfo Grids and geoTiff files so this function is unlikely to
+#' single band ArcInfo Grids and geoTIFF files so this function is unlikely to
 #' parse all available information for all file types. Use `print(rasterInfo(x),
 #' raw = TRUE)`,  `x$raw` if `x` is a rasterInfo object, to see the unparsed
 #' text.
@@ -17,7 +17,7 @@
 #' @rdname rasterInfo
 #' @param x  For raster info the path to a raster file.
 #' For the print method a rasterInfo object as returned by `rasterInfo`.
-#' @param all if `FALSE` (the default) some potentially lengthly components of
+#' @param all if `FALSE` (the default) some potentially lengthy components of
 #' `x` are omitted.  Use `print(x, all=TRUE)` to print everything.
 #' @param raw if `TRUE` Then the raw text from the gdalinfo call is printed.
 #'  Use this if you think the something is being lost when the text is parsed
@@ -31,7 +31,7 @@
 #'  \item{type}{Calculated from `bands` will be "missing" if the raster file is missing or unreadable, "mixed" if there are multiple bands and they have varying types, otherwise the type associated with the band(s).}
 #'  \item{res}{the resolution of  the cells,  as reported gdal (two dimensions, possible negative)}
 #'  \item{cellsize}{calculated from `res` `NA` if the cells aren't square, otherwise the (positive) dimension of the cell}
-#'  \item{na.value}{`NA` if bands have inconsitent no data values. Otherewise the no data value used by the band(s)}
+#'  \item{na.value}{`NA` if bands have inconsistent no data values. Otherwise the no data value used by the band(s)}
 #'  \item{dim}{The dimensions of the raster in cells (rows, then cols).  This is from a raw line that reads  "Size is" and reports cols then rows (reverse of order used here). }
 #'  \item{rows}{the number of rows in the file  (copied from `dim`)}
 #'  \item{cols}{the number of columns in the file (copied from `dim`)}
@@ -42,7 +42,7 @@
 #'  \item{nbands}{The number of bands in the file.}
 #'  \item{bands}{A list  of lists (one per band); inner list has items \describe{
 #'    \item{id}{assigned, 1:`nbands`}
-#'    \item{block}{the block dimensions as reported by gdal (colums, rows)}
+#'    \item{block}{the block dimensions as reported by gdal (columns, rows)}
 #'    \item{type}{the storage type of the band}
 #'    \item{colorinterp}{reported by gdal}
 #'    \item{stats}{list of min, max, mean, sd}

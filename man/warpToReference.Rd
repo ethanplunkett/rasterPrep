@@ -54,7 +54,7 @@ the highest possible value for unsigned types.}
 in which case the gdal_warp creation option -co compress=(compression) will
 be used if creating a new file.}
 
-\item{bigtiff}{(optioanal) defaults to FALSE, can be set to TRUE, 'YES', 'NO',
+\item{bigtiff}{(optional) defaults to FALSE, can be set to TRUE, 'YES', 'NO',
 'IF_NEEDED', or 'IF_SAFER' and is passed to the gdalwarp BIGTIFF
 creation option. See \url{https://gdal.org/drivers/raster/gtiff.html.}
 TRUE and FALSE are mapped to 'YES' and 'NO' respectively. This argument

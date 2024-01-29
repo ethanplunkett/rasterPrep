@@ -47,7 +47,7 @@
 #' @param compression (optional, character) can be set to 'LZW' or 'DEFLATE'
 #'   in which case the gdal_warp creation option -co compress=(compression) will
 #'   be used if creating a new file.
-#' @param bigtiff (optioanal) defaults to FALSE, can be set to TRUE, 'YES', 'NO',
+#' @param bigtiff (optional) defaults to FALSE, can be set to TRUE, 'YES', 'NO',
 #'    'IF_NEEDED', or 'IF_SAFER' and is passed to the gdalwarp BIGTIFF
 #'    creation option. See \url{https://gdal.org/drivers/raster/gtiff.html.}
 #'    TRUE and FALSE are mapped to 'YES' and 'NO' respectively. This argument
@@ -121,7 +121,7 @@ warpToReference <- function( source, destination, reference, clip, method = "nea
     "Stop reference file must have a defined projection"
   }
 
-  # Note gdalWarp allows setting the NA value and a new type
+  # Note gdalwarp allows setting the NA value and a new type
   # but it does NOT reclass existing NA values to the new NA value
   # If the user specifies a new type we are going to create a .vrt file
   # with gdalTranslate
