@@ -1,31 +1,41 @@
-#64-bit branch 
+## 64-bit branch 
 
-## Breaking Changes
+### Breaking Changes
 
-  * Fix bug in addVat that caused it to replace the second 
+  * Fix bug in `addVat` that caused it to replace the second 
   attribute column name with "attributes" when there were only two columns.
   For example if the input names where  "VALUE", and "class" the output 
   previously would have had columns  "VALUE", "COUNT", and "attributes", 
   but will now have "VALUE", "COUNT", and "class". Although this fixes a bug it
   may break existing code that expect the old behavior.
 
-## Updates
+### Updates
   * Drop **raster** package in favor of **terra** this was 95% done in prior 
-  version.  The last holdout was a call to `raster::freq()` that works fine 
-  now with `terra::freq()` but apparently didn't the last time I tried.
+  version.  Replacing `raster::freq()` that with `terra::freq()` within
+  `addOverviews()` was the last step.
   
-  * Add Unit testing for all functions that call gdal utilities.
+  * Add unit testing for all functions that call gdal utilities.
   
-  * Switch from using shell commands to gdal utilities installed in the OS. To
-  calling gdal utilities through **sf** package. This means the user doesn't 
-  need to install anything other than **sf** and this package; and that issues
-  arising from weird GDAL configurations shouldn't occur - and if they do it 
-  will probably be an issue for **sf**.
+  * Switch from using shell commands to calling `sf::gdal_utils`, 
+  which uses gdal distributed with the **sf**
+  package. So the user does not need to install thier own gdal for the 
+  command line; and issues arising from weird GDAL configurations should be
+  reduced and opefully will be fully the responsibility of the **sf** team.
+    * This is complete with the exception of `addOverviews`. An 
+    [accepted PR](https://github.com/r-spatial/sf/pull/2323)
+    fixes an issue with `sf::gdal_addo` that blocked the use of 
+    configure options - making it impossible to create compressed overviews. 
+    With the next update to **sf** on CRAN I'll switch `addOverviews` over to
+    **sf** too.
+    * Setting `rasterPrepOptions(usesf = FALSE)` will switch back to the old 
+    behavior of exclusively using shell commands.
+  
+  * Overhaul vignette.
+  * Update readme.
+  * Check spelling
+  * Lint
 
-## Updates
-
-
-# rasterPrep 0.1.12.9004
+## rasterPrep 0.1.12.9004
 
 * On load rasterPrep now looks for an environmental variable `RASTERPREP_PROJ` 
   and if it exists calls `rasterPrepOptions(projLib = value)` with the result.
