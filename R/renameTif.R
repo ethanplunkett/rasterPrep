@@ -6,14 +6,14 @@
 #'   same base name.
 #' @return this function returns nothing
 #' @export
-renameTif <- function(from, to, includeVrt = TRUE){
+renameTif <- function(from, to, includeVrt = TRUE) {
   # Rename a tif file (and it's associated files)
   stopifnot(grepl(".tif$", from, ignore.case = TRUE))
   targets <- findTifFiles(from, includeVrt = TRUE)
   a <- gsub(".tif$", "", from, ignore.case = TRUE)
   b <- gsub(".tif$", "", to, ignore.case = TRUE)
   new <- gsub(a, b, targets)
-  if(rasterPrepOptions()$verbose)
-    print(data.frame(from=targets, to = new))
+  if (rasterPrepOptions()$verbose)
+    print(data.frame(from = targets, to = new))
   file.rename(targets, new)
 }

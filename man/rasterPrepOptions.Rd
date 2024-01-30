@@ -20,22 +20,26 @@ This function allows the user to retrieve or change the settings for the
 rasterPrep package
 }
 \details{
-Currently there are four settings:
+Currently there are five settings:
 
 \code{resetLibs} -  controls whether raster prep should attempt to reset the system
 environmental settings for PROJ_LIB and GDAL_DATA prior to executing system
 calls it defaults to TRUE.
 
-\code{projLib} - is what the PROJ_LIB environmental setting should be set to prior
-to the calls. It defaults to the system environment variable "RASTERPREP_PROJ"
-or if that's not set to an empty string (\code{""}).
+\code{projLib} - is what the PROJ_LIB environmental setting should be when making
+shell calls to gdal utilities. It defaults to the system environment
+variable "RASTERPREP_PROJ" or if that's not set to an empty string (\code{""}).
 
 \code{gdalData} - is what the GDAL_DATA environmental variable should be set to
-prior to system calls (if resetsLibs is TRUE). It defaults to an empty string
-(\code{""}).
+during shell calls (if \code{resetsLibs} is \code{TRUE}). It defaults to an empty
+string (\code{""}).
 
 \code{verbose} - defaults to FALSE.  If TRUE than progress and command structure
 will be printed to the console.
+
+\code{usesf} - If TRUE use the sf package.  Otherwise use shell to call gdal
+utilities on the command line. This is a temporary option to facilitate
+the transition to \strong{sf} and will be dropped when the transition is complete.
 
 On my system in a clean R session Sys.getenv("PROJ_LIB") will return "" but
 after rgdal or sp are loaded it will be
@@ -51,15 +55,14 @@ gdal_utilities gets around this by using GDAL installed with sf but doesn't
 support all of the utilities I use here - gdaladdo is missing.
 
 With the default values rasterPrep will change the PROJ_LIB and GDAL_DATA
-enviromental setting  to "" before making a system call.
+environment variables to "" before making a system call.
 
 This can be turned off with \code{rasterPrepOptions(resetLibs = FALSE)} or changed
 to to different location with for example \code{rasterPrepOptions(projLib = "C:/Proj/")} or some appropriate for your system.
 
 The package will always reset the PROJ_LIB and GDAL_DATA variables to the
-original value after each the system call so subsequent rgdal, sp, and sf
-functions will  find them set as expected or at least as it was (there seem to
-be dueling settings!).
+original value after each the system call so other functions will find
+them set as expected or at least as it was.
 
 Also, note all the changes made by rgdal, sp, sf, and this package are just
 for the r session not for the computer as a whole.

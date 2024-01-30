@@ -7,19 +7,21 @@
 snapToEdge(x, cellsize, up = TRUE, offset = 0)
 }
 \arguments{
-\item{x}{a vector of coordinates (either x or y component) to be snapped to a cell boundary}
+\item{x}{a vector of coordinates (either x or y component) to be snapped to
+a cell boundary}
 
 \item{cellsize}{the cellsize of the grid being snapped.}
 
-\item{up}{if TRUE then the number is snapped up to the nearest cell boundary if FALSE
-it is snapped down.}
+\item{up}{if \code{TRUE} then the number is snapped up to the nearest cell
+boundary if \code{FALSE} it is snapped down.}
 
 \item{offset}{the distance up from the origin to the first cell boundary.}
 }
 \value{
-a vector of number close to \code{x} that fall on cell boundaries if \code{up}
-is TRUE they will be equal to or higher than corresponding values in \code{x} is FALSE they will be
-the equal or lower.
+a vector of number close to \code{x} that fall on cell boundaries
+if \code{up} is \code{TRUE} they will be equal to or higher
+than corresponding values in \code{x}
+if \code{FALSE} they will be the equal or lower.
 }
 \description{
 This function is primarily for internal use by \code{\link[=makeReference]{makeReference()}}

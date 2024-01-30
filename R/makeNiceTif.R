@@ -26,14 +26,14 @@
 #'   initial NA value is high because it will will be truncated to the highest
 #'    value in the Int16 and which is what the new no data value will be set to.
 #'    The default `noDataValue` of the output when using `type` and not
-#'    specifying the `noDataValue` is determied by \code{\link{assessType}}.
+#'    specifying the `noDataValue` is determined by \code{\link{assessType}}.
 #'
-#'  If you use `type` and your ouput raster ends up with values cells that were
+#'  If you use `type` and your output raster ends up with values cells that were
 #'  originally no data you might be able to remedy this by setting
 #'  `noDataValue` to that value.
 #'
 #'  If you want to change the type you can do so safely in a call to
-#'  warpToReference prior to using this function as gdalWarp can reset the type
+#'  warpToReference prior to using this function as gdalwarp can reset the type
 #'  and reset the values of the NA cell to the new noDataValue.
 #'
 #'
@@ -45,21 +45,26 @@
 #' [addColorTable()] and then pass the .vrt file it creates to this function.
 #
 #' @param source (character) path to a raster file readable by gdal.
-#' @param destination (character) path to a .tif file to be created for viewing with GIS software
+#' @param destination (character) path to a .tif file to be created for viewing
+#'  with GIS software
 #' @param type (character) If the `type` is used the output will be converted
 #' to it. It should be one of `"Byte"`, `"UInt16"`, `"Int16"`,
 #'   `"UInt32"`, `"Int32"`, `"Float32"`, `"Float64"` or for convenience you may
 #' also use the raster package's designations: [raster::dataType()]. See
 #' cautionary section below on no data problems while reassigning type.
 #' @param overwrite (logical) if `TRUE` any existing file will be overwritten
-#' @param buildOverviews (logical) if `TRUE` overviews (AKA pyramids) will be built
+#' @param buildOverviews (logical) if `TRUE` overviews (AKA pyramids) will be
+#' built
 #' @param overviewResample (character) one of  `"nearest"`,
 #'  `"average"`, `"gauss"`, `"cubic"`, `"cubicspline"`,
-#'  `"lanczos"`, `"average_mp"`, `"average_magphase"`, `"mode"` see [gdaladdo](https://www.gdal.org/gdaladdo.html) for details. For convenience `"near"` is silently updated to `"nearest"`
-#' @param vat (logical) if `TRUE` an ESRI Value Attribute Table (VAT) sidecar file will be
-#'   created containing all the unique values in the grid and
-#'    their associated count of cells. This is only recommended for categorical
-#'     data and can be slow but will speed up setting up symbology of that data in ArcGIS.
+#'  `"lanczos"`, `"average_mp"`, `"average_magphase"`, `"mode"` see
+#'   [gdaladdo](https://www.gdal.org/gdaladdo.html) for details.
+#'   For convenience `"near"` is silently updated to `"nearest"`
+#' @param vat (logical) if `TRUE` an ESRI Value Attribute Table (VAT) sidecar
+#'  file will be created containing all the unique values in the grid and
+#'  their associated count of cells. This is only recommended for categorical
+#'  data and can be slow but will speed up setting up symbology of that data
+#'   in ArcGIS.
 #' @param stats (logical) if `TRUE` than statistics are generated and saved;
 #'    this helps GIS software transform continuous data
 #'    (e.g. make a standard deviation color ramp)
@@ -69,33 +74,35 @@
 #'   of values supported by `type` then they will end up with the value in range
 #'   that is closest to the existing value. If this argument isn't supplied and
 #'   `type` is used `noDataValue`` will be assigned based on the output of
-#'   \code{\link{assessType()}} which often but not always picks an appropriate
+#'   [assessType()] which often but not always picks an appropriate
 #'   value.
 #' @return This function creates a copy of the source raster at the destination
-#' path that is formatted to facilitate viewing in GIS software. It does not return
-#' anything.
+#' path that is formatted to facilitate viewing in GIS software. It does not
+#' return anything.
 #'
 #' @export
 makeNiceTif <- function(source, destination, type, overwrite = FALSE,
                         buildOverviews = TRUE, overviewResample = "nearest",
-                        vat = FALSE, stats = TRUE, noDataValue){
+                        vat = FALSE, stats = TRUE, noDataValue) {
+
   verbose <- rasterPrepOptions()$verbose
-  if(!file.exists(source)) stop("input file", source, "is missing.")
-  if(file.exists(destination)){
-   if(overwrite){
-     deleteTif(destination)
-   } else {
-    stop("destination file already exists: ", destination)
-   }
+  if (!file.exists(source)) stop("input file", source, "is missing.")
+  if (file.exists(destination)) {
+    if (overwrite) {
+      deleteTif(destination)
+    } else {
+      stop("destination file already exists: ", destination)
+    }
   }
 
   has.type <- FALSE
   is.signed.byte <- FALSE
+  usesf <- rasterPrepOptions()$usesf
 
-  if(!missing(type)){
-
-    if(verbose)
-      cat("Type conversion will work in some cases but in others will not properly conserve NA encoding. Use with caution.  I might fix this someday.")
+  if (!missing(type)) {
+    if (verbose)
+      cat("Type conversion will work in some cases but in others will ",
+          "not properly conserve NA encoding. Use with caution.\n", sep = "")
     has.type <- TRUE
     a <- assessType(type)
     type <- a$type
@@ -106,75 +113,105 @@ makeNiceTif <- function(source, destination, type, overwrite = FALSE,
     stopifnot(is.numeric(noDataValue),
               !is.na(noDataValue),
               length(noDataValue) == 1)
-
   } else { # missing type
-
-  if(!missing(noDataValue))
-    warning("noDataValue will be ignored. Set type to use noDataValue.")
+    if (!missing(noDataValue))
+      warning("noDataValue will be ignored. Set type to use noDataValue.")
   }
 
-  qc <- '"'
-  command <- paste0("gdal_translate -stats -co compress=LZW -co TFW=YES -co TILED=YES ",
-                    qc, source, qc, " ", qc, destination, qc, " ")
+  if (usesf) {
 
-  if(has.type)
-    command <- paste0(command,
-                      " -ot ", type, " ",
-                      " -a_nodata ", noDataValue, " "  # NOTE
-                 )
+    opts <- character(0)
+    opts <- c(opts,
+              "-stats",
+              "-co", "compress=LZW",
+              "-co", "TFW=YES",
+              "-co", "TILED=YES")
+    if (has.type)
+      opts <- c(opts,
+                "-ot", type,
+                " -a_nodata", noDataValue)
+    if (is.signed.byte)
+      opts <- c(opts, "-co", "PIXELTYPE=SIGNEDBYTE")
+    if (stats)
+      opts <- c(opts, "-stats")
 
-  if(is.signed.byte)
-    command <- paste0(command,
-                      " -co  PIXELTYPE=SIGNEDBYTE ")
+    args <- list(util = "translate",
+                 source = source,
+                 destination = destination,
+                 options = opts)
 
-  if(stats)
-    command <- paste0(command, "-stats ")
+    if (verbose) {
+      cat("Calling sf::gdal_utils with arguments:\n")
+      print(utils::str(args))
+    }
 
-  # Temporarily reset the PROJ_LIB environmental setting for system call (if indicated by settings)
-  oprojlib <- Sys.getenv("PROJ_LIB")
-  ogdaldata <- Sys.getenv("GDAL_DATA")
-  if(rasterPrepSettings$resetLibs){
-    Sys.setenv(PROJ_LIB = rasterPrepSettings$projLib )
-    Sys.setenv(GDAL_DATA = rasterPrepSettings$gdalData)
-    on.exit({
-      Sys.setenv(PROJ_LIB = oprojlib)
-      Sys.setenv(GDAL_DATA = ogdaldata)
-    })
+    do.call(sf::gdal_utils, args = args)
+
+  } else {
+    # Execute with shell commands
+
+    qc <- '"'
+    command <- paste0("gdal_translate -stats -co compress=LZW -co ",
+                      "TFW=YES -co TILED=YES ",
+                      qc, source, qc, " ", qc, destination, qc, " ")
+
+    if (has.type)
+      command <- paste0(command, " -ot ", type, " ",
+                        " -a_nodata ", noDataValue, " ")
+
+    if (is.signed.byte)
+      command <- paste0(command,
+                        " -co  PIXELTYPE=SIGNEDBYTE ")
+
+    if (stats)
+      command <- paste0(command, "-stats ")
+
+    # Temporarily reset the PROJ_LIB environmental setting for system call
+    # (if indicated by settings)
+    oprojlib <- Sys.getenv("PROJ_LIB")
+    ogdaldata <- Sys.getenv("GDAL_DATA")
+    if (rasterPrepSettings$resetLibs) {
+      Sys.setenv(PROJ_LIB = rasterPrepSettings$projLib)
+      Sys.setenv(GDAL_DATA = rasterPrepSettings$gdalData)
+      on.exit({
+        Sys.setenv(PROJ_LIB = oprojlib)
+        Sys.setenv(GDAL_DATA = ogdaldata)
+      })
+    }
+    if (verbose)
+      cat("Compressing with system command:\n", command, "\n")
+    a <- system(command = command, intern = TRUE, wait = TRUE)
+
+  } # end  use shell command (!usesf)
+
+  if (!file.exists(destination))
+    stop("Output file", destination,
+         "was not created. System call returned: ", a)
+
+  if (buildOverviews) {
+    addOverviews(x = destination, method = overviewResample)
   }
-  if(verbose)
-    cat("Compressing with system command:\n", command, "\n")
-  a <- system(command = command, intern = TRUE, wait = TRUE)
 
-
-  if(!file.exists(destination))
-    stop("Output file", destination, "was not created. System call returned: ", a)
-
-  if(stats){
-    # Make a call to gdalinfo to add both stats and a histogram
-    # the histogram isn't added by gdal_translate even if -stats flag is set
-    command <- paste0("gdalinfo -stats -hist ",
-                      shQuote(destination))
-    b <- system(command = command, intern = TRUE, wait = TRUE)
-  }
-
-  if(rasterPrepSettings$resetLibs){
-    Sys.setenv(PROJ_LIB = oprojlib)
-    Sys.setenv(GDAL_DATA = ogdaldata)
-  }
-
-
-  if(buildOverviews){
-   addOverviews(x = destination, method = overviewResample)
-  }
-
-  if(vat){
-    if(verbose)
+  if (vat) {
+    if (verbose)
       cat("building vat")
     addVat(destination)
   }
 
-  if(terra::crs(terra::rast(destination)) == "")
-    stop("Output was created but lacks a coordinate reference system")
+  if (stats) {
+    if (usesf) {
+      # Calling for side effect of updating stats and historgrams
+      a <- sf::gdal_utils(util = "info", source = destination,
+                          options = c("-stats", "-hist"),
+                          quiet = TRUE)
 
-
+    } else {
+      # Make a call to gdalinfo to add both stats and a histogram
+      # the histogram isn't added by gdal_translate even if -stats flag is set
+      command <- paste0("gdalinfo -stats -hist ",
+                        shQuote(destination))
+      b <- system(command = command, intern = TRUE, wait = TRUE)
+      rm(b)
+    }
+  }
 }

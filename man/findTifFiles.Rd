@@ -2,28 +2,29 @@
 % Please edit documentation in R/findTifFiles.R
 \name{findTifFiles}
 \alias{findTifFiles}
-\title{function to find all the files associated with a .tif file.}
+\title{Find all the files associated with a TIFF file.}
 \usage{
 findTifFiles(x, includeVrt = TRUE)
 }
 \arguments{
-\item{x}{(character) the path to a single .tif file}
+\item{x}{(character) the path to a single TIFF file.}
 
-\item{includeVrt}{(logical) if TRUE consider a .vrt with the same base name
+\item{includeVrt}{(logical) if TRUE consider a \emph{.vrt} with the same base name
 to be associated.}
 }
 \value{
-a vector of files associated with x
+a vector of files associated with \code{x}
 }
 \description{
 This is primarily intended for internal use and is called by
 \code{\link[=copyTif]{copyTif()}},\code{\link[=deleteTif]{deleteTif()}}, and \code{\link[=renameTif]{renameTif()}}.
 }
 \details{
-Given the path to a .tif file return the path to all the files associated with
-it including the original .tif.  Any file that includes the full name (with
-.tif extension and some additional extension  e.g. .tif.orv) a world
-file which has the same base name but .twf instead of .tif and if
-\code{includeVrt} is TRUE a .vrt file with the same name.
+Given the path to a TIFF file (\emph{.tif} extension) return the path to all
+the associated files, including the original \strong{.tif}.  Any file that
+includes the full name (with \strong{.tif} extension and some additional
+extension  e.g. \emph{.tif.ovr}) a world
+file which has the same base name but \emph{.twf} instead of \emph{.tif} and if
+\code{includeVrt} is TRUE a \emph{.vrt} file with the same name.
 }
 \keyword{internal}

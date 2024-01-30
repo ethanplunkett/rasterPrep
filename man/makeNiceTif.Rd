@@ -20,7 +20,8 @@ makeNiceTif(
 \arguments{
 \item{source}{(character) path to a raster file readable by gdal.}
 
-\item{destination}{(character) path to a .tif file to be created for viewing with GIS software}
+\item{destination}{(character) path to a .tif file to be created for viewing
+with GIS software}
 
 \item{type}{(character) If the \code{type} is used the output will be converted
 to it. It should be one of \code{"Byte"}, \code{"UInt16"}, \code{"Int16"},
@@ -30,16 +31,20 @@ cautionary section below on no data problems while reassigning type.}
 
 \item{overwrite}{(logical) if \code{TRUE} any existing file will be overwritten}
 
-\item{buildOverviews}{(logical) if \code{TRUE} overviews (AKA pyramids) will be built}
+\item{buildOverviews}{(logical) if \code{TRUE} overviews (AKA pyramids) will be
+built}
 
 \item{overviewResample}{(character) one of  \code{"nearest"},
 \code{"average"}, \code{"gauss"}, \code{"cubic"}, \code{"cubicspline"},
-\code{"lanczos"}, \code{"average_mp"}, \code{"average_magphase"}, \code{"mode"} see \href{https://www.gdal.org/gdaladdo.html}{gdaladdo} for details. For convenience \code{"near"} is silently updated to \code{"nearest"}}
+\code{"lanczos"}, \code{"average_mp"}, \code{"average_magphase"}, \code{"mode"} see
+\href{https://www.gdal.org/gdaladdo.html}{gdaladdo} for details.
+For convenience \code{"near"} is silently updated to \code{"nearest"}}
 
-\item{vat}{(logical) if \code{TRUE} an ESRI Value Attribute Table (VAT) sidecar file will be
-created containing all the unique values in the grid and
+\item{vat}{(logical) if \code{TRUE} an ESRI Value Attribute Table (VAT) sidecar
+file will be created containing all the unique values in the grid and
 their associated count of cells. This is only recommended for categorical
-data and can be slow but will speed up setting up symbology of that data in ArcGIS.}
+data and can be slow but will speed up setting up symbology of that data
+in ArcGIS.}
 
 \item{stats}{(logical) if \code{TRUE} than statistics are generated and saved;
 this helps GIS software transform continuous data
@@ -51,13 +56,13 @@ data cell values to it. If the existing no data value is not in the range
 of values supported by \code{type} then they will end up with the value in range
 that is closest to the existing value. If this argument isn't supplied and
 \code{type} is used `noDataValue`` will be assigned based on the output of
-\code{\link{assessType()}} which often but not always picks an appropriate
+\code{\link[=assessType]{assessType()}} which often but not always picks an appropriate
 value.}
 }
 \value{
 This function creates a copy of the source raster at the destination
-path that is formatted to facilitate viewing in GIS software. It does not return
-anything.
+path that is formatted to facilitate viewing in GIS software. It does not
+return anything.
 }
 \description{
 This function creates a compressed copy of a tif with LZW compression,
@@ -85,14 +90,14 @@ For example moving from an Int32 to and Int16 will probably work if the
 initial NA value is high because it will will be truncated to the highest
 value in the Int16 and which is what the new no data value will be set to.
 The default \code{noDataValue} of the output when using \code{type} and not
-specifying the \code{noDataValue} is determied by \code{\link{assessType}}.
+specifying the \code{noDataValue} is determined by \code{\link{assessType}}.
 
-If you use \code{type} and your ouput raster ends up with values cells that were
+If you use \code{type} and your output raster ends up with values cells that were
 originally no data you might be able to remedy this by setting
 \code{noDataValue} to that value.
 
 If you want to change the type you can do so safely in a call to
-warpToReference prior to using this function as gdalWarp can reset the type
+warpToReference prior to using this function as gdalwarp can reset the type
 and reset the values of the NA cell to the new noDataValue.
 
 This is a wrapper to the \code{gdaltranslate} command line utility coupled with

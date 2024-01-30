@@ -7,8 +7,8 @@
 addColorTable(x, table)
 }
 \arguments{
-\item{x}{(character) the path to raster file containing categorical data, must be a
-single band byte encoded file.}
+\item{x}{(character) the path to raster file containing categorical data,
+must be a single band byte encoded file.}
 
 \item{table}{a  \code{data.frame}  with two or three columns:
 \describe{
@@ -25,7 +25,8 @@ this function creates a .vrt file but returns nothing.
 }
 \description{
 This allows adding a color table to a byte encoded categorical raster in
-which each value is assigned a unique color and, optionally, a category label.
+which each value is assigned a unique color and, optionally, a category
+label.
 }
 \details{
 The \code{addColorTable} function creates a .vrt file alongside a raster
@@ -37,9 +38,9 @@ case the data and symbology will be united in an output tif.
 
 Note: The key will include all values between 0 and the maximum value in the
 raster.  If your raster doesn't use some values in the sequence the missing
-values will appear in the key with white as the associated color and an empty
-string as the category label. Generally it works best if you recode your
-raster to have values 0 to N-1, or 1 to N.
+values will appear in the key with white as the associated color and an
+empty string as the category label. Generally it works best if you recode
+your raster to have values 0 to N-1, or 1 to N.
 My workflow is generally:
 
 \enumerate{

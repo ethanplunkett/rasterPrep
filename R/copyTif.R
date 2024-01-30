@@ -8,14 +8,14 @@
 #' @return this function returns nothing
 #' @export
 
-copyTif <- function(from, to, includeVrt = TRUE, overwrite = FALSE){
+copyTif <- function(from, to, includeVrt = TRUE, overwrite = FALSE) {
   # Rename a tif file (and it's associated files)
   stopifnot(grepl(".tif$", from, ignore.case = TRUE))
   targets <- findTifFiles(from, includeVrt = includeVrt)
   a <- gsub(".tif$", "", from, ignore.case = TRUE)
   b <- gsub(".tif$", "", to, ignore.case = TRUE)
   new <- gsub(a, b, targets, ignore.case = TRUE)
-  if(rasterPrepOptions()$verbose)
-    print(data.frame(from=targets, to = new))
-  file.copy(from = targets, to=new, overwrite = overwrite)
+  if (rasterPrepOptions()$verbose)
+    print(data.frame(from = targets, to = new))
+  file.copy(from = targets, to = new, overwrite = overwrite)
 }

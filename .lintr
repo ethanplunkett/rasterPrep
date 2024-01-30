@@ -1,0 +1,4 @@
+linters: linters_with_defaults(
+  object_name_linter = NULL,  # it doesn't like thisNamingStyle
+  cyclocomp_linter = NULL)
+encoding: "UTF-8"

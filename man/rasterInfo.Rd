@@ -13,7 +13,7 @@ rasterInfo(x)
 \item{x}{For raster info the path to a raster file.
 For the print method a rasterInfo object as returned by \code{rasterInfo}.}
 
-\item{all}{if \code{FALSE} (the default) some potentially lengthly components of
+\item{all}{if \code{FALSE} (the default) some potentially lengthy components of
 \code{x} are omitted.  Use \code{print(x, all=TRUE)} to print everything.}
 
 \item{raw}{if \code{TRUE} Then the raw text from the gdalinfo call is printed.
@@ -27,26 +27,42 @@ A nested list of class \code{rasterInfo} with most of the
 information returned by gdalinfo (\code{\link[terra:describe]{terra::describe()}}) and some additional
 derived elements.
 \item{path}{The path to the raster file, same as \code{x}}
-\item{driver}{The driver used to read the file which usually matches the file's format}
-\item{type}{Calculated from \code{bands} will be "missing" if the raster file is missing or unreadable, "mixed" if there are multiple bands and they have varying types, otherwise the type associated with the band(s).}
-\item{res}{the resolution of  the cells,  as reported gdal (two dimensions, possible negative)}
-\item{cellsize}{calculated from \code{res} \code{NA} if the cells aren't square, otherwise the (positive) dimension of the cell}
-\item{na.value}{\code{NA} if bands have inconsitent no data values. Otherewise the no data value used by the band(s)}
-\item{dim}{The dimensions of the raster in cells (rows, then cols).  This is from a raw line that reads  "Size is" and reports cols then rows (reverse of order used here). }
+\item{driver}{The driver used to read the file which usually matches
+the file's format}
+\item{type}{Calculated from \code{bands} will be "missing" if the raster file is
+missing or unreadable, "mixed" if there are multiple bands and they have
+varying types, otherwise the type associated with the band(s).}
+\item{res}{the resolution of  the cells,  as reported gdal (two dimensions,
+possible negative)}
+\item{cellsize}{calculated from \code{res} \code{NA} if the cells aren't square,
+otherwise the (positive) dimension of the cell}
+\item{na.value}{\code{NA} if bands have inconsistent no data values. Otherwise
+the no data value used by the band(s)}
+\item{dim}{The dimensions of the raster in cells (rows, then cols).  This
+is from a raw line that reads  "Size is" and reports cols then rows
+(reverse of order used here). }
 \item{rows}{the number of rows in the file  (copied from \code{dim})}
 \item{cols}{the number of columns in the file (copied from \code{dim})}
-\item{origin}{the coordinates of the origin of the file (this seems to be the upper left corner). Note, gdal
-may report more digits than R can represent. Look at raw output to see the text as reported by gdal}
-\item{approx.coords}{the approximate coordinates of the corners and center. This is reported by \code{gdalinfo} but appears to be rounded, thus the "approx"}
-\item{extent}{A list with items \code{xll}, \code{yll}, \code{nrow}, \code{ncol}, \code{cellsize}. If cells are square these are calculated from  \code{origin}, \code{rows}, \code{cols} and \code{cellsize}. This format matches the way grid extents are defined in \pkg{gridio}.}
+\item{origin}{the coordinates of the origin of the file
+(this seems to be the upper left corner).
+Note, gdal may report more digits than R can represent.
+Look at raw output to see the text as reported by gdal}
+\item{approx.coords}{the approximate coordinates of the corners and center.
+This is reported by \code{gdalinfo} but appears to be rounded, thus the "approx"}
+\item{extent}{A list with items \code{xll}, \code{yll}, \code{nrow}, \code{ncol}, \code{cellsize}.
+If cells are square these are calculated from  \code{origin}, \code{rows},
+\code{cols} and \code{cellsize}.
+This format matches the way grid extents are defined in \pkg{gridio2}.}
 \item{nbands}{The number of bands in the file.}
-\item{bands}{A list  of lists (one per band); inner list has items \describe{
+\item{bands}{A list  of lists (one per band); inner list has items
+\describe{
 \item{id}{assigned, 1:\code{nbands}}
-\item{block}{the block dimensions as reported by gdal (colums, rows)}
+\item{block}{the block dimensions as reported by gdal (columns, rows)}
 \item{type}{the storage type of the band}
 \item{colorinterp}{reported by gdal}
 \item{stats}{list of min, max, mean, sd}
-\item{na.value}{the No Data value used for the band. NA if there is no No Data value or if gdalinfo reports 'nan'}
+\item{na.value}{the No Data value used for the band. NA if there is no
+No Data value or if gdalinfo reports 'nan'}
 \item{metadata}{any band specific metadata}
 \item{imagestructuremetadata}{any band specific image structure metadata}
 }}
@@ -54,8 +70,10 @@ may report more digits than R can represent. Look at raw output to see the text 
 \item{imagestructuremetadata}{any file image structure metadata}
 \item{crs}{The coordinate reference system in well known text format}
 \item{files}{a vector of all the files associated with the raster dataset}
-\item{attributetable}{the raster attribute table   (AKA Value Attribute Table, VAT)}
-\item{raw}{The raw text returned by gdalinfo that was parsed to create all other items in this list}
+\item{attributetable}{the raster attribute table
+(AKA Value Attribute Table, VAT)}
+\item{raw}{The raw text returned by gdalinfo that was parsed to create all
+other items in this list}
 }
 \description{
 This is a wrapper for the gdalinfo utility (accessed through either
@@ -65,7 +83,7 @@ list.
 \details{
 This is a work in progress. The information returned by gdalinfo depends on
 the file type described and I've developed this while working primarily with
-single band ArcInfo Grids and geoTiff files so this function is unlikely to
+single band ArcInfo Grids and geoTIFF files so this function is unlikely to
 parse all available information for all file types. Use \code{print(rasterInfo(x), raw = TRUE)},  \code{x$raw} if \code{x} is a rasterInfo object, to see the unparsed
 text.
 
