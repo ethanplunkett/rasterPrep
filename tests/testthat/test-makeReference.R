@@ -17,6 +17,6 @@ test_that("makeReference works", {
   expect_equal(as.numeric(as.vector(terra::ext(r))) %% terra::xres(r),
                rep(0, 4))
 
-  if(FALSE)
+  if (FALSE)
     terra::plot(r)
 })

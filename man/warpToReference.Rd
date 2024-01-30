@@ -76,13 +76,15 @@ align with other raster data while attempting to set many options to sensible
 defaults.  \code{\link[gdalUtilities:gdalwarp]{gdalUtilities::gdalwarp()}} provides direct access to all
 the options.
 
-Clipping and reprojecting in a single step may result in slight imperfections
-in the NA footprint in the final grid; some cells along the edge may end up
-with NA despite being centered within the polygon or vice +versa.  I think this
-is because gdalwarp may be masking based on the center of the source pixels
-rather than the destination pixels.  For that reason if you are both
-reprojecting/resampling and clipping to a polygon I recommend calling this function
-twice. In the first call omit the \code{clip} argument.  It will reproject
-and resample. Then in the second call pass in the output of first and supply
-the \code{clip} argument.
+Clipping and reprojecting in a single step may result
+in slight imperfections in the NA footprint in the final grid;
+some cells along the edge may end up with NA
+despite being centered within the polygon or vice +versa.
+I think this is because gdalwarp may be masking based
+on the center of the source pixels rather than the destination pixels.
+For that reason if you are both reprojecting/resampling
+and clipping to a polygon I recommend calling this function twice.
+In the first call omit the \code{clip} argument.
+It will reproject and resample.
+Then in the second call pass in the output of first and use \code{clip}.
 }

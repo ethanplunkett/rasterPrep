@@ -1,4 +1,4 @@
-if(FALSE){
+if (FALSE) {
   # Example usage
   shapefile <- "gisdata/projects/Boundaries/projectFlagstaff.shp"
 
@@ -6,7 +6,7 @@ if(FALSE){
   out30 <- "gisdata/projects/projectFlagstaff/ref30.tif"
   out1 <- "gisdata/projects/projectFlagstaff/ref1.tif"
   dir.create(dirname(out5), showWarnings = FALSE)
-  burn = 1
+  burn <- 1
 
   makenewextent(polyFile = shapefile, destination = out5, burn = 1,
                 cellsize = 5, nestingCellsize = 30)
@@ -49,18 +49,19 @@ if(FALSE){
 #'   will be created.
 #' @param cellsize (numeric) the desired resolution or cellsize of the the
 #'   reference file.
-#' @param burn (integer between 0 and 255) the value to burn into cells that fall
-#'    inside the polygon
-#' @param alignTo (character) either "origin", the default, which causes cells to
-#'   align to the origin of the projection such that cell boundaries fall on
+#' @param burn (integer between 0 and 255) the value to burn into cells that
+#'    fall inside the polygon
+#' @param alignTo (character) either "origin", the default, which causes cells
+#'   to align to the origin of the projection such that cell boundaries fall on
 #'   integer multiples of the cellsize; or "reference" in which case cells will
 #'   be aligned with cells in the `reference` raster. If `alignTo` is
 #'   set to "reference" than `cellsize` is optional and defaults to the
 #'   resolution of the reference raster, but the extent is still taken from
 #'   `polyFile`.
-#' @param reference (optional, character) if `alignTo` is set to "reference" than
-#'   this should be the path to an existing raster file who's cell alignment
-#'   we would like to match. Its projection should match that of the polyFile
+#' @param reference (optional, character) if `alignTo` is set to "reference"
+#'   than this should be the path to an existing raster file
+#'   who's cell alignment we would like to match.
+#'   Its projection should match that of `polyFile`.
 #' @param nestingCellsize (numeric) This is optional and likely not needed.  If
 #' `nestingCellsize` is provided it must be a multiple of `cellsize` and
 #'  the extent will be expanded out to match the extent that would be
@@ -71,135 +72,151 @@ if(FALSE){
 #'   tif at the `destination` path. It does not return anything.
 #' @export
 makeReference <- function(polyFile, destination, cellsize,  burn = 1,
-                          alignTo = "origin", reference,  nestingCellsize = cellsize){
+                          alignTo = "origin", reference,
+                          nestingCellsize = cellsize) {
 
 
-  # Note in March 2020 with current GDAL and PROJ I couldn't get gdal_rasterize to honor the projection
-  # of the input file.  Prior functionality and documentation represent that the projection information
-  # is retained from the polygon file used but I found that not to be the case. I also found that
-  # specifying the output projection either with a proj4 style string or with a path to a wkt file
-  # also resulted in a file with no projection.
-  #
-  # To solve this I did something hacky that I hate. I did the rasterizing to a temporary file
-  # and then used gdal_translate to copy while specifying an output rpojection. Finally, I deleted
-  # the temp file and then wkt file that specified the projection.
-  #  At some future date it might make sense to test if gdal_translate is behaving again and save
-  # creating an extra copy.
+  # Note in March 2020 with current GDAL and PROJ I couldn't get gdal_rasterize
+  # to honor the projection of the input file.  Prior functionality and
+  # documentation represent that the projection information is retained from the
+  # polygon file used but I found that not to be the case. I also found that
+  # specifying the output projection either with a proj4 style string or with a
+  # path to a wkt file also resulted in a file with no projection.
+
+
+
+  # To solve this I did something hacky that I hate. I did the rasterizing to a
+  # temporary file and then used gdal_translate to copy while specifying an
+  # output rpojection. Finally, I deleted the temp file and then wkt file that
+  # specified the projection. At some future date it might make sense to test if
+  # gdal_translate is behaving again and save creating an extra copy.
 
   verbose <- rasterPrepOptions()$verbose
 
-  if(file.exists(destination))
+  if (file.exists(destination))
     stop(destination, "already exists")
 
   # based on terra
-  if(!missing(reference)){
+  if (!missing(reference)) {
     refinfo <- terra::rast(reference)
     ref.res <- terra::res(refinfo)
-    if(missing(cellsize)){
-      # If cellsize not set and reference is take cellsize (and likely nestingCellsize) from reference
+    if (missing(cellsize)) {
+      # If cellsize not set and reference is take cellsize
+      # (and likely nestingCellsize) from reference
       stopifnot(isTRUE(all.equal(ref.res[1], ref.res[2])))
       cellsize <- ref.res[1]
-      if(missing(nestingCellsize))
+      if (missing(nestingCellsize))
         nestingCellsize <- cellsize
     }
   }
 
-  stopifnot(nestingCellsize %% cellsize == 0)   # nestingCellsize must be the same or an integer multiple of cellsize
+  # nestingCellsize must be the same or an integer multiple of cellsize
+  stopifnot(nestingCellsize %% cellsize == 0)
   stopifnot(alignTo %in% c("origin", "reference"))
 
   poly <- sf::st_read(polyFile, quiet = TRUE)
-  proj <- sf::st_crs(poly)$wkt
   bbox <- sf::st_bbox(poly)
 
   # Find the extent that contains the polygon and where the cell edges fall
   # neatly on multiples of the cellsize.
-  if(alignTo == "origin"){
+  if (alignTo == "origin") {
     yoffset <- xoffset <- 0
-  }  else {  #  ( alignTo == "reference")
-
-    cellsizes.ok <- function(a, b){
+  }  else {  #  alignTo is "reference"
+    cellsizes.ok <- function(a, b) {
       # This checks to make sure a is either
       #  equal to b
       #   a multiple of b
       #   or a factor of b
       # allowing for some tiny rounding errors via all.equal
       ok <- FALSE
-      if(isTRUE(all.equal(a  %% b,  0))) ok <- TRUE
-      if(isTRUE(all.equal(b  %% a,  0))) ok <- TRUE
-      if(isTRUE(all.equal(a, b))) ok <- TRUE
+      if (isTRUE(all.equal(a  %% b,  0)))
+        ok <- TRUE
+      if (isTRUE(all.equal(b  %% a,  0)))
+        ok <- TRUE
+      if (isTRUE(all.equal(a, b)))
+        ok <- TRUE
       return(ok)
     }
 
-    if( !(cellsizes.ok(ref.res[1], nestingCellsize) & cellsizes.ok(ref.res[2], nestingCellsize) ) )
+    if (!(cellsizes.ok(ref.res[1], nestingCellsize) &&
+            cellsizes.ok(ref.res[2], nestingCellsize)))
       stop("The cellsize is incompatible with the reference cellsize")
 
-    # calculate the (positive) offset of the 1'st vertical cell edge from the origin.
+    # calculate the (positive) offset of the 1'st vertical cell edge from the
+    # origin.
     xoffset <- terra::ext(refinfo)[1] %% nestingCellsize  # xmin
     yoffset <- terra::ext(refinfo)[3] %% nestingCellsize  # ymin
   }
 
 
-  # Figure out extent that contains the bounding box of the polygon and snaps to the origin of the
-  # projection
-  xmin <- as.numeric(bbox[1])  # sf bbox is a list of 4
+  # Figure out extent that contains the bounding box of the polygon and snaps
+  # to the origin of the projection
+  xmin <- as.numeric(bbox[1])
   ymin <- as.numeric(bbox[2])
   xmax <- as.numeric(bbox[3])
   ymax <- as.numeric(bbox[4])
 
-  xmin <- snapToEdge(x = xmin, cellsize = nestingCellsize, FALSE, offset = xoffset)
-  ymin <- snapToEdge(x = ymin, cellsize = nestingCellsize, FALSE, offset = yoffset)
-  xmax <- snapToEdge(x = xmax, cellsize = nestingCellsize, TRUE, offset = xoffset)
-  ymax <- snapToEdge(x = ymax, cellsize = nestingCellsize, TRUE, offset = yoffset)
+  xmin <- snapToEdge(x = xmin, cellsize = nestingCellsize, FALSE,
+                     offset = xoffset)
+  ymin <- snapToEdge(x = ymin, cellsize = nestingCellsize, FALSE,
+                     offset = yoffset)
+  xmax <- snapToEdge(x = xmax, cellsize = nestingCellsize, TRUE,
+                     offset = xoffset)
+  ymax <- snapToEdge(x = ymax, cellsize = nestingCellsize, TRUE,
+                     offset = yoffset)
 
   # Double check alignment
-  is.aligned <- function(loc, cs, offset){
+  is.aligned <- function(loc, cs, offset) {
     # Function to check alignment of an x or y location
     # given the cellsize and offset
     # Returns TRUE if aligned
-    if(isTRUE(all.equal(loc %% cs,  offset))) return(TRUE)
-    if(isTRUE(all.equal(loc %% cs,  offset + cs))) return(TRUE)
+    if (isTRUE(all.equal(loc %% cs,  offset))) return(TRUE)
+    if (isTRUE(all.equal(loc %% cs,  offset + cs))) return(TRUE)
     return(FALSE)
   }
   stopifnot(
-    isTRUE(is.aligned(xmin , nestingCellsize,  xoffset)),
+    isTRUE(is.aligned(xmin, nestingCellsize,  xoffset)),
     isTRUE(is.aligned(ymin, nestingCellsize,  yoffset)),
     isTRUE(is.aligned(xmax, nestingCellsize,  xoffset)),
     isTRUE(is.aligned(ymax, nestingCellsize,  yoffset))
   )
 
   stopifnot(grepl(".tif$", destination, ignore.case = TRUE))
-  intermediatefile <- gsub(".tif$", "_tempzzz.tif", destination, ignore.case = TRUE)
 
   command <- "gdal_rasterize"
-  command <- paste0(command, " -burn ", burn, " -te ", xmin, " ", ymin, " ", xmax, " ", ymax)
+  command <- paste0(command, " -burn ", burn,
+                    " -te ", xmin, " ", ymin, " ", xmax, " ", ymax)
   command <- paste0(command, " -tr ", cellsize, " ", cellsize)
   command <- paste0(command, " -ot byte")
   command <- paste0(command, " -a_nodata ", 255)
   command <- paste0(command, " ", polyFile, " ", destination)
 
-  # Temporarily reset the PROJ_LIB environmental setting for system call (if indicated by settings)
+  # Temporarily reset the PROJ_LIB environmental setting for system call
+  # (if indicated by settings)
   oprojlib <- Sys.getenv("PROJ_LIB")
   ogdaldata <- Sys.getenv("GDAL_DATA")
-  if(rasterPrepSettings$resetLibs){
-    Sys.setenv(PROJ_LIB = rasterPrepSettings$projLib )
+  if (rasterPrepSettings$resetLibs) {
+    Sys.setenv(PROJ_LIB = rasterPrepSettings$projLib)
     Sys.setenv(GDAL_DATA = rasterPrepSettings$gdalData)
     on.exit({
       Sys.setenv(PROJ_LIB = oprojlib)
       Sys.setenv(GDAL_DATA = ogdaldata)
     })
   }
-  if(verbose)
-    cat("Rasterizing polygon to new extent with system command:\n", command, "\n")
+  if (verbose)
+    cat("Rasterizing polygon to new extent with system command:\n",
+        command, "\n")
   a <- system(command = command, intern = TRUE, wait = TRUE)
   a <-  gsub("[[:blank:]]", " ", a)
-  if(!grepl("- done.[[:blank:]]*$", a[length(a)]) ){
+  if (!grepl("- done.[[:blank:]]*$", a[length(a)])) {
     stop("An error might have occured.  The function returned: ", a)
   }
 
-  if(!file.exists(destination))
-    stop("gdal_rasterize failed to produce a file:", destination, " System call returned: ", a)
+  if (!file.exists(destination))
+    stop("gdal_rasterize failed to produce a file:", destination,
+         " System call returned: ", a)
 
   d <- terra::rast(destination)
-  if(terra::crs(d) == "") stop("Final file was created without projection information")
+  if (terra::crs(d) == "")
+    stop("Final file was created without projection information")
 }
-

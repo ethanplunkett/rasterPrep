@@ -14,9 +14,9 @@ test_that("warpToReference works", {
   expect_true(file.exists(elev))
   rr <- terra::rast(ref)
   r1 <- terra::rast(elev)
-  if(FALSE)
+  if (FALSE)
     terra::plot(r1)
-  expect_equal(as.vector(terra::ext(rr)),as.vector(terra::ext(r1)))
+  expect_equal(as.vector(terra::ext(rr)), as.vector(terra::ext(r1)))
 
   # With clip
   warpToReference(elev, elev2, reference = ref, clip = shp)
@@ -26,7 +26,4 @@ test_that("warpToReference works", {
   # as encoded in the reference raster
   all(is.na(terra::values(r2))[is.na(terra::values(rr))])
 
-
-
 })
-

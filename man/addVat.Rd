@@ -10,9 +10,10 @@ addVat(x, attributes, skipCount = FALSE)
 \item{x}{the path to a geoTIFF file; use with other raster formats
 is untested.}
 
-\item{attributes}{a \code{data.frame} with a column \code{VALUE} (case insensitive) along with
-any other data that should be added to the VAT. Column names should not
-contain periods and are limited to 11 characters.}
+\item{attributes}{a \code{data.frame} with a column \code{VALUE} (case insensitive)
+along with any other data that should be added to the VAT.
+Column names should not contain periods and are
+limited to 11 characters.}
 
 \item{skipCount}{if TRUE then this function will assume that all values in
 the grid are represented in \code{attributes} and will not calculate the
@@ -35,11 +36,12 @@ It calls \code{\link[terra:freq]{terra::freq()}} to generate a table of values a
 frequencies from the raster \code{x} which can take a long time for large
 files.  It should only be called on integer encoded files.
 
-A VAT is a a dbf file with "VALUE" and "COUNT" fields containing all the unique
-values and their associated frequency in the raster file. The VAT file's
-name will be the name of the image file with ".vat.dbf" appended; for a tif
-this means the file will end in ".tif.vat.dbf". The column names in a .dbf
-file are restricted to 11 characters and cannot contain periods; for detailed
-limitations see \code{\link[foreign:write.dbf]{foreign::write.dbf()}} which is used to write the
-VAT.
+A VAT is a a dbf file with "VALUE" and "COUNT" fields containing all the
+unique values and their associated frequency in the raster file. The VAT
+file's name will be the name of the image file with ".vat.dbf" appended;
+for a tif this means the file will end in ".tif.vat.dbf".
+The column names in a .dbf file are restricted to 11 characters and
+cannot contain periods;
+for detailed limitations see \code{\link[foreign:write.dbf]{foreign::write.dbf()}}
+which is used to write the VAT.
 }

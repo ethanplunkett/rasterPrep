@@ -5,12 +5,12 @@ test_that("addVat() works", {
   dir <- withr::local_tempdir("addVat")
 
   # Paths
-  original <- system.file("ex/elev.tif", package="terra")
+  original <- system.file("ex/elev.tif", package = "terra")
   classed <- file.path(dir, "elev_class.tif")
   vat <- paste0(classed, ".vat.dbf")
 
   r0 <- terra::rast(original)
-  if(FALSE)
+  if (FALSE)
     terra::plot(r0)
 
   # Classify into 10 height groups
@@ -22,7 +22,7 @@ test_that("addVat() works", {
   names(r1) <- "class"
   colors <- rev(grDevices::terrain.colors(10))  # based on terra::plot col
   terra::writeRaster(r1, classed, datatype = "INT1U")
-  if(FALSE)
+  if (FALSE)
     terra::plot(r1)
 
   ### run
@@ -44,7 +44,7 @@ test_that("addVat() works", {
   expect_equal(cbind(v, at[, -1]), v2, ignore_attr = TRUE)
 
   # Only one new attribute column (previously it's name was lost)
-  at2 <- at[ , -3]
+  at2 <- at[, -3]
   file.remove(vat)
   expect_no_error(addVat(classed, attributes = at2))
   v3 <- foreign::read.dbf(vat, as.is = TRUE)

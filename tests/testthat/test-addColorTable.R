@@ -4,12 +4,12 @@ test_that("addColorTable() works", {
   dir <- withr::local_tempdir("addo")
 
   # Paths
-  original <- system.file("ex/elev.tif", package="terra")
+  original <- system.file("ex/elev.tif", package = "terra")
   classed <- file.path(dir, "elev_class.tif")
   vrt <-  file.path(dir, "elev_class.vrt") # virtual raster with color table
 
   r0 <- terra::rast(original)
-  if(FALSE)
+  if (FALSE)
     terra::plot(r0)
 
   # Classify into 10 height groups
@@ -21,7 +21,7 @@ test_that("addColorTable() works", {
   names(r1) <- "class"
   colors <- rev(grDevices::terrain.colors(10))  # based on terra::plot col
   terra::writeRaster(r1, classed, datatype = "INT1U")
-  if(FALSE)
+  if (FALSE)
     terra::plot(r1)
 
   # Make color table

@@ -20,8 +20,8 @@ knitr::opts_chunk$set(
 ### Installation
 
 ```{r install, eval = FALSE}
-if(!require("remotes"))
-  install.packages("remotes") 
+if (!require("remotes"))
+  install.packages("remotes")
 library("remotes")
 remotes::install_github("ethanplunkett/rasterPrep")
 ```
@@ -60,7 +60,7 @@ Load packages
 ```{r, echo = TRUE, message = FALSE, warning = FALSE}
 library(rasterPrep)
 library(gdalUtilities)  # for ogr2ogr() used to reproject vector Shapefiles
-library(terra)  # for crs() and rast() 
+library(terra)  # for crs() and rast()
 ```
 
 **Input paths**
@@ -81,10 +81,10 @@ the original projection and cell alignment preserved.  It is in the USA Contiguo
 
 ```{r}
 input <- list(
-  bound = system.file("extdata","Amherst.shp" , package = "rasterPrep"),
-  slope = system.file("extdata","slope.tif" , package = "rasterPrep"), 
-  roads =  system.file("extdata","roads.shp" , package = "rasterPrep"),
-  key = system.file("extdata","roadClassKey.csv" , package = "rasterPrep")
+  bound = system.file("extdata", "Amherst.shp", package = "rasterPrep"),
+  slope = system.file("extdata", "slope.tif", package = "rasterPrep"),
+  roads =  system.file("extdata", "roads.shp", package = "rasterPrep"),
+  key = system.file("extdata", "roadClassKey.csv", package = "rasterPrep")
 )
 ```
 
@@ -113,14 +113,14 @@ files are aligned to it.
 outDir <- file.path(tempdir(), "rasterPrepDemo")
 dir.create(outDir, showWarnings = FALSE)
 
-out <- list(
-  ref = file.path(outDir, "reference.tif"),        # reference 
-  slopeTemp = file.path(outDir, "slopeTemp.tif"),  # Intermediate slope
-  slope = file.path(outDir, "slope.tif"),          # Slope
-  roadLines = file.path(outDir, "roadLines.shp"),  # Reprojected vector roads
-  roadsTemp = file.path(outDir, "roads1.tif"),     # Intermediate roads
-  roads  = file.path(outDir, "roads.tif"),         # Binary Roads
-  roadClass  = file.path(outDir, "roadClass.tif") )# Road class
+out <-
+  list(ref = file.path(outDir, "reference.tif"),        # reference
+       slopeTemp = file.path(outDir, "slopeTemp.tif"),  # Intermediate slope
+       slope = file.path(outDir, "slope.tif"),          # Slope
+       roadLines = file.path(outDir, "roadLines.shp"),  # Transformed roads
+       roadsTemp = file.path(outDir, "roads1.tif"),     # Intermediate roads
+       roads  = file.path(outDir, "roads.tif"),         # Binary Roads
+       roadClass  = file.path(outDir, "roadClass.tif")) # Road class
 ```
 
 ```{r, echo = FALSE, eval = TRUE}
@@ -178,7 +178,7 @@ Use the default nearest neighbor method (`method = "near"`) for
 categorical data, like landcover.  
 
 ```{r, echo = TRUE, message = FALSE, warning = FALSE, results = FALSE}
-warpToReference(input$slope, out$slopeTemp, reference = out$ref, 
+warpToReference(input$slope, out$slopeTemp, reference = out$ref,
                 method = "bilinear")
 ```
 
@@ -213,9 +213,9 @@ You could also use the **sf** package to read in the vector data, reproject, and
 write out to a new Shapefile.
 
 ```{r, echo = TRUE, message = FALSE, warning = FALSE, results = FALSE}
-refProj <- terra::crs(terra::rast(out$ref))  #  well known text of projection
+refProj <- terra::crs(terra::rast(out$ref))  # well known text of projection
 projFile <- file.path(outDir, "refproj.txt")
-cat(refProj, file = projFile)   #well known text in file
+cat(refProj, file = projFile)   # well known text in file
 gdalUtilities::ogr2ogr(input$roads, out$roadLines, t_srs = projFile)
 ```
 
@@ -225,8 +225,9 @@ Create a raster that contains the values from the "ROADCLASS"" attribute from
 the roads shapefile in cells underlying the roads and and NA everywhere else.
 
 ```{r, echo = TRUE, message = FALSE, warning = FALSE, results = FALSE}
-rasterizeToReference(out$roadLines, destination = out$roadClass, reference = out$ref, attribute = "ROADCLASS", type = "byte")
-
+rasterizeToReference(out$roadLines, destination = out$roadClass,
+                     reference = out$ref, attribute = "ROADCLASS",
+                     type = "byte")
 ```
 
 
@@ -238,7 +239,7 @@ the boundary to indicate if there is a road.
 Burn zero everywhere within the study area:
 
 ```{r, echo = TRUE, message = FALSE, warning = FALSE, results = FALSE}
-rasterizeToReference(input$bound, out$roadsTemp, reference = out$ref, 
+rasterizeToReference(input$bound, out$roadsTemp, reference = out$ref,
                      burn = 0)
 ```
 
@@ -247,7 +248,7 @@ means that all cells touched by the road will have 1; this creates orthogonal
 connections along the road which can be useful in landscape analysis.
 
 ```{r}
-rasterizeToReference(out$roadLines, destination = out$roadsTemp, 
+rasterizeToReference(out$roadLines, destination = out$roadsTemp,
                      allTouched = TRUE, burn = 1)
 ```
 
@@ -300,7 +301,7 @@ covers. This is different than the default of "nearest" used by many
 GIS systems.    
 
 ```{r, results= FALSE}
- makeNiceTif(out$slope, final$slope, overviewResample = "average")
+makeNiceTif(out$slope, final$slope, overviewResample = "average")
 ```
 
 ## Adding a Value Attribute Table (VAT)
@@ -320,9 +321,9 @@ default to a categorical rather than gradient display when loaded.
 
     Create a VAT while preparing a file for export by setting `vat=TRUE`:
 ```{r}
-    makeNiceTif(source = out$roads, destination = final$roads, 
-            overwrite = TRUE, overviewResample = "near", stats = FALSE, 
-            vat = TRUE )
+makeNiceTif(source = out$roads, destination = final$roads,
+            overwrite = TRUE, overviewResample = "near", stats = FALSE,
+            vat = TRUE)
 ```
 
 2. Another reason to create a VAT is to associate additional information with
@@ -354,7 +355,7 @@ The key needs to be a data frame with three named columns:
   * `color`: the hexadecimal color to display
 
 ```{r}
-key <- read.csv(input$key, stringsAsFactors = FALSE)  
+key <- read.csv(input$key, stringsAsFactors = FALSE)
 print(key)
 ```
 
@@ -374,7 +375,7 @@ compression, tiling, stats, histograms, and overviews by calling
 `"near"` is appropriate for categorical data.
 
 ```{r}
-makeNiceTif(source = vrt.file, destination = final$roadclass, 
+makeNiceTif(source = vrt.file, destination = final$roadclass,
             overwrite = TRUE, stats = TRUE)
 ```
 

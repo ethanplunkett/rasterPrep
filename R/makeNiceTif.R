@@ -45,21 +45,26 @@
 #' [addColorTable()] and then pass the .vrt file it creates to this function.
 #
 #' @param source (character) path to a raster file readable by gdal.
-#' @param destination (character) path to a .tif file to be created for viewing with GIS software
+#' @param destination (character) path to a .tif file to be created for viewing
+#'  with GIS software
 #' @param type (character) If the `type` is used the output will be converted
 #' to it. It should be one of `"Byte"`, `"UInt16"`, `"Int16"`,
 #'   `"UInt32"`, `"Int32"`, `"Float32"`, `"Float64"` or for convenience you may
 #' also use the raster package's designations: [raster::dataType()]. See
 #' cautionary section below on no data problems while reassigning type.
 #' @param overwrite (logical) if `TRUE` any existing file will be overwritten
-#' @param buildOverviews (logical) if `TRUE` overviews (AKA pyramids) will be built
+#' @param buildOverviews (logical) if `TRUE` overviews (AKA pyramids) will be
+#' built
 #' @param overviewResample (character) one of  `"nearest"`,
 #'  `"average"`, `"gauss"`, `"cubic"`, `"cubicspline"`,
-#'  `"lanczos"`, `"average_mp"`, `"average_magphase"`, `"mode"` see [gdaladdo](https://www.gdal.org/gdaladdo.html) for details. For convenience `"near"` is silently updated to `"nearest"`
-#' @param vat (logical) if `TRUE` an ESRI Value Attribute Table (VAT) sidecar file will be
-#'   created containing all the unique values in the grid and
-#'    their associated count of cells. This is only recommended for categorical
-#'     data and can be slow but will speed up setting up symbology of that data in ArcGIS.
+#'  `"lanczos"`, `"average_mp"`, `"average_magphase"`, `"mode"` see
+#'   [gdaladdo](https://www.gdal.org/gdaladdo.html) for details.
+#'   For convenience `"near"` is silently updated to `"nearest"`
+#' @param vat (logical) if `TRUE` an ESRI Value Attribute Table (VAT) sidecar
+#'  file will be created containing all the unique values in the grid and
+#'  their associated count of cells. This is only recommended for categorical
+#'  data and can be slow but will speed up setting up symbology of that data
+#'   in ArcGIS.
 #' @param stats (logical) if `TRUE` than statistics are generated and saved;
 #'    this helps GIS software transform continuous data
 #'    (e.g. make a standard deviation color ramp)
@@ -72,18 +77,18 @@
 #'   [assessType()] which often but not always picks an appropriate
 #'   value.
 #' @return This function creates a copy of the source raster at the destination
-#' path that is formatted to facilitate viewing in GIS software. It does not return
-#' anything.
+#' path that is formatted to facilitate viewing in GIS software. It does not
+#' return anything.
 #'
 #' @export
 makeNiceTif <- function(source, destination, type, overwrite = FALSE,
                         buildOverviews = TRUE, overviewResample = "nearest",
-                        vat = FALSE, stats = TRUE, noDataValue){
+                        vat = FALSE, stats = TRUE, noDataValue) {
 
   verbose <- rasterPrepOptions()$verbose
-  if(!file.exists(source)) stop("input file", source, "is missing.")
-  if(file.exists(destination)){
-    if(overwrite){
+  if (!file.exists(source)) stop("input file", source, "is missing.")
+  if (file.exists(destination)) {
+    if (overwrite) {
       deleteTif(destination)
     } else {
       stop("destination file already exists: ", destination)
@@ -94,9 +99,10 @@ makeNiceTif <- function(source, destination, type, overwrite = FALSE,
   is.signed.byte <- FALSE
   usesf <- rasterPrepOptions()$usesf
 
-  if(!missing(type)){
-    if(verbose)
-      cat("Type conversion will work in some cases but in others will not properly conserve NA encoding. Use with caution.  I might fix this someday.")
+  if (!missing(type)) {
+    if (verbose)
+      cat("Type conversion will work in some cases but in others will ",
+          "not properly conserve NA encoding. Use with caution.\n", sep = "")
     has.type <- TRUE
     a <- assessType(type)
     type <- a$type
@@ -108,11 +114,11 @@ makeNiceTif <- function(source, destination, type, overwrite = FALSE,
               !is.na(noDataValue),
               length(noDataValue) == 1)
   } else { # missing type
-    if(!missing(noDataValue))
+    if (!missing(noDataValue))
       warning("noDataValue will be ignored. Set type to use noDataValue.")
   }
 
-  if(usesf){
+  if (usesf) {
 
     opts <- character(0)
     opts <- c(opts,
@@ -120,21 +126,21 @@ makeNiceTif <- function(source, destination, type, overwrite = FALSE,
               "-co", "compress=LZW",
               "-co", "TFW=YES",
               "-co", "TILED=YES")
-    if(has.type)
+    if (has.type)
       opts <- c(opts,
                 "-ot", type,
                 " -a_nodata", noDataValue)
-    if(is.signed.byte)
+    if (is.signed.byte)
       opts <- c(opts, "-co", "PIXELTYPE=SIGNEDBYTE")
-    if(stats)
+    if (stats)
       opts <- c(opts, "-stats")
 
-    args = list(util = "translate",
-                source = source,
-                destination = destination,
-                options = opts)
+    args <- list(util = "translate",
+                 source = source,
+                 destination = destination,
+                 options = opts)
 
-    if(verbose){
+    if (verbose) {
       cat("Calling sf::gdal_utils with arguments:\n")
       print(utils::str(args))
     }
@@ -145,58 +151,59 @@ makeNiceTif <- function(source, destination, type, overwrite = FALSE,
     # Execute with shell commands
 
     qc <- '"'
-    command <- paste0("gdal_translate -stats -co compress=LZW -co TFW=YES -co TILED=YES ",
+    command <- paste0("gdal_translate -stats -co compress=LZW -co ",
+                      "TFW=YES -co TILED=YES ",
                       qc, source, qc, " ", qc, destination, qc, " ")
 
-    if(has.type)
-      command <- paste0(command,
-                        " -ot ", type, " ",
-                        " -a_nodata ", noDataValue, " "  # NOTE
-      )
+    if (has.type)
+      command <- paste0(command, " -ot ", type, " ",
+                        " -a_nodata ", noDataValue, " ")
 
-    if(is.signed.byte)
+    if (is.signed.byte)
       command <- paste0(command,
                         " -co  PIXELTYPE=SIGNEDBYTE ")
 
-    if(stats)
+    if (stats)
       command <- paste0(command, "-stats ")
 
-    # Temporarily reset the PROJ_LIB environmental setting for system call (if indicated by settings)
+    # Temporarily reset the PROJ_LIB environmental setting for system call
+    # (if indicated by settings)
     oprojlib <- Sys.getenv("PROJ_LIB")
     ogdaldata <- Sys.getenv("GDAL_DATA")
-    if(rasterPrepSettings$resetLibs){
-      Sys.setenv(PROJ_LIB = rasterPrepSettings$projLib )
+    if (rasterPrepSettings$resetLibs) {
+      Sys.setenv(PROJ_LIB = rasterPrepSettings$projLib)
       Sys.setenv(GDAL_DATA = rasterPrepSettings$gdalData)
       on.exit({
         Sys.setenv(PROJ_LIB = oprojlib)
         Sys.setenv(GDAL_DATA = ogdaldata)
       })
     }
-    if(verbose)
+    if (verbose)
       cat("Compressing with system command:\n", command, "\n")
     a <- system(command = command, intern = TRUE, wait = TRUE)
 
   } # end  use shell command (!usesf)
 
-  if(!file.exists(destination))
-    stop("Output file", destination, "was not created. System call returned: ", a)
+  if (!file.exists(destination))
+    stop("Output file", destination,
+         "was not created. System call returned: ", a)
 
-  if(buildOverviews){
+  if (buildOverviews) {
     addOverviews(x = destination, method = overviewResample)
   }
 
-  if(vat){
-    if(verbose)
+  if (vat) {
+    if (verbose)
       cat("building vat")
     addVat(destination)
   }
 
-  if(stats){
-    if(usesf){
+  if (stats) {
+    if (usesf) {
       # Calling for side effect of updating stats and historgrams
       a <- sf::gdal_utils(util = "info", source = destination,
-                     options = c("-stats", "-hist"),
-                     quiet = TRUE)
+                          options = c("-stats", "-hist"),
+                          quiet = TRUE)
 
     } else {
       # Make a call to gdalinfo to add both stats and a histogram
@@ -204,7 +211,7 @@ makeNiceTif <- function(source, destination, type, overwrite = FALSE,
       command <- paste0("gdalinfo -stats -hist ",
                         shQuote(destination))
       b <- system(command = command, intern = TRUE, wait = TRUE)
+      rm(b)
     }
   }
-
 }

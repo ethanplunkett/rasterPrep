@@ -2,7 +2,7 @@
 % Please edit documentation in R/rasterizeToReference.R
 \name{rasterizeToReference}
 \alias{rasterizeToReference}
-\title{Function to rasterize vector data}
+\title{Rasterize vector data}
 \usage{
 rasterizeToReference(
   source,
@@ -20,27 +20,34 @@ rasterizeToReference(
 \item{source}{(character) path to a vector GIS file (such as a shapefile)
 that contains data to be rasterized.}
 
-\item{destination}{(character) path to a \code{.tif} file that will either be created or added to.}
+\item{destination}{(character) path to a \code{.tif} file that will either be
+created or added to.}
 
-\item{reference}{(character) path to raster dataset will be used to define extent, cellsize, and projection
-used to define the extent of destination if destination does not already exist.}
+\item{reference}{(character) path to a raster dataset
+that defines the extent, cellsize, and projection of \code{destination}
+if \code{destination} does not already exist.}
 
-\item{burn}{(optional, numeric) value to be burnt into grid (everywhere the \code{source} has data)}
+\item{burn}{(optional, numeric) value to be burnt into grid
+(everywhere the \code{source} has data)}
 
-\item{attribute}{(optional, character) the column name in the source to extract values from}
+\item{attribute}{(optional, character) the column name in the source to
+extract values from}
 
-\item{init}{(optional, numeric) if supplied this value will be written into the grid as a background value
-prior to rasterizing.  init can only be used if the destination does not already exist.}
+\item{init}{(optional, numeric) if supplied this value will be written into
+the grid as a background value prior to rasterizing.
+init can only be used if the destination does not already exist.}
 
-\item{type}{the type of grid to create. Should be one of \code{"Byte"}, \code{"UInt16"},
-\code{"Int16"}, \code{"UInt32"}, \code{"Int32"}, \code{"Float32"},
-\code{"Float64"} or for convenience you may
-also use the raster package's designations: \code{\link[raster:dataType]{raster::dataType()}}.}
+\item{type}{the type of grid to create.
+Should be one of \code{"Byte"}, \code{"UInt16"}, \code{"Int16"}, \code{"UInt32"}, \code{"Int32"},
+\code{"Float32"},\code{"Float64"}
+or for convenience you may also use the \strong{terra} package's
+designations.}
 
-\item{allTouched}{(optional, logical) defaults to FALSE.  If TRUE
+\item{allTouched}{(optional, logical) defaults to \code{FALSE}.  If \code{TRUE}
 "all pixels touched by lines or polygons will be updated, not just those on
 the line render path, or whose center point is within the polygon"
-see "-at" flag description for gdal_rasterize: \url{http://www.gdal.org/gdal_rasterize.html}}
+see "-at" flag description for
+\href{http://www.gdal.org/gdal_rasterize.html}{gdal_rasterize}}
 
 \item{sql}{(optional, character) An SQL statement to be applied to the data
 source.  This can be used to filter or sort the data prior to burning.}
@@ -50,8 +57,9 @@ This function creates a new raster or writes values to an existing raster
 at the destination.  It does not return anything.
 }
 \description{
-This function rasterizes vector data into a file that coincides (same extent,
-cellsize, projection, and cell alignment) with a reference raster file.
+This function rasterizes vector data into a file that coincides
+(same extent, cellsize, projection, and cell alignment)
+with a reference raster file.
 }
 \details{
 If the file at \code{destination} exists the new pixels will be overlaid on
@@ -66,11 +74,12 @@ if you are only writing a few values you may want to set \code{type} to somethin
 that supports fewer values such as \code{"Byte"}.
 
 When creating a new file
-the CRS of the source must match that of the reference and this used to be checked
-with \code{\link[raster:compareCRS]{raster::compareCRS()}} but with updates to the proj library and the
-switch to WKT representations I don't currently have a good way to check if two
-projections are equivalent. Its now up to the user to make sure that they are.
+the CRS of the source must match that of the reference and this used to be
+checked with \code{\link[raster:compareCRS]{raster::compareCRS()}} but with updates to the proj library and
+the switch to WKT representations I don't currently have a good way to check
+if two projections are equivalent. Its now up to the user to make sure that
+they are.
 
-In contrast if you are overlaying data on an existing file then the underlying gdal_rasterize
-function will reproject while rasterizing.
+In contrast if you are overlaying data on an existing file then the
+underlying gdal_rasterize function will reproject while rasterizing.
 }

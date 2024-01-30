@@ -67,7 +67,7 @@ rasterPrepSettings$usesf <- TRUE
 #'@export
 #'@return a list of the current settings is returned if the function is called
 #'  with no arguments.
-rasterPrepOptions <- function(...){
+rasterPrepOptions <- function(...) {
 
   # This function allows changing raster prep settings
   # ... arguments must be setting names and their new value
@@ -75,45 +75,46 @@ rasterPrepOptions <- function(...){
   #
 
   args <- list(...)
-  if(!all(names(args) %in% names(rasterPrepSettings))){
-    bogus <- setdiff(names(args), names(rasterPrepSettings) )
-    stop("These arguments are not valid rasterPrepSettings: ", paste(bogus, collapse = ", "))
+  if (!all(names(args) %in% names(rasterPrepSettings))) {
+    bogus <- setdiff(names(args), names(rasterPrepSettings))
+    stop("These arguments are not valid rasterPrepSettings: ",
+         paste(bogus, collapse = ", "))
   }
 
-  if("resetLibs" %in% names(args)){
+  if ("resetLibs" %in% names(args)) {
     a <- args$resetLibs
-    if(!is.logical(a) || length(a) != 1 || is.na(a))
-      stop("resetLibs should be TRUE or FALSE" )
+    if (!is.logical(a) || length(a) != 1 || is.na(a))
+      stop("resetLibs should be TRUE or FALSE")
     rasterPrepSettings$resetLibs <- a
   }
-  if("projLib" %in% names(args)){
+  if ("projLib" %in% names(args)) {
     a  <- args$projLib
-    if(!is.character(a) || length(a) != 1 || is.na(a))
-      stop("projLib should be a character string" )
+    if (!is.character(a) || length(a) != 1 || is.na(a))
+      stop("projLib should be a character string")
     rasterPrepSettings$projLib <- a
   }
-  if("gdalData" %in% names(args)){
+  if ("gdalData" %in% names(args)) {
     a  <- args$gdalData
-    if(!is.character(a) || length(a) != 1 || is.na(a))
-      stop("gdalData should be a character string" )
+    if (!is.character(a) || length(a) != 1 || is.na(a))
+      stop("gdalData should be a character string")
     rasterPrepSettings$gdalData <- a
   }
 
-  if("verbose" %in% names(args)){
+  if ("verbose" %in% names(args)) {
     verbose <- args$verbose
-    if(!is.logical(verbose) || length(verbose) != 1 || is.na(verbose))
+    if (!is.logical(verbose) || length(verbose) != 1 || is.na(verbose))
       stop("verbose should be TRUE or FALSE")
     rasterPrepSettings$verbose <- verbose
   }
 
-  if("usesf" %in% names(args)){
+  if ("usesf" %in% names(args)) {
     usesf <- args$usesf
-    if(!is.logical(usesf) || length(usesf) != 1 || is.na(usesf))
+    if (!is.logical(usesf) || length(usesf) != 1 || is.na(usesf))
       stop("usesf should be TRUE or FALSE")
     rasterPrepSettings$usesf <- usesf
   }
 
-  if(length(args) == 0) return(as.list(rasterPrepSettings))
-
+  if (length(args) == 0)
+    return(as.list(rasterPrepSettings))
 
 }

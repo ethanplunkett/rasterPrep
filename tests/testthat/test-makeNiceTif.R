@@ -29,9 +29,9 @@ test_that("makeNiceTif works", {
   expect_true(grepl("compression", sf::gdal_utils(source = ovr, quiet = TRUE),
                     ignore.case = TRUE))
 
-  if(FALSE){
-     a <- sf::gdal_utils(util = "info", source = tif,
-                    options = c("-stats", "-hist"), quiet = TRUE)
+  if (FALSE) {
+    a <- sf::gdal_utils(util = "info", source = tif,
+                        options = c("-stats", "-hist"), quiet = TRUE)
   }
 
   # aux.xml  (histogram)
@@ -41,6 +41,5 @@ test_that("makeNiceTif works", {
 
   # Make sure crs is retained
   expect_equal(sf::gdal_crs(tif), sf::gdal_crs(source))
-
 
 })

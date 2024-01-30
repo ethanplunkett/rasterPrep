@@ -3,7 +3,7 @@ test_that("rasterPrep() addOverviews() works", {
   ri <- function(x) sf::gdal_utils(source = x)
 
   # This returns lines from gdal_info that meet the pattern
-  getRastInfo <- function(x, pattern = "overviews"){
+  getRastInfo <- function(x, pattern = "overviews") {
     info <- sf::gdal_utils(source = x, quiet = TRUE) |> strsplit("\n")
     info <- info[[1]]
     sv <- grepl(pattern, info, ignore.case = TRUE)
@@ -11,7 +11,7 @@ test_that("rasterPrep() addOverviews() works", {
   }
 
   dir <- withr::local_tempdir("addo")
-  f <- system.file("ex/elev.tif", package="terra")
+  f <- system.file("ex/elev.tif", package = "terra")
   f2 <- file.path(dir, "elev.tif")
   ovf <- file.path(dir, "elev.tif.ovr")
 
@@ -28,8 +28,8 @@ test_that("rasterPrep() addOverviews() works", {
   expect_warning(nearover <- terra::rast(ovf))
   nearsamp <- nearover[10, 10:18]
 
-  if(FALSE)
-     terra::plot(nearover)
+  if (FALSE)
+    terra::plot(nearover)
 
   # remove overviews
   addOverviews(f2, clean = TRUE)
@@ -52,7 +52,7 @@ test_that("rasterPrep() addOverviews() works", {
   expect_warning(averageover <- terra::rast(ovf))
   avgrsamp <- nearover[10, 10:18]
 
-  if(FALSE)
+  if (FALSE)
     terra::plot(averageover)
 
   # Compare a selection of pixels from the nearest neighbor and average

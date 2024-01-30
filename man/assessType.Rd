@@ -9,15 +9,16 @@ assessType(type)
 \arguments{
 \item{type}{A data type designation as used by
 \href{https://gdal.org/programs/gdalwarp.html#cmdoption-gdalwarp-ot}{gdalwarp} and
-\href{https://gdal.org/programs/gdal_translate.html#cmdoption-gdal_translate-ot}{gdal_translate}
+\href{https://gdal.org/programs/gdal_translate.html#cmdoption-gdal_translate-ot}{gdal_translate} # nolint: line_length_lintr
 \code{-ot} arguments, or as used by the \link[terra:writeRaster]{terra::writeRaster} \code{datatype} argument.}
 }
 \value{
 \code{assessType} returns a list with:
 \describe{
-\item{type}{(character) indicating the data type in the format used by gdal}
-\item{isSignedByte}{(logical) indicating if it should be written as a signed
-byte }
+\item{type}{(character) indicating the data type in the format used by
+gdal}
+\item{isSignedByte}{(logical) indicating if it should be written as a
+signed byte}
 \item{noDataValue}{(numeric) the value that will be used to represent
 no data in a raster of this type.}
 }

@@ -20,7 +20,8 @@ makeNiceTif(
 \arguments{
 \item{source}{(character) path to a raster file readable by gdal.}
 
-\item{destination}{(character) path to a .tif file to be created for viewing with GIS software}
+\item{destination}{(character) path to a .tif file to be created for viewing
+with GIS software}
 
 \item{type}{(character) If the \code{type} is used the output will be converted
 to it. It should be one of \code{"Byte"}, \code{"UInt16"}, \code{"Int16"},
@@ -30,16 +31,20 @@ cautionary section below on no data problems while reassigning type.}
 
 \item{overwrite}{(logical) if \code{TRUE} any existing file will be overwritten}
 
-\item{buildOverviews}{(logical) if \code{TRUE} overviews (AKA pyramids) will be built}
+\item{buildOverviews}{(logical) if \code{TRUE} overviews (AKA pyramids) will be
+built}
 
 \item{overviewResample}{(character) one of  \code{"nearest"},
 \code{"average"}, \code{"gauss"}, \code{"cubic"}, \code{"cubicspline"},
-\code{"lanczos"}, \code{"average_mp"}, \code{"average_magphase"}, \code{"mode"} see \href{https://www.gdal.org/gdaladdo.html}{gdaladdo} for details. For convenience \code{"near"} is silently updated to \code{"nearest"}}
+\code{"lanczos"}, \code{"average_mp"}, \code{"average_magphase"}, \code{"mode"} see
+\href{https://www.gdal.org/gdaladdo.html}{gdaladdo} for details.
+For convenience \code{"near"} is silently updated to \code{"nearest"}}
 
-\item{vat}{(logical) if \code{TRUE} an ESRI Value Attribute Table (VAT) sidecar file will be
-created containing all the unique values in the grid and
+\item{vat}{(logical) if \code{TRUE} an ESRI Value Attribute Table (VAT) sidecar
+file will be created containing all the unique values in the grid and
 their associated count of cells. This is only recommended for categorical
-data and can be slow but will speed up setting up symbology of that data in ArcGIS.}
+data and can be slow but will speed up setting up symbology of that data
+in ArcGIS.}
 
 \item{stats}{(logical) if \code{TRUE} than statistics are generated and saved;
 this helps GIS software transform continuous data
@@ -56,8 +61,8 @@ value.}
 }
 \value{
 This function creates a copy of the source raster at the destination
-path that is formatted to facilitate viewing in GIS software. It does not return
-anything.
+path that is formatted to facilitate viewing in GIS software. It does not
+return anything.
 }
 \description{
 This function creates a compressed copy of a tif with LZW compression,

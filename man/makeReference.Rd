@@ -25,20 +25,21 @@ will be created.}
 \item{cellsize}{(numeric) the desired resolution or cellsize of the the
 reference file.}
 
-\item{burn}{(integer between 0 and 255) the value to burn into cells that fall
-inside the polygon}
+\item{burn}{(integer between 0 and 255) the value to burn into cells that
+fall inside the polygon}
 
-\item{alignTo}{(character) either "origin", the default, which causes cells to
-align to the origin of the projection such that cell boundaries fall on
+\item{alignTo}{(character) either "origin", the default, which causes cells
+to align to the origin of the projection such that cell boundaries fall on
 integer multiples of the cellsize; or "reference" in which case cells will
 be aligned with cells in the \code{reference} raster. If \code{alignTo} is
 set to "reference" than \code{cellsize} is optional and defaults to the
 resolution of the reference raster, but the extent is still taken from
 \code{polyFile}.}
 
-\item{reference}{(optional, character) if \code{alignTo} is set to "reference" than
-this should be the path to an existing raster file who's cell alignment
-we would like to match. Its projection should match that of the polyFile}
+\item{reference}{(optional, character) if \code{alignTo} is set to "reference"
+than this should be the path to an existing raster file
+who's cell alignment we would like to match.
+Its projection should match that of \code{polyFile}.}
 
 \item{nestingCellsize}{(numeric) This is optional and likely not needed.  If
 \code{nestingCellsize} is provided it must be a multiple of \code{cellsize} and

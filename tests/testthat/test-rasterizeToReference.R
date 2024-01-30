@@ -21,10 +21,10 @@ test_that("rasterizeToReference  works", {
   rr <- terra::rast(ref)
   r <- terra::rast(regions)
 
-  if(FALSE){
+  if (FALSE) {
     terra::plot(r)
     p <- sf::st_read(shp, quiet = TRUE)
-    plot(p[, 1], add= TRUE, col = NA)
+    plot(p[, 1], add = TRUE, col = NA)
 
   }
 
@@ -42,7 +42,7 @@ test_that("rasterizeToReference  works", {
   expect_true(file.exists(regions2))
 
   r2 <- terra::rast(regions2)
-  if(FALSE)
+  if (FALSE)
     terra::plot(r2)
   # Raster has only one value
   expect_equal(as.numeric(table(terra::values(r2))), 3953)
