@@ -12,66 +12,106 @@
 
 <meta name="author" content="Ethan Plunkett" />
 
-<meta name="date" content="2021-10-21" />
 
-<title>rasterPrep preparing raster files for modeling or viewing</title>
+<title>rasterPrep</title>
+
+<script>// Pandoc 2.9 adds attributes on both header and div. We remove the former (to
+// be compatible with the behavior of Pandoc < 2.8).
+document.addEventListener('DOMContentLoaded', function(e) {
+  var hs = document.querySelectorAll("div.section[class*='level'] > :first-child");
+  var i, h, a;
+  for (i = 0; i < hs.length; i++) {
+    h = hs[i];
+    if (!/^h[1-6]$/i.test(h.tagName)) continue;  // it should be a header h1-h6
+    a = h.attributes;
+    while (a.length > 0) h.removeAttribute(a[0].name);
+  }
+});
+</script>
+
+<style type="text/css">
+code{white-space: pre-wrap;}
+span.smallcaps{font-variant: small-caps;}
+span.underline{text-decoration: underline;}
+div.column{display: inline-block; vertical-align: top; width: 50%;}
+div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+ul.task-list{list-style: none;}
+</style>
+
 
 
 <style type="text/css">
-  code{white-space: pre-wrap;}
-  span.smallcaps{font-variant: small-caps;}
-  span.underline{text-decoration: underline;}
-  div.column{display: inline-block; vertical-align: top; width: 50%;}
-  div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
-  ul.task-list{list-style: none;}
-    </style>
-
-
-<style type="text/css">
-  code {
-    white-space: pre;
-  }
-  .sourceCode {
-    overflow: visible;
-  }
+code {
+white-space: pre;
+}
+.sourceCode {
+overflow: visible;
+}
 </style>
 <style type="text/css" data-origin="pandoc">
-div.sourceCode { overflow-x: auto; }
-table.sourceCode, tr.sourceCode, td.lineNumbers, td.sourceCode {
-  margin: 0; padding: 0; vertical-align: baseline; border: none; }
-table.sourceCode { width: 100%; line-height: 100%; }
-td.lineNumbers { text-align: right; padding-right: 4px; padding-left: 4px; color: #aaaaaa; border-right: 1px solid #aaaaaa; }
-td.sourceCode { padding-left: 5px; }
-code > span.kw { color: #007020; font-weight: bold; } /* Keyword */
-code > span.dt { color: #902000; } /* DataType */
-code > span.dv { color: #40a070; } /* DecVal */
-code > span.bn { color: #40a070; } /* BaseN */
-code > span.fl { color: #40a070; } /* Float */
-code > span.ch { color: #4070a0; } /* Char */
-code > span.st { color: #4070a0; } /* String */
-code > span.co { color: #60a0b0; font-style: italic; } /* Comment */
-code > span.ot { color: #007020; } /* Other */
-code > span.al { color: #ff0000; font-weight: bold; } /* Alert */
-code > span.fu { color: #06287e; } /* Function */
-code > span.er { color: #ff0000; font-weight: bold; } /* Error */
-code > span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warning */
-code > span.cn { color: #880000; } /* Constant */
-code > span.sc { color: #4070a0; } /* SpecialChar */
-code > span.vs { color: #4070a0; } /* VerbatimString */
-code > span.ss { color: #bb6688; } /* SpecialString */
-code > span.im { } /* Import */
-code > span.va { color: #19177c; } /* Variable */
-code > span.cf { color: #007020; font-weight: bold; } /* ControlFlow */
-code > span.op { color: #666666; } /* Operator */
-code > span.bu { } /* BuiltIn */
-code > span.ex { } /* Extension */
-code > span.pp { color: #bc7a00; } /* Preprocessor */
-code > span.at { color: #7d9029; } /* Attribute */
-code > span.do { color: #ba2121; font-style: italic; } /* Documentation */
-code > span.an { color: #60a0b0; font-weight: bold; font-style: italic; } /* Annotation */
-code > span.cv { color: #60a0b0; font-weight: bold; font-style: italic; } /* CommentVar */
-code > span.in { color: #60a0b0; font-weight: bold; font-style: italic; } /* Information */
-
+pre > code.sourceCode { white-space: pre; position: relative; }
+pre > code.sourceCode > span { display: inline-block; line-height: 1.25; }
+pre > code.sourceCode > span:empty { height: 1.2em; }
+.sourceCode { overflow: visible; }
+code.sourceCode > span { color: inherit; text-decoration: inherit; }
+div.sourceCode { margin: 1em 0; }
+pre.sourceCode { margin: 0; }
+@media screen {
+div.sourceCode { overflow: auto; }
+}
+@media print {
+pre > code.sourceCode { white-space: pre-wrap; }
+pre > code.sourceCode > span { text-indent: -5em; padding-left: 5em; }
+}
+pre.numberSource code
+{ counter-reset: source-line 0; }
+pre.numberSource code > span
+{ position: relative; left: -4em; counter-increment: source-line; }
+pre.numberSource code > span > a:first-child::before
+{ content: counter(source-line);
+position: relative; left: -1em; text-align: right; vertical-align: baseline;
+border: none; display: inline-block;
+-webkit-touch-callout: none; -webkit-user-select: none;
+-khtml-user-select: none; -moz-user-select: none;
+-ms-user-select: none; user-select: none;
+padding: 0 4px; width: 4em;
+color: #aaaaaa;
+}
+pre.numberSource { margin-left: 3em; border-left: 1px solid #aaaaaa; padding-left: 4px; }
+div.sourceCode
+{ }
+@media screen {
+pre > code.sourceCode > span > a:first-child::before { text-decoration: underline; }
+}
+code span.al { color: #ff0000; font-weight: bold; } 
+code span.an { color: #60a0b0; font-weight: bold; font-style: italic; } 
+code span.at { color: #7d9029; } 
+code span.bn { color: #40a070; } 
+code span.bu { color: #008000; } 
+code span.cf { color: #007020; font-weight: bold; } 
+code span.ch { color: #4070a0; } 
+code span.cn { color: #880000; } 
+code span.co { color: #60a0b0; font-style: italic; } 
+code span.cv { color: #60a0b0; font-weight: bold; font-style: italic; } 
+code span.do { color: #ba2121; font-style: italic; } 
+code span.dt { color: #902000; } 
+code span.dv { color: #40a070; } 
+code span.er { color: #ff0000; font-weight: bold; } 
+code span.ex { } 
+code span.fl { color: #40a070; } 
+code span.fu { color: #06287e; } 
+code span.im { color: #008000; font-weight: bold; } 
+code span.in { color: #60a0b0; font-weight: bold; font-style: italic; } 
+code span.kw { color: #007020; font-weight: bold; } 
+code span.op { color: #666666; } 
+code span.ot { color: #007020; } 
+code span.pp { color: #bc7a00; } 
+code span.sc { color: #4070a0; } 
+code span.ss { color: #bb6688; } 
+code span.st { color: #4070a0; } 
+code span.va { color: #19177c; } 
+code span.vs { color: #4070a0; } 
+code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } 
 </style>
 <script>
 // apply pandoc div.sourceCode style to pre.sourceCode instead
@@ -80,13 +120,20 @@ code > span.in { color: #60a0b0; font-weight: bold; font-style: italic; } /* Inf
   for (var i = 0; i < sheets.length; i++) {
     if (sheets[i].ownerNode.dataset["origin"] !== "pandoc") continue;
     try { var rules = sheets[i].cssRules; } catch (e) { continue; }
-    for (var j = 0; j < rules.length; j++) {
+    var j = 0;
+    while (j < rules.length) {
       var rule = rules[j];
       // check if there is a div.sourceCode rule
-      if (rule.type !== rule.STYLE_RULE || rule.selectorText !== "div.sourceCode") continue;
+      if (rule.type !== rule.STYLE_RULE || rule.selectorText !== "div.sourceCode") {
+        j++;
+        continue;
+      }
       var style = rule.style.cssText;
       // check if color or background-color is set
-      if (rule.style.color === '' && rule.style.backgroundColor === '') continue;
+      if (rule.style.color === '' && rule.style.backgroundColor === '') {
+        j++;
+        continue;
+      }
       // replace div.sourceCode by a pre.sourceCode rule
       sheets[i].deleteRule(j);
       sheets[i].insertRule('pre.sourceCode{' + style + '}', j);
@@ -98,7 +145,187 @@ code > span.in { color: #60a0b0; font-weight: bold; font-style: italic; } /* Inf
 
 
 
-<link href="data:text/css;charset=utf-8,body%20%7B%0Abackground%2Dcolor%3A%20%23fff%3B%0Amargin%3A%201em%20auto%3B%0Amax%2Dwidth%3A%20700px%3B%0Aoverflow%3A%20visible%3B%0Apadding%2Dleft%3A%202em%3B%0Apadding%2Dright%3A%202em%3B%0Afont%2Dfamily%3A%20%22Open%20Sans%22%2C%20%22Helvetica%20Neue%22%2C%20Helvetica%2C%20Arial%2C%20sans%2Dserif%3B%0Afont%2Dsize%3A%2014px%3B%0Aline%2Dheight%3A%201%2E35%3B%0A%7D%0A%23TOC%20%7B%0Aclear%3A%20both%3B%0Amargin%3A%200%200%2010px%2010px%3B%0Apadding%3A%204px%3B%0Awidth%3A%20400px%3B%0Aborder%3A%201px%20solid%20%23CCCCCC%3B%0Aborder%2Dradius%3A%205px%3B%0Abackground%2Dcolor%3A%20%23f6f6f6%3B%0Afont%2Dsize%3A%2013px%3B%0Aline%2Dheight%3A%201%2E3%3B%0A%7D%0A%23TOC%20%2Etoctitle%20%7B%0Afont%2Dweight%3A%20bold%3B%0Afont%2Dsize%3A%2015px%3B%0Amargin%2Dleft%3A%205px%3B%0A%7D%0A%23TOC%20ul%20%7B%0Apadding%2Dleft%3A%2040px%3B%0Amargin%2Dleft%3A%20%2D1%2E5em%3B%0Amargin%2Dtop%3A%205px%3B%0Amargin%2Dbottom%3A%205px%3B%0A%7D%0A%23TOC%20ul%20ul%20%7B%0Amargin%2Dleft%3A%20%2D2em%3B%0A%7D%0A%23TOC%20li%20%7B%0Aline%2Dheight%3A%2016px%3B%0A%7D%0Atable%20%7B%0Amargin%3A%201em%20auto%3B%0Aborder%2Dwidth%3A%201px%3B%0Aborder%2Dcolor%3A%20%23DDDDDD%3B%0Aborder%2Dstyle%3A%20outset%3B%0Aborder%2Dcollapse%3A%20collapse%3B%0A%7D%0Atable%20th%20%7B%0Aborder%2Dwidth%3A%202px%3B%0Apadding%3A%205px%3B%0Aborder%2Dstyle%3A%20inset%3B%0A%7D%0Atable%20td%20%7B%0Aborder%2Dwidth%3A%201px%3B%0Aborder%2Dstyle%3A%20inset%3B%0Aline%2Dheight%3A%2018px%3B%0Apadding%3A%205px%205px%3B%0A%7D%0Atable%2C%20table%20th%2C%20table%20td%20%7B%0Aborder%2Dleft%2Dstyle%3A%20none%3B%0Aborder%2Dright%2Dstyle%3A%20none%3B%0A%7D%0Atable%20thead%2C%20table%20tr%2Eeven%20%7B%0Abackground%2Dcolor%3A%20%23f7f7f7%3B%0A%7D%0Ap%20%7B%0Amargin%3A%200%2E5em%200%3B%0A%7D%0Ablockquote%20%7B%0Abackground%2Dcolor%3A%20%23f6f6f6%3B%0Apadding%3A%200%2E25em%200%2E75em%3B%0A%7D%0Ahr%20%7B%0Aborder%2Dstyle%3A%20solid%3B%0Aborder%3A%20none%3B%0Aborder%2Dtop%3A%201px%20solid%20%23777%3B%0Amargin%3A%2028px%200%3B%0A%7D%0Adl%20%7B%0Amargin%2Dleft%3A%200%3B%0A%7D%0Adl%20dd%20%7B%0Amargin%2Dbottom%3A%2013px%3B%0Amargin%2Dleft%3A%2013px%3B%0A%7D%0Adl%20dt%20%7B%0Afont%2Dweight%3A%20bold%3B%0A%7D%0Aul%20%7B%0Amargin%2Dtop%3A%200%3B%0A%7D%0Aul%20li%20%7B%0Alist%2Dstyle%3A%20circle%20outside%3B%0A%7D%0Aul%20ul%20%7B%0Amargin%2Dbottom%3A%200%3B%0A%7D%0Apre%2C%20code%20%7B%0Abackground%2Dcolor%3A%20%23f7f7f7%3B%0Aborder%2Dradius%3A%203px%3B%0Acolor%3A%20%23333%3B%0Awhite%2Dspace%3A%20pre%2Dwrap%3B%20%0A%7D%0Apre%20%7B%0Aborder%2Dradius%3A%203px%3B%0Amargin%3A%205px%200px%2010px%200px%3B%0Apadding%3A%2010px%3B%0A%7D%0Apre%3Anot%28%5Bclass%5D%29%20%7B%0Abackground%2Dcolor%3A%20%23f7f7f7%3B%0A%7D%0Acode%20%7B%0Afont%2Dfamily%3A%20Consolas%2C%20Monaco%2C%20%27Courier%20New%27%2C%20monospace%3B%0Afont%2Dsize%3A%2085%25%3B%0A%7D%0Ap%20%3E%20code%2C%20li%20%3E%20code%20%7B%0Apadding%3A%202px%200px%3B%0A%7D%0Adiv%2Efigure%20%7B%0Atext%2Dalign%3A%20center%3B%0A%7D%0Aimg%20%7B%0Abackground%2Dcolor%3A%20%23FFFFFF%3B%0Apadding%3A%202px%3B%0Aborder%3A%201px%20solid%20%23DDDDDD%3B%0Aborder%2Dradius%3A%203px%3B%0Aborder%3A%201px%20solid%20%23CCCCCC%3B%0Amargin%3A%200%205px%3B%0A%7D%0Ah1%20%7B%0Amargin%2Dtop%3A%200%3B%0Afont%2Dsize%3A%2035px%3B%0Aline%2Dheight%3A%2040px%3B%0A%7D%0Ah2%20%7B%0Aborder%2Dbottom%3A%204px%20solid%20%23f7f7f7%3B%0Apadding%2Dtop%3A%2010px%3B%0Apadding%2Dbottom%3A%202px%3B%0Afont%2Dsize%3A%20145%25%3B%0A%7D%0Ah3%20%7B%0Aborder%2Dbottom%3A%202px%20solid%20%23f7f7f7%3B%0Apadding%2Dtop%3A%2010px%3B%0Afont%2Dsize%3A%20120%25%3B%0A%7D%0Ah4%20%7B%0Aborder%2Dbottom%3A%201px%20solid%20%23f7f7f7%3B%0Amargin%2Dleft%3A%208px%3B%0Afont%2Dsize%3A%20105%25%3B%0A%7D%0Ah5%2C%20h6%20%7B%0Aborder%2Dbottom%3A%201px%20solid%20%23ccc%3B%0Afont%2Dsize%3A%20105%25%3B%0A%7D%0Aa%20%7B%0Acolor%3A%20%230033dd%3B%0Atext%2Ddecoration%3A%20none%3B%0A%7D%0Aa%3Ahover%20%7B%0Acolor%3A%20%236666ff%3B%20%7D%0Aa%3Avisited%20%7B%0Acolor%3A%20%23800080%3B%20%7D%0Aa%3Avisited%3Ahover%20%7B%0Acolor%3A%20%23BB00BB%3B%20%7D%0Aa%5Bhref%5E%3D%22http%3A%22%5D%20%7B%0Atext%2Ddecoration%3A%20underline%3B%20%7D%0Aa%5Bhref%5E%3D%22https%3A%22%5D%20%7B%0Atext%2Ddecoration%3A%20underline%3B%20%7D%0A%0Acode%20%3E%20span%2Ekw%20%7B%20color%3A%20%23555%3B%20font%2Dweight%3A%20bold%3B%20%7D%20%0Acode%20%3E%20span%2Edt%20%7B%20color%3A%20%23902000%3B%20%7D%20%0Acode%20%3E%20span%2Edv%20%7B%20color%3A%20%2340a070%3B%20%7D%20%0Acode%20%3E%20span%2Ebn%20%7B%20color%3A%20%23d14%3B%20%7D%20%0Acode%20%3E%20span%2Efl%20%7B%20color%3A%20%23d14%3B%20%7D%20%0Acode%20%3E%20span%2Ech%20%7B%20color%3A%20%23d14%3B%20%7D%20%0Acode%20%3E%20span%2Est%20%7B%20color%3A%20%23d14%3B%20%7D%20%0Acode%20%3E%20span%2Eco%20%7B%20color%3A%20%23888888%3B%20font%2Dstyle%3A%20italic%3B%20%7D%20%0Acode%20%3E%20span%2Eot%20%7B%20color%3A%20%23007020%3B%20%7D%20%0Acode%20%3E%20span%2Eal%20%7B%20color%3A%20%23ff0000%3B%20font%2Dweight%3A%20bold%3B%20%7D%20%0Acode%20%3E%20span%2Efu%20%7B%20color%3A%20%23900%3B%20font%2Dweight%3A%20bold%3B%20%7D%20%0Acode%20%3E%20span%2Eer%20%7B%20color%3A%20%23a61717%3B%20background%2Dcolor%3A%20%23e3d2d2%3B%20%7D%20%0A" rel="stylesheet" type="text/css" />
+<style type="text/css">body {
+background-color: #fff;
+margin: 1em auto;
+max-width: 700px;
+overflow: visible;
+padding-left: 2em;
+padding-right: 2em;
+font-family: "Open Sans", "Helvetica Neue", Helvetica, Arial, sans-serif;
+font-size: 14px;
+line-height: 1.35;
+}
+#TOC {
+clear: both;
+margin: 0 0 10px 10px;
+padding: 4px;
+width: 400px;
+border: 1px solid #CCCCCC;
+border-radius: 5px;
+background-color: #f6f6f6;
+font-size: 13px;
+line-height: 1.3;
+}
+#TOC .toctitle {
+font-weight: bold;
+font-size: 15px;
+margin-left: 5px;
+}
+#TOC ul {
+padding-left: 40px;
+margin-left: -1.5em;
+margin-top: 5px;
+margin-bottom: 5px;
+}
+#TOC ul ul {
+margin-left: -2em;
+}
+#TOC li {
+line-height: 16px;
+}
+table {
+margin: 1em auto;
+border-width: 1px;
+border-color: #DDDDDD;
+border-style: outset;
+border-collapse: collapse;
+}
+table th {
+border-width: 2px;
+padding: 5px;
+border-style: inset;
+}
+table td {
+border-width: 1px;
+border-style: inset;
+line-height: 18px;
+padding: 5px 5px;
+}
+table, table th, table td {
+border-left-style: none;
+border-right-style: none;
+}
+table thead, table tr.even {
+background-color: #f7f7f7;
+}
+p {
+margin: 0.5em 0;
+}
+blockquote {
+background-color: #f6f6f6;
+padding: 0.25em 0.75em;
+}
+hr {
+border-style: solid;
+border: none;
+border-top: 1px solid #777;
+margin: 28px 0;
+}
+dl {
+margin-left: 0;
+}
+dl dd {
+margin-bottom: 13px;
+margin-left: 13px;
+}
+dl dt {
+font-weight: bold;
+}
+ul {
+margin-top: 0;
+}
+ul li {
+list-style: circle outside;
+}
+ul ul {
+margin-bottom: 0;
+}
+pre, code {
+background-color: #f7f7f7;
+border-radius: 3px;
+color: #333;
+white-space: pre-wrap; 
+}
+pre {
+border-radius: 3px;
+margin: 5px 0px 10px 0px;
+padding: 10px;
+}
+pre:not([class]) {
+background-color: #f7f7f7;
+}
+code {
+font-family: Consolas, Monaco, 'Courier New', monospace;
+font-size: 85%;
+}
+p > code, li > code {
+padding: 2px 0px;
+}
+div.figure {
+text-align: center;
+}
+img {
+background-color: #FFFFFF;
+padding: 2px;
+border: 1px solid #DDDDDD;
+border-radius: 3px;
+border: 1px solid #CCCCCC;
+margin: 0 5px;
+}
+h1 {
+margin-top: 0;
+font-size: 35px;
+line-height: 40px;
+}
+h2 {
+border-bottom: 4px solid #f7f7f7;
+padding-top: 10px;
+padding-bottom: 2px;
+font-size: 145%;
+}
+h3 {
+border-bottom: 2px solid #f7f7f7;
+padding-top: 10px;
+font-size: 120%;
+}
+h4 {
+border-bottom: 1px solid #f7f7f7;
+margin-left: 8px;
+font-size: 105%;
+}
+h5, h6 {
+border-bottom: 1px solid #ccc;
+font-size: 105%;
+}
+a {
+color: #0033dd;
+text-decoration: none;
+}
+a:hover {
+color: #6666ff; }
+a:visited {
+color: #800080; }
+a:visited:hover {
+color: #BB00BB; }
+a[href^="http:"] {
+text-decoration: underline; }
+a[href^="https:"] {
+text-decoration: underline; }
+
+code > span.kw { color: #555; font-weight: bold; } 
+code > span.dt { color: #902000; } 
+code > span.dv { color: #40a070; } 
+code > span.bn { color: #d14; } 
+code > span.fl { color: #d14; } 
+code > span.ch { color: #d14; } 
+code > span.st { color: #d14; } 
+code > span.co { color: #888888; font-style: italic; } 
+code > span.ot { color: #007020; } 
+code > span.al { color: #ff0000; font-weight: bold; } 
+code > span.fu { color: #900; font-weight: bold; } 
+code > span.er { color: #a61717; background-color: #e3d2d2; } 
+</style>
 
 
 
@@ -110,182 +337,314 @@ code > span.in { color: #60a0b0; font-weight: bold; font-style: italic; } /* Inf
 
 
 
-<h1 class="title toc-ignore">rasterPrep preparing raster files for modeling or viewing</h1>
+<h1 class="title toc-ignore">rasterPrep</h1>
 <h4 class="author">Ethan Plunkett</h4>
-<h4 class="date">2021-10-21</h4>
 
 
 
-<div id="rasterprep" class="section level1">
-<h1>rasterPrep</h1>
-<p>The rasterPrep package provides a workflow to prepare data for modeling by creating a standardized set of rasters from disparate raster and vector GIS data; and a second workflow for preparing raster files for viewing in GIS software. These workflows are each documented in their own section below.</p>
 <div id="installation" class="section level3">
 <h3>Installation</h3>
-<p>This package requires that GDAL Utilities be installed on your computer and the directory that houses them be added to your PATH environmental variable. On Linux and Mac systems I recommend you use your package manager to install GDAL. On Windows I recommend you download the latest &quot;Stable release&quot; from <a href="http://download.gisinternals.com/" class="uri">http://download.gisinternals.com/</a>; you want the &quot;Generic installer for the GDAL core components&quot;. With considerably more effort you can install GDAL Utilities on Windows with python bindings but that is not required for this package; If you want to anyway read <a href="https://sandbox.idre.ucla.edu/sandbox/tutorials/installing-gdal-for-windows">this</a>.</p>
+<div class="sourceCode" id="cb1"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb1-1"><a href="#cb1-1" tabindex="-1"></a><span class="cf">if</span> (<span class="sc">!</span><span class="fu">require</span>(<span class="st">&quot;remotes&quot;</span>))</span>
+<span id="cb1-2"><a href="#cb1-2" tabindex="-1"></a>  <span class="fu">install.packages</span>(<span class="st">&quot;remotes&quot;</span>)</span>
+<span id="cb1-3"><a href="#cb1-3" tabindex="-1"></a><span class="fu">library</span>(<span class="st">&quot;remotes&quot;</span>)</span>
+<span id="cb1-4"><a href="#cb1-4" tabindex="-1"></a>remotes<span class="sc">::</span><span class="fu">install_github</span>(<span class="st">&quot;ethanplunkett/rasterPrep&quot;</span>)</span></code></pre></div>
+<p>The <strong>rasterPrep</strong> package fills two distinct needs:</p>
+<ol style="list-style-type: decimal">
+<li><p>To create fully aligned raster files for modeling, and analysis,
+from raster or vector data.</p></li>
+<li><p>To prepares output from models for viewing in GIS software by
+humans.</p></li>
+</ol>
 </div>
 <div id="i.-preparing-rasters-for-modeling" class="section level2">
 <h2>I. Preparing rasters for modeling</h2>
-<p>This section walks through the process of preparing raster data for modeling.</p>
-<p>Often the first step in any raster based GIS modeling exercise is creating a series of raster files that coincide perfectly. That is they agree in cell size, cell alignment, projection, and extent. Typically, the source data is a mix of raster and vector files that do not coincide. This workflow demonstrates how to fix that.</p>
+<p>This section walks through the process of preparing raster data for
+modeling.</p>
+<p>The first step in many raster based GIS analyses is creating a series
+of raster files that coincide perfectly. That is they have identical
+resolutions, cell alignments, coordinate reference systems (crs), and
+extents.</p>
+<p>Typically, the source data is a mix of raster and vector files that
+do not coincide. This workflow demonstrates how convert disparate source
+data into a set of coinciding TIFF files.</p>
 <p>Overview:</p>
 <ol style="list-style-type: decimal">
 <li>Load packages and setup paths</li>
-<li>Create a reference raster file</li>
-<li>Use <code>warpToReference()</code> to make existing rasters coincide with the reference</li>
-<li>Use <code>rasterizeToReference()</code> to convert vector data to rasters that coincide with the reference.</li>
+<li>Create a reference raster file with <code>makeRefence()</code></li>
+<li>Use <code>warpToReference()</code> to make existing rasters coincide
+with the reference</li>
+<li>Use <code>rasterizeToReference()</code> to convert vector data to
+rasters that coincide with the reference, or overlay vector data on
+raster data.</li>
 </ol>
 <div id="load-packages-and-setup-paths" class="section level3">
 <h3>1. Load packages and setup paths</h3>
-<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="co"># Load packages</span>
-<span class="kw">library</span>(rasterPrep)
-<span class="kw">library</span>(gdalUtilities)  <span class="co"># for ogr2ogr() used to reproject vector Shapefiles</span>
-<span class="kw">library</span>(terra)  <span class="co"># for crs() and rast() </span>
-
-<span class="co"># Note because I'm pulling data from one read-only directory and writing to a</span>
-<span class="co"># a second I'm defining complete paths here.  Often it's easier to set a working</span>
-<span class="co"># directory then use file names when calling the functions.</span>
-
-<span class="co"># Set paths for retrieving input data included with this package</span>
-inPaths &lt;-<span class="st"> </span><span class="kw">list</span>(
-  <span class="dt">bound =</span> <span class="kw">system.file</span>(<span class="st">&quot;extdata&quot;</span>,<span class="st">&quot;Amherst.shp&quot;</span> , <span class="dt">package =</span> <span class="st">&quot;rasterPrep&quot;</span>),
-  <span class="dt">slope =</span> <span class="kw">system.file</span>(<span class="st">&quot;extdata&quot;</span>,<span class="st">&quot;slope.tif&quot;</span> , <span class="dt">package =</span> <span class="st">&quot;rasterPrep&quot;</span>), 
-  <span class="dt">roads =</span>  <span class="kw">system.file</span>(<span class="st">&quot;extdata&quot;</span>,<span class="st">&quot;roads.shp&quot;</span> , <span class="dt">package =</span> <span class="st">&quot;rasterPrep&quot;</span>),
-  <span class="dt">key =</span> <span class="kw">system.file</span>(<span class="st">&quot;extdata&quot;</span>,<span class="st">&quot;roadClassKey.csv&quot;</span> , <span class="dt">package =</span> <span class="st">&quot;rasterPrep&quot;</span>)
-)
-
-<span class="co"># Output directory: you might want to replace this with a path of your choosing:</span>
-outDir &lt;-<span class="st"> </span><span class="kw">tempdir</span>() 
-
-<span class="co"># Set output paths </span>
-outPaths &lt;-<span class="st"> </span><span class="kw">list</span>(
-  <span class="dt">ref =</span> <span class="kw">file.path</span>(outDir, <span class="st">&quot;reference.tif&quot;</span>),        <span class="co"># Our reference grid</span>
-  <span class="dt">slopeTemp =</span> <span class="kw">file.path</span>(outDir, <span class="st">&quot;slopeTemp.tif&quot;</span>),  <span class="co"># Intermediate raster file</span>
-  <span class="dt">slope =</span> <span class="kw">file.path</span>(outDir, <span class="st">&quot;slope.tif&quot;</span>),          <span class="co"># Slope raster</span>
-  <span class="dt">roadLines =</span> <span class="kw">file.path</span>(outDir, <span class="st">&quot;roadLines.shp&quot;</span>), <span class="co"># Reprojected vector roads</span>
-  <span class="dt">roadsTemp =</span> <span class="kw">file.path</span>(outDir, <span class="st">&quot;roads1.tif&quot;</span>),     <span class="co"># Intermediate raster file</span>
-  <span class="dt">roads  =</span> <span class="kw">file.path</span>(outDir, <span class="st">&quot;roads.tif&quot;</span>),         <span class="co"># Binary Roads raster</span>
-  <span class="dt">roadClass  =</span> <span class="kw">file.path</span>(outDir, <span class="st">&quot;roadClass.tif&quot;</span>) )<span class="co"># Road class raster</span>
-
-<span class="co"># Delete output so rerunning doesn't cause problems</span>
-<span class="cf">if</span>(<span class="kw">file.exists</span>(outPaths<span class="op">$</span>roadLines))
-  <span class="kw">file.remove</span>(<span class="kw">list.files</span>(outDir, <span class="st">&quot;roadLines&quot;</span>, <span class="dt">full.names =</span> <span class="ot">TRUE</span>))
-
-<span class="cf">for</span>(a <span class="cf">in</span> <span class="kw">setdiff</span>(<span class="kw">names</span>(outPaths), <span class="st">&quot;roadLines&quot;</span>)){
-  <span class="cf">if</span>(<span class="kw">file.exists</span>(outPaths[[a]]))
-    <span class="kw">deleteTif</span>(outPaths[[a]])
-}</code></pre></div>
-<p>The four data sets included with this package are:</p>
+<p>Load packages</p>
+<div class="sourceCode" id="cb2"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb2-1"><a href="#cb2-1" tabindex="-1"></a><span class="fu">library</span>(rasterPrep)</span>
+<span id="cb2-2"><a href="#cb2-2" tabindex="-1"></a><span class="fu">library</span>(gdalUtilities)  <span class="co"># for ogr2ogr() used to reproject vector Shapefiles</span></span>
+<span id="cb2-3"><a href="#cb2-3" tabindex="-1"></a><span class="fu">library</span>(terra)  <span class="co"># for crs() and rast()</span></span></code></pre></div>
+<p><strong>Input paths</strong></p>
+<p>Four example files are included with the <strong>rasterPrep</strong>
+package:</p>
 <ol style="list-style-type: decimal">
-<li><p>&quot;Amherst.shp&quot;: The polygon boundary for the Town of Amherst, MA extracted from here: <a href="https://docs.digital.mass.gov/dataset/massgis-data-community-boundaries-towns" class="uri">https://docs.digital.mass.gov/dataset/massgis-data-community-boundaries-towns</a> It is in Mass Mainland mass state plain projection (<a href="https://epsg.io/26986">EPSG:26986</a>). This defines our study area and output projection.</p></li>
-<li><p>&quot;slope.tif&quot;: A raster clipped from <a href="https://scholarworks.umass.edu/data/17/" class="uri">https://scholarworks.umass.edu/data/17/</a> with the original projection and cell alignment preserved. It is in the USA Contiguous Albers Equal Area Conic Projection(<a href="https://epsg.io/102003">ESRI:202003</a>).</p></li>
-<li><p>&quot;roads.shp&quot;: A Shapefile containing vector roads, originally from Open Street map but with small roads removed and clipped to Amherst. It's in the same projection as 2.</p></li>
-<li><p>&quot;roadClassKey.csv&quot;: A csv file with columns &quot;value&quot; , &quot;category&quot;, and &quot;color&quot;, representing integer values, associated road class names, and a hexadecimal color that should be used for rendering (#rrggbb).</p></li>
+<li><p><code>input$bound</code>, <em>“Amherst.shp”</em>: The polygon
+boundary for the Town of Amherst, MA extracted from here: <a href="https://docs.digital.mass.gov/dataset/massgis-data-community-boundaries-towns" class="uri">https://docs.digital.mass.gov/dataset/massgis-data-community-boundaries-towns</a>
+It is in Mass Mainland mass state plain projection (<a href="https://epsg.io/26986">EPSG:26986</a>). This defines our study
+area and output projection.</p></li>
+<li><p><code>input$slope</code>, <em>“slope.tif”</em>: A raster clipped
+from <a href="https://scholarworks.umass.edu/data/17/" class="uri">https://scholarworks.umass.edu/data/17/</a> with the
+original projection and cell alignment preserved. It is in the USA
+Contiguous Albers Equal Area Conic Projection(<a href="https://epsg.io/102003">ESRI:202003</a>).</p></li>
+<li><p><code>input$roads</code>, <em>“roads.shp”</em>: A Shapefile
+containing vector roads, originally from Open Street map but with small
+roads removed and clipped to Amherst. It’s in the same projection as
+2.</p></li>
+<li><p><code>input$key</code>, <em>“roadClassKey.csv”</em>: A csv file
+with columns “value” , “category”, and “color”, representing integer
+values, associated road class names, and a hexadecimal color that should
+be used to draw it.</p></li>
 </ol>
+<div class="sourceCode" id="cb3"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb3-1"><a href="#cb3-1" tabindex="-1"></a>input <span class="ot">&lt;-</span> <span class="fu">list</span>(</span>
+<span id="cb3-2"><a href="#cb3-2" tabindex="-1"></a>  <span class="at">bound =</span> <span class="fu">system.file</span>(<span class="st">&quot;extdata&quot;</span>, <span class="st">&quot;Amherst.shp&quot;</span>, <span class="at">package =</span> <span class="st">&quot;rasterPrep&quot;</span>),</span>
+<span id="cb3-3"><a href="#cb3-3" tabindex="-1"></a>  <span class="at">slope =</span> <span class="fu">system.file</span>(<span class="st">&quot;extdata&quot;</span>, <span class="st">&quot;slope.tif&quot;</span>, <span class="at">package =</span> <span class="st">&quot;rasterPrep&quot;</span>),</span>
+<span id="cb3-4"><a href="#cb3-4" tabindex="-1"></a>  <span class="at">roads =</span>  <span class="fu">system.file</span>(<span class="st">&quot;extdata&quot;</span>, <span class="st">&quot;roads.shp&quot;</span>, <span class="at">package =</span> <span class="st">&quot;rasterPrep&quot;</span>),</span>
+<span id="cb3-5"><a href="#cb3-5" tabindex="-1"></a>  <span class="at">key =</span> <span class="fu">system.file</span>(<span class="st">&quot;extdata&quot;</span>, <span class="st">&quot;roadClassKey.csv&quot;</span>, <span class="at">package =</span> <span class="st">&quot;rasterPrep&quot;</span>)</span>
+<span id="cb3-6"><a href="#cb3-6" tabindex="-1"></a>)</span></code></pre></div>
+<p><strong>Output paths</strong></p>
+<ol style="list-style-type: decimal">
+<li><p><code>out$ref</code>, <em>“reference.tif”</em> A reference file
+used to define the extent, CRS, cellsize, and cell alignment, this is
+created first and then all other files are aligned to it.</p></li>
+<li><p><code>out$slopeTemp</code>, <em>slopeTemp.tif</em> : An
+intermediate slope grid.</p></li>
+<li><p><code>out$slope</code>, <em>“slope.tif”</em> : The slope grid,
+ready for modeling.</p></li>
+<li><p><code>out$road$lines</code>, <em>roadLines.shp</em> :
+Intermediate, transformed vector roads.</p></li>
+<li><p><code>out$roadsTemp</code>, <em>“roads1.tif”</em> : Intermediate
+road raster.</p></li>
+<li><p><code>out$roads</code>, <em>“roads.tif”</em> : Binary Roads; 1
+for road, 0 not road, or NA outside of study area.</p></li>
+<li><p><code>roadClass</code>, <em>“roadClass.tif”</em> : Classified
+road raster.</p></li>
+</ol>
+<div class="sourceCode" id="cb4"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb4-1"><a href="#cb4-1" tabindex="-1"></a>outDir <span class="ot">&lt;-</span> <span class="fu">file.path</span>(<span class="fu">tempdir</span>(), <span class="st">&quot;rasterPrepDemo&quot;</span>)</span>
+<span id="cb4-2"><a href="#cb4-2" tabindex="-1"></a><span class="fu">dir.create</span>(outDir, <span class="at">showWarnings =</span> <span class="cn">FALSE</span>)</span>
+<span id="cb4-3"><a href="#cb4-3" tabindex="-1"></a></span>
+<span id="cb4-4"><a href="#cb4-4" tabindex="-1"></a>out <span class="ot">&lt;-</span></span>
+<span id="cb4-5"><a href="#cb4-5" tabindex="-1"></a>  <span class="fu">list</span>(<span class="at">ref =</span> <span class="fu">file.path</span>(outDir, <span class="st">&quot;reference.tif&quot;</span>),        <span class="co"># reference</span></span>
+<span id="cb4-6"><a href="#cb4-6" tabindex="-1"></a>       <span class="at">slopeTemp =</span> <span class="fu">file.path</span>(outDir, <span class="st">&quot;slopeTemp.tif&quot;</span>),  <span class="co"># Intermediate slope</span></span>
+<span id="cb4-7"><a href="#cb4-7" tabindex="-1"></a>       <span class="at">slope =</span> <span class="fu">file.path</span>(outDir, <span class="st">&quot;slope.tif&quot;</span>),          <span class="co"># Slope</span></span>
+<span id="cb4-8"><a href="#cb4-8" tabindex="-1"></a>       <span class="at">roadLines =</span> <span class="fu">file.path</span>(outDir, <span class="st">&quot;roadLines.shp&quot;</span>),  <span class="co"># Transformed roads</span></span>
+<span id="cb4-9"><a href="#cb4-9" tabindex="-1"></a>       <span class="at">roadsTemp =</span> <span class="fu">file.path</span>(outDir, <span class="st">&quot;roads1.tif&quot;</span>),     <span class="co"># Intermediate roads</span></span>
+<span id="cb4-10"><a href="#cb4-10" tabindex="-1"></a>       <span class="at">roads  =</span> <span class="fu">file.path</span>(outDir, <span class="st">&quot;roads.tif&quot;</span>),         <span class="co"># Binary Roads</span></span>
+<span id="cb4-11"><a href="#cb4-11" tabindex="-1"></a>       <span class="at">roadClass  =</span> <span class="fu">file.path</span>(outDir, <span class="st">&quot;roadClass.tif&quot;</span>)) <span class="co"># Road class</span></span></code></pre></div>
 </div>
 <div id="create-a-reference-raster" class="section level3">
 <h3>2. Create a reference raster</h3>
-<p>You may already have a raster that you would like all your other data to coincide with. If so use that as your reference. If you do not already have a reference raster then we can create one from a polygon that delineates a study area boundary and has the projection we would like to work in.</p>
-<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">
-<span class="kw">makeReference</span>(<span class="dt">polyFile =</span> inPaths<span class="op">$</span>bound, <span class="dt">destination =</span> outPaths<span class="op">$</span>ref, <span class="dt">cellsize =</span> <span class="dv">30</span>)</code></pre></div>
-<p>Note: The optional 'alignTo' argument determines the cell alignment (AKA &quot;snapping&quot;); the default (<code>&quot;origin&quot;</code>) means that the edges of the cells will all fall on integer multiples of the cell size. If you already have some raster data in your desired projection you can also set alignTo=&quot;reference&quot; and then set the reference argument to the path of a raster that will set the cell alignment. In this case the reference would only be used for cell alignment and not extent; allowing you to use that data without resampling or shifting the pixels. With either pixel alignment the resulting raster is going to have an extent just big enough to include all the pixels that overlap the bounds of the study area as defined in polyFile.</p>
+<p>You may already have a raster that you would like all your other data
+to coincide with. If so use that as your reference.</p>
+<p>If you do not have a reference raster then we can create one from a
+polygon that delineates a buffered study area boundary that has the
+desired CRS. The buffer can be added to include surrounding cells that
+influence your study area.</p>
+<div class="sourceCode" id="cb5"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb5-1"><a href="#cb5-1" tabindex="-1"></a><span class="fu">makeReference</span>(<span class="at">polyFile =</span> input<span class="sc">$</span>bound, <span class="at">destination =</span> out<span class="sc">$</span>ref, <span class="at">cellsize =</span> <span class="dv">30</span>)</span></code></pre></div>
+<p>The optional <code>alignTo</code> argument determines the cell
+alignment (AKA snapping), there are two options to choose from:</p>
+<ol style="list-style-type: decimal">
+<li><p>The default (<code>&quot;alignto=origin&quot;</code>) means that the edges
+of the cells will all fall on integer multiples of the cell
+size.</p></li>
+<li><p>If you have an important raster data set in your desired CRS and
+resolution you may set your reference cell alignment to match it so that
+there is no resampling or transformation required for that data set.
+This is especially helpful for categorical data (like landcover) which
+is particularly hard to resample without loss of information. In this
+case you would set <code>alignTo=&quot;reference&quot;</code> and then set the
+<code>reference</code> argument to the path of a raster with the desired
+cell alignment. In this function, in contrast with others in the
+package, the reference will only be used for cell alignment.</p></li>
+</ol>
+<p>With either alignment scheme the resulting raster is going to have an
+extent just big enough to include all the pixels that overlap the
+<code>polyFile</code> argument.</p>
 </div>
-<div id="warp-raster-data-to-match-the-reference" class="section level3">
-<h3>3. Warp raster data to match the reference</h3>
-<p>Here we will align the sample slope data with our reference raster. We will reproject and crop in one step and then clip (assign NA outside of the boundary polygon) in a second step. I've found that although we can combine these all in one step the masking of pixels outside of the boundary isn't always consistent on the edges when reprojection and clipping are done together.</p>
-<p>If you don't want to clip you could just use the first step and you would retain data for the entire rectangular extent.</p>
-<p>Because slope is continuous we'll use the <code>&quot;bilinear&quot;</code> resampling method in the first step. If we were working with categorical data (E.g. land cover classes) we would leave the default nearest neighbor (<code>&quot;near&quot;</code>) method.</p>
-<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">
-<span class="co"># Reproject to final extent, projection and alignment</span>
-<span class="kw">warpToReference</span>(inPaths<span class="op">$</span>slope, outPaths<span class="op">$</span>slopeTemp, <span class="dt">reference =</span> outPaths<span class="op">$</span>ref, <span class="dt">method =</span> <span class="st">&quot;bilinear&quot;</span>)
-
-<span class="co"># Assign NA outside of boundary</span>
-<span class="kw">warpToReference</span>(outPaths<span class="op">$</span>slopeTemp, outPaths<span class="op">$</span>slope, <span class="dt">reference =</span>  outPaths<span class="op">$</span>ref, <span class="dt">clip =</span> inPaths<span class="op">$</span>bound)
-
-<span class="co"># Delete intermediate file</span>
-<span class="kw">deleteTif</span>(outPaths<span class="op">$</span>slopeTemp)</code></pre></div>
+<div id="transform-and-resample-raster-data-to-match-the-reference" class="section level3">
+<h3>3. Transform and resample raster data to match the reference</h3>
+<p>The line of code below aligns the input slope data with our reference
+raster, it transforms, crops, extends, and resamples as necessary to
+produce a raster that matches the reference resolution and extent.</p>
+<p>Slope is continuous so the <code>&quot;bilinear&quot;</code> resampling method
+is appropriate. Use the default nearest neighbor method
+(<code>method = &quot;near&quot;</code>) for categorical data, like landcover.</p>
+<div class="sourceCode" id="cb6"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb6-1"><a href="#cb6-1" tabindex="-1"></a><span class="fu">warpToReference</span>(input<span class="sc">$</span>slope, out<span class="sc">$</span>slopeTemp, <span class="at">reference =</span> out<span class="sc">$</span>ref,</span>
+<span id="cb6-2"><a href="#cb6-2" tabindex="-1"></a>                <span class="at">method =</span> <span class="st">&quot;bilinear&quot;</span>)</span></code></pre></div>
+<p>The next step is optional, it assigns NA to areas outside of the clip
+polygon. It is a separate step to avoid small errors in the clipping
+that occur when transforming or resampling in the same step as
+clipping.</p>
+<div class="sourceCode" id="cb7"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb7-1"><a href="#cb7-1" tabindex="-1"></a><span class="fu">warpToReference</span>(out<span class="sc">$</span>slopeTemp, out<span class="sc">$</span>slope, <span class="at">reference =</span>  out<span class="sc">$</span>ref,</span>
+<span id="cb7-2"><a href="#cb7-2" tabindex="-1"></a>                <span class="at">clip =</span> input<span class="sc">$</span>bound)</span></code></pre></div>
+<p>Delete the intermediate file.</p>
+<div class="sourceCode" id="cb8"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb8-1"><a href="#cb8-1" tabindex="-1"></a><span class="co"># Delete intermediate file</span></span>
+<span id="cb8-2"><a href="#cb8-2" tabindex="-1"></a><span class="fu">deleteTif</span>(out<span class="sc">$</span>slopeTemp)</span></code></pre></div>
+<p>Visualize the result:</p>
+<div class="sourceCode" id="cb9"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb9-1"><a href="#cb9-1" tabindex="-1"></a>slope <span class="ot">&lt;-</span> <span class="fu">rast</span>(out<span class="sc">$</span>slope)</span>
+<span id="cb9-2"><a href="#cb9-2" tabindex="-1"></a><span class="fu">plot</span>(slope)</span></code></pre></div>
+<p><img src="data:image/png;base64,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" /><!-- --></p>
 </div>
 <div id="rasterize-vector-to-match-the-reference" class="section level3">
 <h3>4. Rasterize vector to match the reference</h3>
-<p>Here we will first reproject the vector roads to our output projection and then use the result to create a roads raster that matches the reference raster.</p>
-<p>To reproject the vector roads we are going to use the 'ogr2ogr()' function within the gdalUtilities R package. You could also use sf package to read in the vector data, reproject, and write out to a new Shapefile, but it woud be less efficient.</p>
-<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">
-<span class="co"># Reproject vector to reference projection</span>
-refProj &lt;-<span class="st"> </span>terra<span class="op">::</span><span class="kw">crs</span>(terra<span class="op">::</span><span class="kw">rast</span>(outPaths<span class="op">$</span>ref))  <span class="co">#  well known text of projection</span>
-projFile &lt;-<span class="st"> </span><span class="kw">file.path</span>(outDir, <span class="st">&quot;refproj.txt&quot;</span>)
-<span class="kw">cat</span>(refProj, <span class="dt">file =</span> projFile)   <span class="co">#well known text in file</span>
-gdalUtilities<span class="op">::</span><span class="kw">ogr2ogr</span>(inPaths<span class="op">$</span>roads, outPaths<span class="op">$</span>roadLines, <span class="dt">t_srs =</span> projFile)</code></pre></div>
-<p>Now we are going to rasterize the vector data using <code>rasterizeToReference()</code> from this package. We could do this in several ways depending on what data we want in the final raster. Importantly this function will write into any existing destination raster files so multiple calls can be used to overlay data from different sources together in a file.</p>
-<p>In this first example we'll create a raster that contains the values from the &quot;ROADCLASS&quot;&quot; attribute from the roads shapefile in cells underlying the roads and and NA everywhere else.</p>
-<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="kw">rasterizeToReference</span>(outPaths<span class="op">$</span>roadLines, <span class="dt">destination =</span> outPaths<span class="op">$</span>roadClass, <span class="dt">reference =</span> outPaths<span class="op">$</span>ref, <span class="dt">attribute =</span> <span class="st">&quot;ROADCLASS&quot;</span>, <span class="dt">type =</span> <span class="st">&quot;byte&quot;</span>)</code></pre></div>
-<p>Next an example where we'll create a raster with NA outside the study area boundary, and 0 or 1 inside the boundary to indicate if there is a road. In this example we'll also set <code>allTouched=TRUE</code> which will result in roads that have orthogonal connections.</p>
-<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">
-<span class="co"># Burn in zero everywhere within the study area boundary creating a new raster file in the process</span>
-<span class="kw">rasterizeToReference</span>(inPaths<span class="op">$</span>bound, outPaths<span class="op">$</span>roadsTemp, 
-                     <span class="dt">reference =</span> outPaths<span class="op">$</span>ref, <span class="dt">burn =</span> <span class="dv">0</span>, <span class="dt">allTouched =</span> <span class="ot">TRUE</span>)
-
-<span class="co"># Burn in 1 where there are roads (on top of values from prior step)</span>
-<span class="kw">rasterizeToReference</span>(outPaths<span class="op">$</span>roadLines, <span class="dt">destination =</span> outPaths<span class="op">$</span>roadsTemp, 
-                     <span class="dt">burn =</span> <span class="dv">1</span>)
-
-<span class="co"># Write to new file while clipping.  Without this step road cells outside of the </span>
-<span class="co">#  study boundary will have a value of 1. This re-sets them to NA.</span>
-<span class="kw">warpToReference</span>(outPaths<span class="op">$</span>roadsTemp, outPaths<span class="op">$</span>roads, <span class="dt">reference =</span> outPaths<span class="op">$</span>ref,
-                <span class="dt">clip =</span> inPaths<span class="op">$</span>bound)
-
-<span class="co"># Delete intermediate file</span>
-<span class="kw">deleteTif</span>(outPaths<span class="op">$</span>roadsTemp)</code></pre></div>
-<p>Print out the paths to what we created:</p>
-<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="kw">cat</span>(<span class="st">&quot;Files created here:</span><span class="ch">\n\t</span><span class="st">&quot;</span>,
-    <span class="kw">normalizePath</span>(outPaths<span class="op">$</span>ref), <span class="st">&quot; our reference raster</span><span class="ch">\n\t</span><span class="st">&quot;</span>,
-    <span class="kw">normalizePath</span>(outPaths<span class="op">$</span>roadClass), <span class="st">&quot; road class</span><span class="ch">\n\t</span><span class="st">&quot;</span>, 
-    <span class="kw">normalizePath</span>(outPaths<span class="op">$</span>roads), <span class="st">&quot; roads 1, other study area cells 0</span><span class="ch">\n\t</span><span class="st">&quot;</span>, 
-    <span class="kw">normalizePath</span>(outPaths<span class="op">$</span>slope), <span class="st">&quot; slope.&quot;</span>
-    )
-
-<span class="co"># Confirm that projections information is there for all files</span>
-<span class="co"># Not required but changes in R's handling of spatial data have broken this in the past</span>
-refcrs &lt;-<span class="st"> </span>terra<span class="op">::</span><span class="kw">crs</span>(terra<span class="op">::</span><span class="kw">rast</span>(outPaths<span class="op">$</span>ref))  <span class="co"># wkt of refrence grid we created</span>
-<span class="cf">if</span>(refcrs <span class="op">==</span><span class="st"> &quot;&quot;</span>) <span class="kw">stop</span>(<span class="st">&quot;Reference grid doesn't have projection information&quot;</span>)
-<span class="cf">for</span>(file <span class="cf">in</span> <span class="kw">c</span>(<span class="st">&quot;slope&quot;</span>, <span class="st">&quot;roads&quot;</span>, <span class="st">&quot;roadClass&quot;</span>)){
-  filecrs &lt;-<span class="st"> </span>terra<span class="op">::</span><span class="kw">crs</span>(terra<span class="op">::</span><span class="kw">rast</span>(outPaths[[file]]))
-  <span class="kw">stopifnot</span>(filecrs <span class="op">==</span><span class="st"> </span>refcrs)
-}</code></pre></div>
+<p>Transform vector inputs to match the reference. This code uses the
+‘ogr2ogr()’ function within the gdalUtilities R package. You could also
+use the <strong>sf</strong> package to read in the vector data,
+reproject, and write out to a new Shapefile.</p>
+<div class="sourceCode" id="cb10"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb10-1"><a href="#cb10-1" tabindex="-1"></a>refProj <span class="ot">&lt;-</span> terra<span class="sc">::</span><span class="fu">crs</span>(terra<span class="sc">::</span><span class="fu">rast</span>(out<span class="sc">$</span>ref))  <span class="co"># well known text of projection</span></span>
+<span id="cb10-2"><a href="#cb10-2" tabindex="-1"></a>projFile <span class="ot">&lt;-</span> <span class="fu">file.path</span>(outDir, <span class="st">&quot;refproj.txt&quot;</span>)</span>
+<span id="cb10-3"><a href="#cb10-3" tabindex="-1"></a><span class="fu">cat</span>(refProj, <span class="at">file =</span> projFile)   <span class="co"># well known text in file</span></span>
+<span id="cb10-4"><a href="#cb10-4" tabindex="-1"></a>gdalUtilities<span class="sc">::</span><span class="fu">ogr2ogr</span>(input<span class="sc">$</span>roads, out<span class="sc">$</span>roadLines, <span class="at">t_srs =</span> projFile)</span></code></pre></div>
+<p><strong>Road class</strong></p>
+<p>Create a raster that contains the values from the “ROADCLASS””
+attribute from the roads shapefile in cells underlying the roads and and
+NA everywhere else.</p>
+<div class="sourceCode" id="cb11"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb11-1"><a href="#cb11-1" tabindex="-1"></a><span class="fu">rasterizeToReference</span>(out<span class="sc">$</span>roadLines, <span class="at">destination =</span> out<span class="sc">$</span>roadClass,</span>
+<span id="cb11-2"><a href="#cb11-2" tabindex="-1"></a>                     <span class="at">reference =</span> out<span class="sc">$</span>ref, <span class="at">attribute =</span> <span class="st">&quot;ROADCLASS&quot;</span>,</span>
+<span id="cb11-3"><a href="#cb11-3" tabindex="-1"></a>                     <span class="at">type =</span> <span class="st">&quot;byte&quot;</span>)</span></code></pre></div>
+<p><strong>Roads</strong></p>
+<p>Create a road raster with NA outside the study area boundary, and 0
+or 1 inside the boundary to indicate if there is a road.</p>
+<p>Burn zero everywhere within the study area:</p>
+<div class="sourceCode" id="cb12"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb12-1"><a href="#cb12-1" tabindex="-1"></a><span class="fu">rasterizeToReference</span>(input<span class="sc">$</span>bound, out<span class="sc">$</span>roadsTemp, <span class="at">reference =</span> out<span class="sc">$</span>ref,</span>
+<span id="cb12-2"><a href="#cb12-2" tabindex="-1"></a>                     <span class="at">burn =</span> <span class="dv">0</span>)</span></code></pre></div>
+<p>Burn in ones everywhere under roads. Setting
+<code>allTouched=TRUE</code> means that all cells touched by the road
+will have 1; this creates orthogonal connections along the road which
+can be useful in landscape analysis.</p>
+<div class="sourceCode" id="cb13"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb13-1"><a href="#cb13-1" tabindex="-1"></a><span class="fu">rasterizeToReference</span>(out<span class="sc">$</span>roadLines, <span class="at">destination =</span> out<span class="sc">$</span>roadsTemp,</span>
+<span id="cb13-2"><a href="#cb13-2" tabindex="-1"></a>                     <span class="at">allTouched =</span> <span class="cn">TRUE</span>, <span class="at">burn =</span> <span class="dv">1</span>)</span></code></pre></div>
+<p>Clip to eliminate the roads outside the study area.</p>
+<div class="sourceCode" id="cb14"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb14-1"><a href="#cb14-1" tabindex="-1"></a><span class="fu">warpToReference</span>(out<span class="sc">$</span>roadsTemp, out<span class="sc">$</span>roads, <span class="at">reference =</span> out<span class="sc">$</span>ref,</span>
+<span id="cb14-2"><a href="#cb14-2" tabindex="-1"></a>                <span class="at">clip =</span> input<span class="sc">$</span>bound)</span>
+<span id="cb14-3"><a href="#cb14-3" tabindex="-1"></a><span class="co">#&gt; [1] TRUE</span></span></code></pre></div>
+<p>Delete intermediate file and visualize.</p>
+<div class="sourceCode" id="cb15"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb15-1"><a href="#cb15-1" tabindex="-1"></a><span class="fu">deleteTif</span>(out<span class="sc">$</span>roadsTemp)</span>
+<span id="cb15-2"><a href="#cb15-2" tabindex="-1"></a>roads <span class="ot">&lt;-</span> <span class="fu">rast</span>(out<span class="sc">$</span>roads)</span>
+<span id="cb15-3"><a href="#cb15-3" tabindex="-1"></a><span class="fu">plot</span>(roads)</span></code></pre></div>
+<p><img src="data:image/png;base64,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" /><!-- --></p>
 </div>
 </div>
 <div id="ii.-preparing-raster-files-for-viewing-with-gis-software" class="section level2">
 <h2>II. Preparing raster files for viewing with GIS software</h2>
-<p>The workflow in this section is for creating .tif files that are ideally suited for viewing with GIS software. These are compressed, tiled, and have overviews (AKA pyramids). Depending on the data contained in the file we may also add statistics, a color table, and/or a Value Attribute Table (VAT). Tiling and overviews allow GIS software to efficiently display the data across a wide range of scales and compression reduces file size.</p>
-<p>Everything we do here either hinders reading and processing with the raster package or adds extra files that don't help, so I do not recommend running these functions on the files you plan to process with R. I use these to prep output rasters for viewing and distribution.</p>
-<p>Tiling and overviews aren't necessary for the small demonstration files we are using but make a huge difference with large datasets.</p>
-<p>For many datasets a single function call will create a copy of the input raster that is optimized for viewing. Here's an example with the slope grid produced above. It is a continuous grid so I'm setting <code>overviewResample=&quot;average&quot;</code> so that each overview cell will be assigned the average value of all the original cells it covers.</p>
-<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">  final.dir &lt;-<span class="st"> </span><span class="kw">file.path</span>(outDir, <span class="st">&quot;final&quot;</span>)
- <span class="kw">dir.create</span>(final.dir, <span class="dt">showWarnings =</span> <span class="ot">FALSE</span>)
- <span class="kw">makeNiceTif</span>(outPaths<span class="op">$</span>slope, <span class="kw">file.path</span>(final.dir,  <span class="st">&quot;slope.tif&quot;</span>) , <span class="dt">overviewResample =</span> <span class="st">&quot;average&quot;</span>)</code></pre></div>
-<p>For categorical data we may want to add a VAT and color table. I've found its very difficult to embed color tables in a tif file using R. The method used by <code>addColorTable()</code> works only for byte encoded grids; it also requires every integer between 0 and the maximum value in the grid to appear in the color table. Finally, it is displayed in a somewhat clunky way in ArcGIS. However, it is best way I've found to programmatically set the color and labels for categories in a tif file from within R; If you have a better way please let me know.</p>
-<p>We'll demonstrate with the road class grid we created above. First, we'll use <code>addColorTable()</code> to create a small .vrt (gdal virtual format) file that references the tif and adds color table information. The .vrt file can be opened directly with ArcGIS or QGIS but we'll use it to create a .tif with the color table embedded.</p>
-<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">key &lt;-<span class="st"> </span><span class="kw">read.csv</span>(inPaths<span class="op">$</span>key, <span class="dt">stringsAsFactors =</span> <span class="ot">FALSE</span>)  
-
-<span class="co"># Note the table must have &quot;value&quot;, and &quot;color&quot; columns and can optionally </span>
-<span class="co"># have a &quot;category&quot; column will class labels</span>
-vrt.file &lt;-<span class="st"> </span><span class="kw">addColorTable</span>(outPaths<span class="op">$</span>roadClass, <span class="dt">table =</span> key)</code></pre></div>
-<p>Next well encode the data and the color table into a new .tif. along with compression, tiling, and overviews. The default <code>overviewResample</code> of <code>&quot;near&quot;</code> is appropriate for categorical data.</p>
-<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">finalRoadClass &lt;-<span class="st"> </span><span class="kw">file.path</span>(final.dir,  <span class="st">&quot;roadClass.tif&quot;</span>)
-<span class="kw">makeNiceTif</span>(<span class="dt">source =</span> vrt.file, <span class="dt">destination =</span> finalRoadClass, <span class="dt">overwrite =</span> <span class="ot">TRUE</span>, <span class="dt">stats =</span> <span class="ot">FALSE</span> )
-<span class="co">#&gt; Compressing with system command:</span>
-<span class="co">#&gt;  gdal_translate -stats -co compress=LZW -co TFW=YES -co TILED=YES &quot;C:\Users\landeco\AppData\Local\Temp\5\RtmpgZJkgL/roadClass.vrt&quot; &quot;C:\Users\landeco\AppData\Local\Temp\5\RtmpgZJkgL/final/roadClass.tif&quot;  </span>
-<span class="co">#&gt; Adding overviews with system command:</span>
-<span class="co">#&gt;  gdaladdo -ro &quot;C:\Users\landeco\AppData\Local\Temp\5\RtmpgZJkgL/final/roadClass.tif&quot; 2 4 8 16 32 64 128 256 --config COMPRESS_OVERVIEW LZW -r nearest -clean</span></code></pre></div>
-<p>Finally, we can optionally add an ESRI style value attribute table (VAT) sidecar file to the dataset, that includes the attribute information from the key.</p>
-<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">
-<span class="kw">addVat</span>(<span class="dt">x =</span> finalRoadClass, <span class="dt">attributes =</span> key)</code></pre></div>
-<p>If you use ArcGIS you may want to add a VAT to a categorical raster even if you don't want to add attribute information or a color table. The presence of a VAT causes ArcGIS to default to a unique value display of the data and saves the user from having to wait in an interactive session for ArcGIS to build the VAT when you switch symbology to categories. In this case we can do everything in a single call to the <code>makeNiceTif()</code> function:</p>
-<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">roadWithVAT &lt;-<span class="st"> </span><span class="kw">file.path</span>(final.dir,  <span class="st">&quot;roadsWithVAT.tif&quot;</span>)
-<span class="kw">makeNiceTif</span>(<span class="dt">source =</span> outPaths<span class="op">$</span>roadClass, <span class="dt">destination =</span> roadWithVAT, <span class="dt">overwrite =</span> <span class="ot">TRUE</span>, <span class="dt">overviewResample =</span> <span class="st">&quot;near&quot;</span>, <span class="dt">stats =</span> <span class="ot">FALSE</span>, <span class="dt">vat =</span> <span class="ot">TRUE</span> )
-<span class="co">#&gt; Compressing with system command:</span>
-<span class="co">#&gt;  gdal_translate -stats -co compress=LZW -co TFW=YES -co TILED=YES &quot;C:\Users\landeco\AppData\Local\Temp\5\RtmpgZJkgL/roadClass.tif&quot; &quot;C:\Users\landeco\AppData\Local\Temp\5\RtmpgZJkgL/final/roadsWithVAT.tif&quot;  </span>
-<span class="co">#&gt; Adding overviews with system command:</span>
-<span class="co">#&gt;  gdaladdo -ro &quot;C:\Users\landeco\AppData\Local\Temp\5\RtmpgZJkgL/final/roadsWithVAT.tif&quot; 2 4 8 16 32 64 128 256 --config COMPRESS_OVERVIEW LZW -r nearest -clean </span>
-<span class="co">#&gt; building vat</span></code></pre></div>
+<p>geoTIFFs that are tiled, have overviews (AKA pyramids), stats,
+histograms, and possibly value attribute tables (VATs) will load faster
+in some GIS software than files that don’t; compression reduces file
+size.</p>
+<p>Most of those things either hinder reading and processing with the
+<strong>terra</strong> package or add extra files that don’t help. Do
+not use these functions on model input, instead use them on model output
+in preparation for viewing, or distribution.</p>
+<div id="setup-final-paths" class="section level3">
+<h3>Setup final paths</h3>
+<p>Create a “final” directory for these files.</p>
+<div class="sourceCode" id="cb16"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb16-1"><a href="#cb16-1" tabindex="-1"></a>finalDir <span class="ot">&lt;-</span> <span class="fu">file.path</span>(outDir, <span class="st">&quot;final&quot;</span>)</span>
+<span id="cb16-2"><a href="#cb16-2" tabindex="-1"></a><span class="fu">dir.create</span>(finalDir, <span class="at">showWarnings =</span> <span class="cn">FALSE</span>)</span>
+<span id="cb16-3"><a href="#cb16-3" tabindex="-1"></a>final <span class="ot">&lt;-</span> <span class="fu">list</span>()</span>
+<span id="cb16-4"><a href="#cb16-4" tabindex="-1"></a>final<span class="sc">$</span>slope <span class="ot">&lt;-</span> <span class="fu">file.path</span>(finalDir,  <span class="st">&quot;slope.tif&quot;</span>)</span>
+<span id="cb16-5"><a href="#cb16-5" tabindex="-1"></a>final<span class="sc">$</span>roads <span class="ot">&lt;-</span> <span class="fu">file.path</span>(finalDir,  <span class="st">&quot;roads.tif&quot;</span>)</span>
+<span id="cb16-6"><a href="#cb16-6" tabindex="-1"></a>final<span class="sc">$</span>roadclass <span class="ot">&lt;-</span> <span class="fu">file.path</span>(finalDir, <span class="st">&quot;roadclass.tif&quot;</span>)</span></code></pre></div>
+<p>For many data sets a single call to <code>makeNiceTiff()</code> will
+create a copy of the input raster that is optimized for viewing.</p>
+<p>The code below prepares the slope grid produced above for viewing.
+Slope is continuous so we set <code>overviewResample=&quot;average&quot;</code> so
+that each overview cell will be assigned the average value of the
+smaller cells it covers. This is different than the default of “nearest”
+used by many GIS systems.</p>
+<div class="sourceCode" id="cb17"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb17-1"><a href="#cb17-1" tabindex="-1"></a><span class="fu">makeNiceTif</span>(out<span class="sc">$</span>slope, final<span class="sc">$</span>slope, <span class="at">overviewResample =</span> <span class="st">&quot;average&quot;</span>)</span></code></pre></div>
+</div>
+</div>
+<div id="adding-a-value-attribute-table-vat" class="section level2">
+<h2>Adding a Value Attribute Table (VAT)</h2>
+<p>A value attribute table (VAT) is a table of all the unique values in
+a raster file, the count of cells of each, and any additional tabular
+data that is associated with each value. It’s stored in a “sidecar” file
+which has the full raster name and extension plus “.vat.dbf” so for
+“slope.tif” the vat is “slope.tif.vat.dbf”.</p>
+<p>There are two reasons you might want to add a VAT:</p>
+<ol style="list-style-type: decimal">
+<li><p>Adding a vat tells GIS software that the data is categorical and
+it will default to a categorical rather than gradient display when
+loaded.</p>
+<p>Do not add a VAT to continuous data (like slope).</p>
+<p>Create a VAT while preparing a file for export by setting
+<code>vat=TRUE</code>:</p></li>
+</ol>
+<div class="sourceCode" id="cb18"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb18-1"><a href="#cb18-1" tabindex="-1"></a><span class="fu">makeNiceTif</span>(<span class="at">source =</span> out<span class="sc">$</span>roads, <span class="at">destination =</span> final<span class="sc">$</span>roads,</span>
+<span id="cb18-2"><a href="#cb18-2" tabindex="-1"></a>            <span class="at">overwrite =</span> <span class="cn">TRUE</span>, <span class="at">overviewResample =</span> <span class="st">&quot;near&quot;</span>, <span class="at">stats =</span> <span class="cn">FALSE</span>,</span>
+<span id="cb18-3"><a href="#cb18-3" tabindex="-1"></a>            <span class="at">vat =</span> <span class="cn">TRUE</span>)</span></code></pre></div>
+<ol start="2" style="list-style-type: decimal">
+<li><p>Another reason to create a VAT is to associate additional
+information with each cell value - like the name of the landcover class,
+or road class.</p>
+<p>We’ll see an example below of this at the end of the next
+section.</p></li>
+</ol>
+<div id="color-tables" class="section level3">
+<h3>Color Tables</h3>
+<p>Color tables allow associating a specific color with every class, and
+as such are only suitable to categorical data and make a lot of sense
+for landcover where we might use greens for natural uplands, blues for
+water, grays and blacks for roads, etc.</p>
+<p>There are a couple of limitations to the color tables supported
+here.</p>
+<ol style="list-style-type: decimal">
+<li>The TIFF must be byte encoded.</li>
+<li>Every value between 0 and the maximum value is going to be in the
+table so ideally used values are sequential.</li>
+</ol>
+<p>Despite these limitations color tables allow you to programmatically
+set the color and labels for categories in a TIFF file from within R,
+and as such are really useful to process output from models that produce
+landcover TIFFs.</p>
+<p>The key needs to be a data frame with three named columns:</p>
+<ul>
+<li><code>value</code>: the integer value used to represent the category
+in the TIFF.</li>
+<li><code>category</code>: (optional) the category name associated with
+each value</li>
+<li><code>color</code>: the hexadecimal color to display</li>
+</ul>
+<div class="sourceCode" id="cb19"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb19-1"><a href="#cb19-1" tabindex="-1"></a>key <span class="ot">&lt;-</span> <span class="fu">read.csv</span>(input<span class="sc">$</span>key, <span class="at">stringsAsFactors =</span> <span class="cn">FALSE</span>)</span>
+<span id="cb19-2"><a href="#cb19-2" tabindex="-1"></a><span class="fu">print</span>(key)</span>
+<span id="cb19-3"><a href="#cb19-3" tabindex="-1"></a><span class="co">#&gt;   value    category   color</span></span>
+<span id="cb19-4"><a href="#cb19-4" tabindex="-1"></a><span class="co">#&gt; 1     1    motorway #CC0000</span></span>
+<span id="cb19-5"><a href="#cb19-5" tabindex="-1"></a><span class="co">#&gt; 2     2     primary #000000</span></span>
+<span id="cb19-6"><a href="#cb19-6" tabindex="-1"></a><span class="co">#&gt; 3     3   secondary #202020</span></span>
+<span id="cb19-7"><a href="#cb19-7" tabindex="-1"></a><span class="co">#&gt; 4     4    tertiary #663300</span></span>
+<span id="cb19-8"><a href="#cb19-8" tabindex="-1"></a><span class="co">#&gt; 5     5 residential #A9A9A9</span></span></code></pre></div>
+<p>Use <code>addColorTable()</code> to create a small <code>.vrt</code>
+(gdal virtual format) file that references the input TIFF and adds color
+table information.</p>
+<div class="sourceCode" id="cb20"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb20-1"><a href="#cb20-1" tabindex="-1"></a>vrt.file <span class="ot">&lt;-</span> <span class="fu">addColorTable</span>(out<span class="sc">$</span>roadClass, <span class="at">table =</span> key) <span class="co"># returns path to file</span></span></code></pre></div>
+<p>The <code>.vrt</code> file can be opened directly with ArcGIS or QGIS
+but it doesn’t contain the raster data.</p>
+<p>Create a geoTIFF that has the color table fully embedded in it while
+adding compression, tiling, stats, histograms, and overviews by calling
+<code>makeNiceTiff()</code> on the <code>.vrt</code> file. The default
+<code>overviewResample</code>of <code>&quot;near&quot;</code> is appropriate for
+categorical data.</p>
+<div class="sourceCode" id="cb21"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb21-1"><a href="#cb21-1" tabindex="-1"></a><span class="fu">makeNiceTif</span>(<span class="at">source =</span> vrt.file, <span class="at">destination =</span> final<span class="sc">$</span>roadclass,</span>
+<span id="cb21-2"><a href="#cb21-2" tabindex="-1"></a>            <span class="at">overwrite =</span> <span class="cn">TRUE</span>, <span class="at">stats =</span> <span class="cn">TRUE</span>)</span></code></pre></div>
+</div>
+<div id="add-attributes" class="section level3">
+<h3>Add attributes</h3>
+<p>The color table itself embeds class names but primarily for
+symbology. The <code>addVat()</code> function can be used to associate
+multiple attribute columns with each value in the grid as well as
+generate a count of how many times each value occurs.</p>
+<div class="sourceCode" id="cb22"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb22-1"><a href="#cb22-1" tabindex="-1"></a><span class="fu">addVat</span>(<span class="at">x =</span> final<span class="sc">$</span>roadclass, <span class="at">attributes =</span> key)</span></code></pre></div>
+<p>The result is a raster that will load quickly, display specific
+colors and labels for each class, and that contains class attribute
+data.</p>
 </div>
 </div>
 
