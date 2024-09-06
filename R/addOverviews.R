@@ -64,11 +64,6 @@ addOverviews <- function(x,
 
   usesf <- rasterPrepOptions()$usesf
 
-  ############################# STOP GAP #######################################
-  usesf <- FALSE  # Waiting on: https://github.com/r-spatial/sf/pull/2323
-  # to hit CRAN
-  ##############################################################################
-
   if (usesf) {
     args <- list(file = x,
                  clean = clean,

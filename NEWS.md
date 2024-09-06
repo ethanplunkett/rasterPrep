@@ -1,4 +1,13 @@
-## 64-bit branch 
+
+# rasterPrep 0.2.0.9002
+
+  This [pull request](https://github.com/r-spatial/sf/pull/2323/files)
+  has made it to CRAN so `addOverviews()` can now use `sf::gdal_addo()` 
+ 
+
+# rasterPrep 0.2.0.9001
+
+## 64 Bit 
 
 ### Breaking Changes
 
