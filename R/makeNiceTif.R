@@ -73,7 +73,7 @@
 #'   data cell values to it. If the existing no data value is not in the range
 #'   of values supported by `type` then they will end up with the value in range
 #'   that is closest to the existing value. If this argument isn't supplied and
-#'   `type` is used `noDataValue`` will be assigned based on the output of
+#'   `type` is used `noDataValue` will be assigned based on the output of
 #'   [assessType()] which often but not always picks an appropriate
 #'   value.
 #' @return This function creates a copy of the source raster at the destination

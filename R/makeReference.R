@@ -22,7 +22,7 @@ if (FALSE) {
 
 #'Create a reference grid from a focal area boundary.
 #'
-#'`makeReference` creates a raster file large enough to contain the boudnary
+#'`makeReference` creates a raster file large enough to contain the boundary
 #'polygon with pixels that are either aligned to the origin (default) or aligned
 #'to pixels in another raster.
 #'
@@ -34,17 +34,18 @@ if (FALSE) {
 #'the path to an existing raster file than the pixels will align with the pixels
 #'in that file.
 #'
-#'If `nestingCellsize` (optional and probably rarely used) is set to a multiple of
-#' `cellsize`, than the extent will be expanded out to match the extent that would
-#'be needed by this larger `nestingCellsize`. This is useful if you are working at
-#'multiple scales and want all scales to have the exact same extent. One example
-#'would be to set `cellsize` to 5 and `nestingCellsize` to 30. That will produce a
-#'reference raster with 5 meter pixels and an extent that will work well with
-#'both 5 and 30 meter pixels. Setting 30 and 30 will result in the same extent
-#'but with with 30 meter pixels.
-
-#' @param polyFile (character) path to a polygon shapefile (with `.shp` extension)
-#'    containing the boundaries of the focal area in the desired projection.
+#'If `nestingCellsize` (optional and probably rarely used) is set to a multiple
+#'of `cellsize`, than the extent will be expanded out to match the extent that
+#'would be needed by this larger `nestingCellsize`. This is useful if you are
+#'working at multiple scales and want all scales to have the exact same extent.
+#'One example would be to set `cellsize` to 5 and `nestingCellsize` to 30. That
+#'will produce a reference raster with 5 meter pixels and an extent that will
+#'work well with both 5 and 30 meter pixels. Setting 30 and 30 will result in
+#'the same extent but with with 30 meter pixels.
+#'
+#' @param polyFile (character) path to a polygon shapefile (with `.shp`
+#'   extension) containing the boundaries of the focal area in the desired
+#'   projection.
 #' @param destination (character) path to a .tif file where the reference grid
 #'   will be created.
 #' @param cellsize (numeric) the desired resolution or cellsize of the the

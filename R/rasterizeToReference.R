@@ -17,7 +17,7 @@
 #'
 #' When creating a new file
 #' the CRS of the source must match that of the reference and this used to be
-#' checked with [raster::compareCRS()] but with updates to the proj library and
+#' checked with [raster::compareCRS()] but with updates to the PROJ library and
 #' the switch to WKT representations I don't currently have a good way to check
 #' if two projections are equivalent. Its now up to the user to make sure that
 #' they are.
@@ -38,7 +38,7 @@
 #' extract values from
 #' @param init (optional, numeric) if supplied this value will be written into
 #' the grid as a background value prior to rasterizing.
-#' init can only be used if the destination does not already exist.
+#' `init` can only be used if the destination does not already exist.
 #' @param type the type of grid to create.
 #' Should be one of `"Byte"`, `"UInt16"`, `"Int16"`, `"UInt32"`, `"Int32"`,
 #' `"Float32"`,`"Float64"`

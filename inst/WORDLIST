@@ -48,10 +48,14 @@ ovr
 osgeo
 OSGEO
 OSGeo
+pre
 polyFile
 programmatically
 providedin
+PROJ
+PROJLIB
 QGIS
+rasterInfo
 rasterize
 Rasterize
 rasterized
@@ -60,6 +64,7 @@ rasterizing
 rasters
 rasterizeToReference
 rasterPrepOptions
+README
 resetLibs
 recode
 reproject
@@ -76,7 +81,11 @@ roadClassKey
 roadLines
 roxygen
 rrggbb
+sd
+sf
+sf's
 shp
+SignedByte
 SignedBytes
 slopeTemp
 sp
@@ -87,9 +96,12 @@ tif
 TIFF
 TIFFs
 twf
+UInt
+unparsed
 VATs
 VignetteEncoding
 VignetteEngine
 VignetteIndexEntry
 vrt
 warpToReference
+WKT

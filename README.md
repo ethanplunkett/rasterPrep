@@ -14,7 +14,7 @@ These tools will be especially useful when working with large datasets
 that may load very slowly or require additional processing in GIS software
 prior to viewing unless these extra components are provided. 
 
-This package calls gdal utilties bundled with the **sf** package and no longer
+This package calls GDAL Utilities bundled with the **sf** package and no longer
 requires them to be installed independently of R.
 
 

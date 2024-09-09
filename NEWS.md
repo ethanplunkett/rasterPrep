@@ -24,10 +24,10 @@
   * Add unit testing for all functions that call gdal utilities.
   
   * Switch from using shell commands to calling `sf::gdal_utils`, 
-  which uses gdal distributed with the **sf**
-  package. So the user does not need to install thier own gdal for the 
+  which uses GDAL distributed with the **sf**
+  package. So the user does not need to install their own GDAL for the 
   command line; and issues arising from weird GDAL configurations should be
-  reduced and opefully will be fully the responsibility of the **sf** team.
+  reduced and hopefully will be fully the responsibility of the **sf** team.
     * This is complete with the exception of `addOverviews`. An 
     [accepted PR](https://github.com/r-spatial/sf/pull/2323)
     
@@ -39,7 +39,7 @@
     behavior of exclusively using shell commands.
   
   * Overhaul vignette.
-  * Update readme.
+  * Update README.
   * Check spelling
   * Lint
 
@@ -48,7 +48,7 @@
 * On load rasterPrep now looks for an environmental variable `RASTERPREP_PROJ` 
   and if it exists calls `rasterPrepOptions(projLib = value)` with the result.
 
-  This allows setting the environmental variable projlib in a consistent way 
+  This allows setting the environmental variable `PROJ_LIB` in a consistent way 
   regardless of whether sp or rgdal is loaded in the session 
   (they change `PROJ_LIB`).  
 
@@ -86,7 +86,9 @@ the change log to NEWS.md
 * Used roxygen2md to update documentation (from old .Rd formatting to markdown)
 
 
-## Nov 17, 2022 (v.0.1.12) 
+# rasterPrep 0.1.12
+Nov 17, 2022 
+
 `warpToReference()` now has `BigTIFF` argument to request the BigTIFF extension
 of the geoTIFF format in output.
 BigTIFF is an extension of TIFF that allows files 
@@ -101,25 +103,25 @@ the lines of:
 
 Than you may need to use BigTIFF = TRUE
 
-## Oct 8, 2022 (v.0.1.11) 
+## Oct 8, 2022 (v 0.1.11) 
 
 * added `compression` argument to warpToReference which allows specifying LZW 
 or DEFLATE compression.
 
-## July 8, 2022 (v.0.1.10) 
+## July 8, 2022 (v 0.1.10) 
 
 * assessType now returns values consistent with the raster package's default no data types for Int16 and Int32. Previously these returned smaller values that were theoretically the smallest value an integer could hold, however, in practice it seemed to trip up some GIS software.
 
-## Jan 6. 2021 (v. 0.1.9) 
+## Jan 6. 2021 (v 0.1.9) 
 * makeNiceTif now calls gdalinfo with -stats -hist flags when the stats argument 
 is TRUE. This forces calculation of a histogram as well as the statistics. 
 Previously I used the -stats flag in gdal_translate which only did the stats.
 
-## Oct 28, 2021 (v. 0.1.8)
+## Oct 28, 2021 (v 0.1.8)
 
 * addOverviews now defaults to clean = FALSE. With clean = TRUE it just deleted overviews.
 
-## Oct 21, 2021 (v. 0.1.7)
+## Oct 21, 2021 (v 0.1.7)
 
 * The two functions that use gdal_rasterize (`rasterizeToRefence()` and `makeReference()`) were failing to retain the CRS. I tracked this down to the GDAL_DATA environment variable that rgdal is setting on load.  I was surprised to see that **sf** package also sets GDAL_DATA when it loads - to a yet different path. This problem was subtle as gdal_translate ran cleanly without error but silently dropped the projection. I now set both environmental variables (GDAL_DATA and PROJ_LIB) before system calls and then set both back to prior values right after each call.  This is all controlled through `rasterPrepOptions()`.  Note when I later tried to create a reproducible minimal example demonstrating side-effects from GDAL_DATA I couldn't; so I no longer feel certain that GDAL_DATA is a problem but I'm leaving code to reset it in just in case as I feel like the GDAL_DATA should be set to the directory on the system not those in the package installations of GDAL while executing system commands.
 
@@ -153,8 +155,7 @@ sf instead. Still pending:
 
 ## September 30, 2021 (V 0.1.5)
 
-* rasterPrep now by default sets the system environment setting  PROJ_LIB to  "" before invoking system calls. This behavior can be controlled with a new function rasterPrepOptions(). The current options are resetLibs and projLib which determine whether PROJ_LIB is set and what it's set to.  In all cases after running the system call the PROJ_LIB environment variable is reset to its original value. All of this is in response to a problem discussed here:  https://github.com/r-spatial/discuss/issues/31 where rgdal sets PROJ_LIB to point to its own installation within the package directory and consequently calls to gdal utilities installed on the system (perhaps a newer or older version) also use rgdal's proj library instead of the system's.  This mismatch sometimes results in clear errors but other times result in opaque errors or output that looks OK but is missing the spatial reference. The default value of "" is correct for my system. To determine what to use for your system restart R without any packages loaded and then execute: Sys.getenv("PROJ_LIB").  Note though if you see a path that ends in "/rgdal/proj" than you're looking at it after
-rgdal has set it and you very likely do not want to use that path. 
+* rasterPrep now by default sets the system environment setting  `PROJ_LIB` to  `""` before invoking system calls. This behavior can be controlled with a new function `rasterPrepOptions()`. The current options are `resetLibs` and `projLib` which determine whether `PROJ_LIB` is set and what it's set to.  In all cases after running the system call the PROJ_LIB environment variable is reset to its original value. All of this is in response to a problem discussed here:  https://github.com/r-spatial/discuss/issues/31 where rgdal sets PROJ_LIB to point to its own installation within the package directory and consequently calls to GDAL Utilities installed on the system (perhaps a newer or older version) also use rgdal's PROJ library instead of the system's.  This mismatch sometimes results in clear errors but other times result in opaque errors or output that looks OK but is missing the spatial reference. The default value of "" is correct for my system. To determine what to use for your system restart R without any packages loaded and then execute: `Sys.getenv("PROJ_LIB")`.  Note though if you see a path that ends in `"/rgdal/proj"` than you're looking at it after **rgdal** has set it and you very likely do not want to use that path. 
 
 
 

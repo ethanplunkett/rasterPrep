@@ -7,16 +7,16 @@
 #' This is a work in progress. The information returned by gdalinfo depends on
 #' the file type described and I've developed this while working primarily with
 #' single band ArcInfo Grids and geoTIFF files so this function is unlikely to
-#' parse all available information for all file types. Use `print(rasterInfo(x),
-#' raw = TRUE)`,  `x$raw` if `x` is a rasterInfo object, to see the unparsed
-#' text.
+#' parse all available information for all file types.
+#' Use `print(rasterInfo(x), raw = TRUE)`,  `x$raw` if `x` is a
+#' `rasterInfo` object, to see the original text.
 #'
 #' Some return values aren't standard for gdal but are calculated here from
 #' other values (e.g. `cellsize`, `type`, `extent`).
 
 #' @rdname rasterInfo
 #' @param x  For raster info the path to a raster file.
-#' For the print method a rasterInfo object as returned by `rasterInfo`.
+#' For the print method a `rasterInfo` object as returned by `rasterInfo`.
 #' @param all if `FALSE` (the default) some potentially lengthy components of
 #' `x` are omitted.  Use `print(x, all=TRUE)` to print everything.
 #' @param raw if `TRUE` Then the raw text from the gdalinfo call is printed.
@@ -61,8 +61,8 @@
 #'    \item{type}{the storage type of the band}
 #'    \item{colorinterp}{reported by gdal}
 #'    \item{stats}{list of min, max, mean, sd}
-#'    \item{na.value}{the No Data value used for the band. NA if there is no
-#'    No Data value or if gdalinfo reports 'nan'}
+#'    \item{na.value}{the No Data value used for the band. `NA `if there is no
+#'    No Data value or if gdalinfo reports `'nan'`}
 #'    \item{metadata}{any band specific metadata}
 #'    \item{imagestructuremetadata}{any band specific image structure metadata}
 #'  }}
@@ -84,7 +84,7 @@
 #'  tif <- system.file("extdata","slope.tif" , package = "rasterPrep")
 #'  rasterInfo(tif)
 #'
-#' @note  The `print` method for rasterInfo will, by default, skip some
+#' @note  The `print` method for `rasterInfo` will, by default, skip some
 #'   potentially large components. Use `print(x, all = TRUE)` to print
 #'   everything but the raw text; or `print(x, raw = TRUE)` to print the
 #'   raw text only. If the raster file is missing, corrupt, or otherwise

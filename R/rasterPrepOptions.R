@@ -4,7 +4,7 @@ rasterPrepSettings$projLib <- ""
 rasterPrepSettings$gdalData <- ""
 rasterPrepSettings$verbose <- FALSE
 rasterPrepSettings$usesf <- TRUE
-
+# nolint start: line_length_linter
 #'change rasterPrep package settings
 #'
 #'This function allows the user to retrieve or change the settings for the
@@ -12,10 +12,10 @@ rasterPrepSettings$usesf <- TRUE
 #'
 #' Settings in order of decreasing relevance:
 #'
-#'`verbose` - defaults to `FALSE`. If `TRUE` than progress and GDAL Utiltiy
+#'`verbose` - defaults to `FALSE`. If `TRUE` than progress and GDAL Utility
 #'arguments will be printed to the console.
 #'
-#'`usesf` - If `TRUE` use GDAL Utilty wrappers from the \pkg{sf} package.
+#'`usesf` - If `TRUE` use GDAL Utility wrappers from the \pkg{sf} package.
 #' Set to `FALSE` to use system installed GDAL utilities via `shell`, which
 #' must be installed separately.  `usesf = FALSE` has not been tested on all
 #' platforms and may be dropped in the future.
@@ -41,7 +41,7 @@ rasterPrepSettings$usesf <- TRUE
 #' Prior to that change PROJ was stable and all installed GDAL versions
 #' would use the same PROJ library directory.  However, when PROJ started
 #' changing it became important that the right PROJ directory was
-#' used. To get around PROJ version conflics `sp` and  `rgdal`  started
+#' used. To get around PROJ version conflicts `sp` and  `rgdal`  started
 #' changing system environmental variables when they were loaded.
 #' This helped calls to GDAL from those packages find the right PROJ directory
 #' but would break calls from R to the system installed GDAL if it used a
@@ -50,10 +50,10 @@ rasterPrepSettings$usesf <- TRUE
 #' variables for the duration of the system calls it made.
 #'
 #' See:
-#' [https://github.com/r-spatial/discuss/issues/31](https://github.com/r-spatial/discuss/issues/31)  # nolint: line_length_linter
+#' [https://github.com/r-spatial/discuss/issues/31](https://github.com/r-spatial/discuss/issues/31)
 #' for a discussion of this 'issue.
 #'
-#' \pkg{rasterPrep} currently uses \pkg{sf} by default bipassing all these
+#' \pkg{rasterPrep} currently uses \pkg{sf} by default bypassing all these
 #' complications.  As of April 2024 this is new, but assuming it proves stable
 #' the options to use system commands (`usesf = FALSE`) may be dropped
 #' completely.
@@ -115,3 +115,4 @@ rasterPrepOptions <- function(...) {
     return(as.list(rasterPrepSettings))
 
 }
+# nolint end: line_length_lintr

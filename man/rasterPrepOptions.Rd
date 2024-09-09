@@ -22,10 +22,10 @@ rasterPrep package
 \details{
 Settings in order of decreasing relevance:
 
-\code{verbose} - defaults to \code{FALSE}. If \code{TRUE} than progress and GDAL Utiltiy
+\code{verbose} - defaults to \code{FALSE}. If \code{TRUE} than progress and GDAL Utility
 arguments will be printed to the console.
 
-\code{usesf} - If \code{TRUE} use GDAL Utilty wrappers from the \pkg{sf} package.
+\code{usesf} - If \code{TRUE} use GDAL Utility wrappers from the \pkg{sf} package.
 Set to \code{FALSE} to use system installed GDAL utilities via \code{shell}, which
 must be installed separately.  \code{usesf = FALSE} has not been tested on all
 platforms and may be dropped in the future.
@@ -51,7 +51,7 @@ disarray when the PROJ library was updated from version 4.
 Prior to that change PROJ was stable and all installed GDAL versions
 would use the same PROJ library directory.  However, when PROJ started
 changing it became important that the right PROJ directory was
-used. To get around PROJ version conflics \code{sp} and  \code{rgdal}  started
+used. To get around PROJ version conflicts \code{sp} and  \code{rgdal}  started
 changing system environmental variables when they were loaded.
 This helped calls to GDAL from those packages find the right PROJ directory
 but would break calls from R to the system installed GDAL if it used a
@@ -60,10 +60,10 @@ would defensively reset the the \code{PROJ_LIB} and \code{GDAL_DATA} environment
 variables for the duration of the system calls it made.
 
 See:
-\url{https://github.com/r-spatial/discuss/issues/31}  # nolint: line_length_linter
+\url{https://github.com/r-spatial/discuss/issues/31}
 for a discussion of this 'issue.
 
-\pkg{rasterPrep} currently uses \pkg{sf} by default bipassing all these
+\pkg{rasterPrep} currently uses \pkg{sf} by default bypassing all these
 complications.  As of April 2024 this is new, but assuming it proves stable
 the options to use system commands (\code{usesf = FALSE}) may be dropped
 completely.

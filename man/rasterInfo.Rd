@@ -11,7 +11,7 @@ rasterInfo(x)
 }
 \arguments{
 \item{x}{For raster info the path to a raster file.
-For the print method a rasterInfo object as returned by \code{rasterInfo}.}
+For the print method a \code{rasterInfo} object as returned by \code{rasterInfo}.}
 
 \item{all}{if \code{FALSE} (the default) some potentially lengthy components of
 \code{x} are omitted.  Use \code{print(x, all=TRUE)} to print everything.}
@@ -61,8 +61,8 @@ This format matches the way grid extents are defined in \pkg{gridio2}.}
 \item{type}{the storage type of the band}
 \item{colorinterp}{reported by gdal}
 \item{stats}{list of min, max, mean, sd}
-\item{na.value}{the No Data value used for the band. NA if there is no
-No Data value or if gdalinfo reports 'nan'}
+\item{na.value}{the No Data value used for the band. \code{NA }if there is no
+No Data value or if gdalinfo reports \code{'nan'}}
 \item{metadata}{any band specific metadata}
 \item{imagestructuremetadata}{any band specific image structure metadata}
 }}
@@ -84,14 +84,15 @@ list.
 This is a work in progress. The information returned by gdalinfo depends on
 the file type described and I've developed this while working primarily with
 single band ArcInfo Grids and geoTIFF files so this function is unlikely to
-parse all available information for all file types. Use \code{print(rasterInfo(x), raw = TRUE)},  \code{x$raw} if \code{x} is a rasterInfo object, to see the unparsed
-text.
+parse all available information for all file types.
+Use \code{print(rasterInfo(x), raw = TRUE)},  \code{x$raw} if \code{x} is a
+\code{rasterInfo} object, to see the original text.
 
 Some return values aren't standard for gdal but are calculated here from
 other values (e.g. \code{cellsize}, \code{type}, \code{extent}).
 }
 \note{
-The \code{print} method for rasterInfo will, by default, skip some
+The \code{print} method for \code{rasterInfo} will, by default, skip some
 potentially large components. Use \code{print(x, all = TRUE)} to print
 everything but the raw text; or \code{print(x, raw = TRUE)} to print the
 raw text only. If the raster file is missing, corrupt, or otherwise
