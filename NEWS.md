@@ -1,4 +1,12 @@
-## 64-bit branch 
+
+
+
+## rasterPrep 0.2.0.9002
+
+  * Add dependency on sf >=1.0-16.  
+  * Use sf's gdal for overviews.
+
+## rasterPrep 0.2.0.9001
 
 ### Breaking Changes
 
@@ -23,6 +31,7 @@
   reduced and opefully will be fully the responsibility of the **sf** team.
     * This is complete with the exception of `addOverviews`. An 
     [accepted PR](https://github.com/r-spatial/sf/pull/2323)
+    
     fixes an issue with `sf::gdal_addo` that blocked the use of 
     configure options - making it impossible to create compressed overviews. 
     With the next update to **sf** on CRAN I'll switch `addOverviews` over to

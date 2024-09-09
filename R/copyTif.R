@@ -1,11 +1,12 @@
-#' Function to copy a tif and all its associated files
+#' Copy a TIFF and all its associated files
 #'
-#' @param from (character) path to a tif to be copied
+#' @param from (character) path to a TIFF to be copied
 #' @param to (character) path where copy will be created
-#' @param includeVrt (logical) if TRUE also copy an associated .vrt file with
-#'   same base name.
-#' @param overwrite (logical) if TRUE overwrite existing file if FALSE don't.
-#' @return this function returns nothing
+#' @param includeVrt (logical) if `TRUE` also copy an associated `.vrt` file
+#' with same base name.
+#' @param overwrite (logical) if `TRUE` overwrite existing file if `FALSE`
+#' don't.
+#' @return Nothing is returned.
 #' @export
 
 copyTif <- function(from, to, includeVrt = TRUE, overwrite = FALSE) {

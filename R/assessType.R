@@ -1,25 +1,28 @@
+# nolint start: line_length_linter
 #' Standardize type and determine associated no data value.
 #'
-#' This function accepts type strings as used by gdal_translate and gdal_warp:
+#' `assessType` standardize the storage type before passing it
+#' to GDAL and to determines the no data value to use for the storage type.
+#' It accepts type strings as used by `gdal_translate` and `gdal_warp`:
 #' `"Byte"`,  `"Int16"`,  `"UInt16"`,  `"Int32"`,
 #' `"UInt32"`,  `"Float32"`,  `"Float64"`; or as used
 #' by [terra::writeRaster()], standardizes them
 #' to work with gdal and returns the type, a logical indicating if it's a signed
 #' byte, and a no data value appropriate for that type.
 #'
-#' There is no universally accepted no data value for each type. Every
-#' file can have it's own no data value.  `rasterPrep` uses the
-#' highest possible value for unsigned integers, lowest for signed integers.
+#' There is no universally accepted no data value for each type; every
+#' geoTIFF file can have it's own no data value.  `rasterPrep` uses the
+#' highest possible value for unsigned integers, and lowest for signed integers.
 #' For floating point numbers it uses values close to the lowest possible.
 #' These follow the defaults used by the deprecated **raster** package,
 #' and for integers are consistent with [terra::writeRaster()] documentation.
 #'
-#' SignedBytes are special case in gdal and are written as bytes with an
+#' SignedBytes are special case in GDAL and are written as bytes with an
 #' additional flag that indicates they are signed. I'm not sure how widely this
-#' is supported in other software. Although its included it here it is not
-#' currently support by other **rasterPrep** functions.
+#' is supported in other software. Although it is included here it is not
+#' currently supported by other **rasterPrep** functions.
 #'
-#' Default No Data Values used in **rasterPrep**
+#' Default No Data Values used in **rasterPrep**:
 #'
 #' | gdal      |terra  | No Data Value |  Formula  |
 #' |:----------|:------|---------------|----------:|
@@ -34,20 +37,21 @@
 #'
 #' @param type A data type designation as used by
 #' [gdalwarp](https://gdal.org/programs/gdalwarp.html#cmdoption-gdalwarp-ot) and
-#' [gdal_translate](https://gdal.org/programs/gdal_translate.html#cmdoption-gdal_translate-ot) # nolint: line_length_lintr
+#' [gdal_translate](https://gdal.org/programs/gdal_translate.html#cmdoption-gdal_translate-ot)
 #'  `-ot` arguments, or as used by the [terra::writeRaster] `datatype` argument.
 #'
 #' @return `assessType` returns a list with:
 #' \describe{
-#'   \item{type}{(character) indicating the data type in the format used by
+#'   \item{`type`}{(character) indicating the data type in the format used by
 #'   gdal}
-#'   \item{isSignedByte}{(logical) indicating if it should be written as a
+#'   \item{`isSignedByte`}{(logical) indicating if it should be written as a
 #'   signed byte}
-#'   \item{noDataValue}{(numeric) the value that will be used to represent
+#'   \item{`noDataValue`}{(numeric) the value that will be used to represent
 #'   no data in a raster of this type.}
 #'  }
 #' @export
 #' @keywords internal
+# nolint end
 assessType <- function(type) {
   isSignedByte <- FALSE
   tab <- data.frame(type = c("SignedByte",

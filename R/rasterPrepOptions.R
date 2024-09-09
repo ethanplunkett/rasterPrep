@@ -10,60 +10,57 @@ rasterPrepSettings$usesf <- TRUE
 #'This function allows the user to retrieve or change the settings for the
 #'rasterPrep package
 #'
-#'Currently there are five settings:
+#' Settings in order of decreasing relevance:
+#'
+#'`verbose` - defaults to `FALSE`. If `TRUE` than progress and GDAL Utiltiy
+#'arguments will be printed to the console.
+#'
+#'`usesf` - If `TRUE` use GDAL Utilty wrappers from the \pkg{sf} package.
+#' Set to `FALSE` to use system installed GDAL utilities via `shell`, which
+#' must be installed separately.  `usesf = FALSE` has not been tested on all
+#' platforms and may be dropped in the future.
+#'
+#' The remaining three options are all only relevant if `usesf` is `FALSE` and
+#' are to manage the issues created by the `sp` and `rgdal`.
+#' They may be dropped in the future.
 #'
 #'`resetLibs` -  controls whether raster prep should attempt to reset the system
 #'environmental settings for PROJ_LIB and GDAL_DATA prior to executing system
-#'calls it defaults to TRUE.
+#'calls it defaults to`TRUE`.
 #'
-#'`projLib` - is what the PROJ_LIB environmental setting should be when making
-#' shell calls to gdal utilities. It defaults to the system environment
-#' variable "RASTERPREP_PROJ" or if that's not set to an empty string (`""`).
+#'`projLib` - is what the `PROJ_LIB` environmental setting should be when making
+#' shell calls to GDAL Utilities. It defaults to the system environment
+#' variable `RASTERPREP_PROJ` or if that's not set to an empty string (`""`).
 #'
 #'`gdalData` - is what the GDAL_DATA environmental variable should be set to
 #' during shell calls (if `resetsLibs` is `TRUE`). It defaults to an empty
 #' string (`""`).
 #'
-#'`verbose` - defaults to FALSE.  If TRUE than progress and command structure
-#'will be printed to the console.
+#' There's a lot of historical junk here.  R spatial packages were all put in
+#' disarray when the PROJ library was updated from version 4.
+#' Prior to that change PROJ was stable and all installed GDAL versions
+#' would use the same PROJ library directory.  However, when PROJ started
+#' changing it became important that the right PROJ directory was
+#' used. To get around PROJ version conflics `sp` and  `rgdal`  started
+#' changing system environmental variables when they were loaded.
+#' This helped calls to GDAL from those packages find the right PROJ directory
+#' but would break calls from R to the system installed GDAL if it used a
+#' different PROJ version.  In response `rasterPrep`
+#' would defensively reset the the `PROJ_LIB` and `GDAL_DATA` environmental
+#' variables for the duration of the system calls it made.
 #'
-#'`usesf` - If TRUE use the sf package.  Otherwise use shell to call gdal
-#' utilities on the command line. This is a temporary option to facilitate
-#' the transition to **sf** and will be dropped when the transition is complete.
+#' See:
+#' [https://github.com/r-spatial/discuss/issues/31](https://github.com/r-spatial/discuss/issues/31)  # nolint: line_length_linter
+#' for a discussion of this 'issue.
 #'
-#'On my system in a clean R session Sys.getenv("PROJ_LIB") will return "" but
-#'after rgdal or sp are loaded it will be
-#'"C:/Users/user/Documents/R/win-library/4.0/rgdal/proj" GDAL_DATA is similarly
-#'changed.  Also note if sf is loaded it changes the GDAL_DATA variable to
-#'something else.
-#'
-#'Unfortunately that means that when you try to run any  of the gdal utilities
-#'via a system call they don't use the co-installed proj library but instead use
-#'rgdal's version. If the versions match this may not be a problem but if they
-#'don't things may go wrong in sometimes obvious and sometimes very subtle ways.
-#'gdal_utilities gets around this by using GDAL installed with sf but doesn't
-#'support all of the utilities I use here - gdaladdo is missing.
-#'
-#'With the default values rasterPrep will change the PROJ_LIB and GDAL_DATA
-#'environment variables to "" before making a system call.
-#'
-#'This can be turned off with `rasterPrepOptions(resetLibs = FALSE)` or changed
-#'to to different location with for example `rasterPrepOptions(projLib =
-#'"C:/Proj/")` or some appropriate for your system.
-#'
-#'The package will always reset the PROJ_LIB and GDAL_DATA variables to the
-#'original value after each the system call so other functions will find
-#'them set as expected or at least as it was.
-#'
-#'Also, note all the changes made by rgdal, sp, sf, and this package are just
-#'for the r session not for the computer as a whole.
-#'
-#'See:   https://github.com/r-spatial/discuss/issues/31 for a discussion of this
-#'issue.
+#' \pkg{rasterPrep} currently uses \pkg{sf} by default bipassing all these
+#' complications.  As of April 2024 this is new, but assuming it proves stable
+#' the options to use system commands (`usesf = FALSE`) may be dropped
+#' completely.
 #'
 #'@param ... Arguments should be settings to reset with their value the new
 #'  setting. If called with no arguments nothing is changed but the current
-#'  settings are printed.
+#'  settings are returned.
 #'@export
 #'@return a list of the current settings is returned if the function is called
 #'  with no arguments.

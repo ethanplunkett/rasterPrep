@@ -9,22 +9,22 @@ findTifFiles(x, includeVrt = TRUE)
 \arguments{
 \item{x}{(character) the path to a single TIFF file.}
 
-\item{includeVrt}{(logical) if TRUE consider a \emph{.vrt} with the same base name
-to be associated.}
+\item{includeVrt}{(logical) if \code{TRUE} consider a \code{.vrt} with the same base
+name to be associated.}
 }
 \value{
 a vector of files associated with \code{x}
 }
 \description{
-This is primarily intended for internal use and is called by
+\code{findTifFiles()} is primarily intended for internal use and is called by
 \code{\link[=copyTif]{copyTif()}},\code{\link[=deleteTif]{deleteTif()}}, and \code{\link[=renameTif]{renameTif()}}.
 }
 \details{
-Given the path to a TIFF file (\emph{.tif} extension) return the path to all
-the associated files, including the original \strong{.tif}.  Any file that
-includes the full name (with \strong{.tif} extension and some additional
-extension  e.g. \emph{.tif.ovr}) a world
-file which has the same base name but \emph{.twf} instead of \emph{.tif} and if
-\code{includeVrt} is TRUE a \emph{.vrt} file with the same name.
+Given the path to a TIFF file (\code{.tif} extension) return the path to all
+the associated files, including the original \code{.tif}.  Any file that
+includes the full name (with \code{.tif} extension and some additional
+extension  e.g. \code{.tif.ovr}) a world
+file which has the same base name but \code{.twf} instead of \code{.tif} and if
+\code{includeVrt} is TRUE a \code{.vrt} file with the same name.
 }
 \keyword{internal}

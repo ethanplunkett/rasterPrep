@@ -146,7 +146,7 @@ makeReference(polyFile = input$bound, destination = out$ref, cellsize = 30)
 The optional `alignTo` argument determines the cell alignment (AKA snapping), 
 there are two options to choose from:
 
-1. The default (`"alignto=origin"`) means that the edges of the cells will all 
+1. The default (`"alignto = "origin"`) means that the edges of the cells will all 
 fall on integer multiples of the cell size. 
 
 2. If you have an important raster data set in your desired CRS and resolution 
@@ -154,10 +154,10 @@ you may set your reference cell alignment to match it so that there is
 no resampling or transformation required for that data set. This is especially 
 helpful for categorical data (like landcover) which is particularly hard to 
 resample without loss of information. 
-In this case you would set `alignTo="reference"` and then set the `reference` 
-argument to the path of a raster with the desired cell alignment.  In this
-function, in contrast with others in the package, the reference will only be
-used for cell alignment.
+In this case you would set `alignTo = "reference"` and then set the `reference` 
+argument to the path of a raster with the desired cell alignment.  In 
+`makeReference` unlike other functions in *rasterPrep* the reference will only
+be used for cell alignment.
 
 
 With either alignment scheme the resulting raster is going to have an 
@@ -173,7 +173,8 @@ that matches the reference resolution and extent.
 
 Slope is continuous so the `"bilinear"` resampling method is appropriate.
 Use the default nearest neighbor method (`method = "near"`) for 
-categorical data, like landcover.  
+categorical data, like landcover.  If your input raster has much smaller cells
+than the reference `method = "average"` is a good choice.
 
 ```{r, echo = TRUE, message = FALSE, warning = FALSE, results = FALSE}
 warpToReference(input$slope, out$slopeTemp, reference = out$ref,

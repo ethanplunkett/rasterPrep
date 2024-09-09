@@ -9,22 +9,24 @@ assessType(type)
 \arguments{
 \item{type}{A data type designation as used by
 \href{https://gdal.org/programs/gdalwarp.html#cmdoption-gdalwarp-ot}{gdalwarp} and
-\href{https://gdal.org/programs/gdal_translate.html#cmdoption-gdal_translate-ot}{gdal_translate} # nolint: line_length_lintr
+\href{https://gdal.org/programs/gdal_translate.html#cmdoption-gdal_translate-ot}{gdal_translate}
 \code{-ot} arguments, or as used by the \link[terra:writeRaster]{terra::writeRaster} \code{datatype} argument.}
 }
 \value{
 \code{assessType} returns a list with:
 \describe{
-\item{type}{(character) indicating the data type in the format used by
+\item{\code{type}}{(character) indicating the data type in the format used by
 gdal}
-\item{isSignedByte}{(logical) indicating if it should be written as a
+\item{\code{isSignedByte}}{(logical) indicating if it should be written as a
 signed byte}
-\item{noDataValue}{(numeric) the value that will be used to represent
+\item{\code{noDataValue}}{(numeric) the value that will be used to represent
 no data in a raster of this type.}
 }
 }
 \description{
-This function accepts type strings as used by gdal_translate and gdal_warp:
+\code{assessType} standardize the storage type before passing it
+to GDAL and to determines the no data value to use for the storage type.
+It accepts type strings as used by \code{gdal_translate} and \code{gdal_warp}:
 \code{"Byte"},  \code{"Int16"},  \code{"UInt16"},  \code{"Int32"},
 \code{"UInt32"},  \code{"Float32"},  \code{"Float64"}; or as used
 by \code{\link[terra:writeRaster]{terra::writeRaster()}}, standardizes them
@@ -32,19 +34,19 @@ to work with gdal and returns the type, a logical indicating if it's a signed
 byte, and a no data value appropriate for that type.
 }
 \details{
-There is no universally accepted no data value for each type. Every
-file can have it's own no data value.  \code{rasterPrep} uses the
-highest possible value for unsigned integers, lowest for signed integers.
+There is no universally accepted no data value for each type; every
+geoTIFF file can have it's own no data value.  \code{rasterPrep} uses the
+highest possible value for unsigned integers, and lowest for signed integers.
 For floating point numbers it uses values close to the lowest possible.
 These follow the defaults used by the deprecated \strong{raster} package,
 and for integers are consistent with \code{\link[terra:writeRaster]{terra::writeRaster()}} documentation.
 
-SignedBytes are special case in gdal and are written as bytes with an
+SignedBytes are special case in GDAL and are written as bytes with an
 additional flag that indicates they are signed. I'm not sure how widely this
-is supported in other software. Although its included it here it is not
-currently support by other \strong{rasterPrep} functions.
+is supported in other software. Although it is included here it is not
+currently supported by other \strong{rasterPrep} functions.
 
-Default No Data Values used in \strong{rasterPrep}\tabular{lllr}{
+Default No Data Values used in \strong{rasterPrep}:\tabular{lllr}{
    gdal \tab terra \tab No Data Value \tab Formula \cr
    SignedByte \tab INT1S \tab -1.280000e+02 \tab -2^7 \cr
    Byte \tab INT1U \tab 2.550000e+02 \tab 2^8 -1 \cr

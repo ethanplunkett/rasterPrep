@@ -1,41 +1,43 @@
+# nolint start: line_length_linter
 #'Function to add overviews to an image file
 #'
 #' This function creates overviews (aka pyramids) with compressed copies
 #'  of the data from a raster at multiple coarser resolutions. They are saved in
-#'  a side car file with the extension ".ovr" appended to the original file's
-#'  full name (e.g. "dem.tif.ovr" would contain the overviews for "dem.tif").
+#'  a side car file with the extension `".ovr"` appended to the original file's
+#'  full name (e.g. `"dem.tif.ovr"` would contain the overviews for `"dem.tif"`).
 #'  Overview are used by GIS software to display the raster file more quickly
 #'  when zoomed out. They are especially useful for large files.
 #'
 #'Generally the default arguments are good but you may want to change the method
-#'to "average" for continuous raster files and possibly to "mode" for
+#'to `"average"` for continuous raster files and possibly to `"mode"` for
 #'categorical files. For continuous files, especially imagery, if you are OK
 #'with lossy compression in the overviews you may change the compression to
 #' `"JPEG"` which should result in smaller files.
 #'
-#'#' This is a convenience wrapper to the
-#' [gdaladdo](https://www.gdal.org/gdaladdo.html)  command line utility.
-#' `addOverviews()` sets reasonable defaults, only some of
-#' which can be overridden.
+#' `addOveriews` is a convenience wrapper to the
+#' [gdaladdo](https://www.gdal.org/gdaladdo.html) utility.
+#' `addOverviews()` sets reasonable defaults, only some of which can be
+#' overridden.
 #'
-#' @param x (character) the path to a tif or other raster file
-#' @param clean (logical) defaults to FALSE; if TRUE overviews are removed
-#'   instead of added
-#' @param compression (character) the style of compression used in the overviews
-#'  options are: "LZW" (the default), "DEFLATE", and "JPEG"
-#' @param method (character) the resampling method one of nearest,
-#'   average, gauss, cubic, cubicspline, lanczos,
-#'   average_mp, average_magphase, or mode. It is passed to
+#' @param x The path to a TIFF or other raster file.
+#' @param clean Defaults to `FALSE`; set to `TRUE` to remove instead of add
+#' overviews.
+#' @param compression The style of compression used in the overviews
+#'  options are: `"LZW"` (the default), `"DEFLATE"`, and `"JPEG"`.
+#' @param method (character) the resampling method one of `"nearest"`,
+#'   `"average"`, `"gauss"`, `"cubic"`, `"cubicspline"`, `"lanczos"`,
+#'   `"average_mp"`, `"average_magphase"`, or `"mode"`. It is passed to
 #'   [gdaladdo](http://www.gdal.org/gdaladdo.html) check there for details.
 #'    `"near"` is also accepted and silently converted to, `"nearest"`.
 #' @param overviews Overview levels to use.
-#' See [gdaladdo  <levels>](https://gdal.org/programs/gdaladdo.html#cmdoption-gdaladdo-arg-levels) # nolint: line_length_linter
+#' See [gdaladdo  <levels>](https://gdal.org/programs/gdaladdo.html#cmdoption-gdaladdo-arg-levels)
 #' @param readonly if TRUE `x` will not be modified and
 #' overviews will be written to an external file.
-#' See [gdaladdo -ro](https://gdal.org/programs/gdaladdo.html#cmdoption-gdaladdo-arg-levels) # nolint: line_length_linter
-#' @return this function creates an additional ".ovr" file alongside `x` with
-#'  overview information.  It does not return anything.
+#' See [gdaladdo -ro](https://gdal.org/programs/gdaladdo.html#cmdoption-gdaladdo-arg-levels)
+#' @return `addOverviews` creates an additional `".ovr"` file alongside `x`
+#' with overview information.  It does not return anything.
 #' @export
+# nolint end
 addOverviews <- function(x,
                          clean = FALSE,
                          compression = "LZW",
@@ -63,11 +65,6 @@ addOverviews <- function(x,
   stopifnot(compression %in% validCompression)
 
   usesf <- rasterPrepOptions()$usesf
-
-  ############################# STOP GAP #######################################
-  usesf <- FALSE  # Waiting on: https://github.com/r-spatial/sf/pull/2323
-  # to hit CRAN
-  ##############################################################################
 
   if (usesf) {
     args <- list(file = x,

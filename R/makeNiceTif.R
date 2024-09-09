@@ -1,19 +1,19 @@
-#' Function to compress and possibly reformat a tif with options to build
-#' overviews and vat
+#' Compress and reformat a TIFF with options to build overviews and VAT
 #'
-#' This function creates a compressed copy of a tif with LZW compression,
-#' stats, and internal tiling. It will optionally build overview and add a vat.
+#' `makeNiceTif()` creates a compressed copy of a TIFF with LZW compression,
+#' stats, and internal tiling. It will optionally build overviews and add a VAT.
 #' The output should be ready to view quickly and easily in interactive GIS
 #' software.
 #'
-#' This function is intended to be called after analysis to prepare result
+#' `makeNiceTif()` is intended to be called after analysis to prepare result
 #' rasters so they can be viewed easily in GIS software. Because it creates
-#' tiled .tif files it is not a good idea to run on files in preparation for
-#'  analysis with the raster package as that package reads by lines.
+#' tiled TIFF files it is not a good idea to run on files in preparation for
+#'  analysis with the \pkg{terra} package as it reads by lines, and does not
+#'  benefit from overviews.
 #'
 #'  ## No Data values and changes in type
 #'
-#' `type` is currently passed to gdal_translate which will reset the
+#' `type` is currently passed to `gdal_translate` which will reset the
 #'  type to the desired value but will **NOT** update no data values of cells.
 #'  One of two things will happen. If the existing no data value is within the
 #'  values supported by the output type they will retain that value. Otherwise
@@ -26,15 +26,15 @@
 #'   initial NA value is high because it will will be truncated to the highest
 #'    value in the Int16 and which is what the new no data value will be set to.
 #'    The default `noDataValue` of the output when using `type` and not
-#'    specifying the `noDataValue` is determined by \code{\link{assessType}}.
+#'    specifying the `noDataValue` is determined by [assessType].
 #'
 #'  If you use `type` and your output raster ends up with values cells that were
 #'  originally no data you might be able to remedy this by setting
 #'  `noDataValue` to that value.
 #'
 #'  If you want to change the type you can do so safely in a call to
-#'  warpToReference prior to using this function as gdalwarp can reset the type
-#'  and reset the values of the NA cell to the new noDataValue.
+#'  [warpToReference()] prior to using this function as gdalwarp can reset
+#'  the type and reset the values of the NA cell to the new `noDataValue`.
 #'
 #'
 #' This is a wrapper to the `gdaltranslate` command line utility coupled with
@@ -42,11 +42,11 @@
 #' translation see [gdalUtilities::gdal_translate()].
 #'
 #' If you intend to create a color table for a categorical raster first call
-#' [addColorTable()] and then pass the .vrt file it creates to this function.
+#' [addColorTable()] and then pass the `.vrt` file it creates to this function.
 #
-#' @param source (character) path to a raster file readable by gdal.
-#' @param destination (character) path to a .tif file to be created for viewing
-#'  with GIS software
+#' @param source (character) path to a raster file readable by GDAL.
+#' @param destination (character) path to a TIFF file to be created for viewing
+#'  with GIS software.
 #' @param type (character) If the `type` is used the output will be converted
 #' to it. It should be one of `"Byte"`, `"UInt16"`, `"Int16"`,
 #'   `"UInt32"`, `"Int32"`, `"Float32"`, `"Float64"` or for convenience you may
@@ -64,7 +64,7 @@
 #'  file will be created containing all the unique values in the grid and
 #'  their associated count of cells. This is only recommended for categorical
 #'  data and can be slow but will speed up setting up symbology of that data
-#'   in ArcGIS.
+#'   in ESRI software.
 #' @param stats (logical) if `TRUE` than statistics are generated and saved;
 #'    this helps GIS software transform continuous data
 #'    (e.g. make a standard deviation color ramp)

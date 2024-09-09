@@ -14,48 +14,48 @@ addOverviews(
 )
 }
 \arguments{
-\item{x}{(character) the path to a tif or other raster file}
+\item{x}{The path to a TIFF or other raster file.}
 
-\item{clean}{(logical) defaults to FALSE; if TRUE overviews are removed
-instead of added}
+\item{clean}{Defaults to \code{FALSE}; set to \code{TRUE} to remove instead of add
+overviews.}
 
-\item{compression}{(character) the style of compression used in the overviews
-options are: "LZW" (the default), "DEFLATE", and "JPEG"}
+\item{compression}{The style of compression used in the overviews
+options are: \code{"LZW"} (the default), \code{"DEFLATE"}, and \code{"JPEG"}.}
 
-\item{method}{(character) the resampling method one of nearest,
-average, gauss, cubic, cubicspline, lanczos,
-average_mp, average_magphase, or mode. It is passed to
+\item{method}{(character) the resampling method one of \code{"nearest"},
+\code{"average"}, \code{"gauss"}, \code{"cubic"}, \code{"cubicspline"}, \code{"lanczos"},
+\code{"average_mp"}, \code{"average_magphase"}, or \code{"mode"}. It is passed to
 \href{http://www.gdal.org/gdaladdo.html}{gdaladdo} check there for details.
 \code{"near"} is also accepted and silently converted to, \code{"nearest"}.}
 
 \item{overviews}{Overview levels to use.
-See \href{https://gdal.org/programs/gdaladdo.html#cmdoption-gdaladdo-arg-levels}{gdaladdo  \if{html}{\out{<levels>}}} # nolint: line_length_linter}
+See \href{https://gdal.org/programs/gdaladdo.html#cmdoption-gdaladdo-arg-levels}{gdaladdo  \if{html}{\out{<levels>}}}}
 
 \item{readonly}{if TRUE \code{x} will not be modified and
 overviews will be written to an external file.
-See \href{https://gdal.org/programs/gdaladdo.html#cmdoption-gdaladdo-arg-levels}{gdaladdo -ro} # nolint: line_length_linter}
+See \href{https://gdal.org/programs/gdaladdo.html#cmdoption-gdaladdo-arg-levels}{gdaladdo -ro}}
 }
 \value{
-this function creates an additional ".ovr" file alongside \code{x} with
-overview information.  It does not return anything.
+\code{addOverviews} creates an additional \code{".ovr"} file alongside \code{x}
+with overview information.  It does not return anything.
 }
 \description{
 This function creates overviews (aka pyramids) with compressed copies
 of the data from a raster at multiple coarser resolutions. They are saved in
-a side car file with the extension ".ovr" appended to the original file's
-full name (e.g. "dem.tif.ovr" would contain the overviews for "dem.tif").
+a side car file with the extension \code{".ovr"} appended to the original file's
+full name (e.g. \code{"dem.tif.ovr"} would contain the overviews for \code{"dem.tif"}).
 Overview are used by GIS software to display the raster file more quickly
 when zoomed out. They are especially useful for large files.
 }
 \details{
 Generally the default arguments are good but you may want to change the method
-to "average" for continuous raster files and possibly to "mode" for
+to \code{"average"} for continuous raster files and possibly to \code{"mode"} for
 categorical files. For continuous files, especially imagery, if you are OK
 with lossy compression in the overviews you may change the compression to
 \code{"JPEG"} which should result in smaller files.
 
-#' This is a convenience wrapper to the
-\href{https://www.gdal.org/gdaladdo.html}{gdaladdo}  command line utility.
-\code{addOverviews()} sets reasonable defaults, only some of
-which can be overridden.
+\code{addOveriews} is a convenience wrapper to the
+\href{https://www.gdal.org/gdaladdo.html}{gdaladdo} utility.
+\code{addOverviews()} sets reasonable defaults, only some of which can be
+overridden.
 }

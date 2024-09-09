@@ -2,26 +2,26 @@
 % Please edit documentation in R/deleteTif.R
 \name{deleteTif}
 \alias{deleteTif}
-\title{Function to delete one or more .tif files and all associated files}
+\title{Delete one or more TIFFs and all associated files}
 \usage{
 deleteTif(x, includeVrt = TRUE)
 }
 \arguments{
-\item{x}{(character) the path to one or more .tif files.}
+\item{x}{The path to one or more TIFF files ending in \code{.tif}.}
 
-\item{includeVrt}{if TRUE (the default) .vrt files with the same base name
-will also be deleted.}
+\item{includeVrt}{if \code{TRUE} (the default) \code{.vrt} files with the same base
+name will also be deleted.}
 }
 \value{
-this function returns nothing
+Nothing is returned.
 }
 \description{
-This will delete the files listed in \code{x} and all associated files,
+\code{deleteTif} deletes the files listed in \code{x} and all associated files,
 specifically: \itemize{
-\item any file that includes the full name with .tif extension and an
-additional extension  e.g. .../name.tif.ovr.
-\item a world file which has the same base name but a ".twf" extension
-instead of ".tif"
-\item if \code{includeVrt} is TRUE a .vrt file with the same name.
+\item any file that includes the full name with \code{.tif} extension and an
+additional extension  e.g. \code{./name.tif.ovr}.
+\item a world file which has the same base name but a \code{.twf} extension
+instead of \code{.tif}
+\item if \code{includeVrt} is \code{TRUE} a \code{.vrt} file with the same name.
 }
 }

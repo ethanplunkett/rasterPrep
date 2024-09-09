@@ -14,19 +14,16 @@ These tools will be especially useful when working with large datasets
 that may load very slowly or require additional processing in GIS software
 prior to viewing unless these extra components are provided. 
 
-Note, this package was recently updated to use **sf** to call gdal 
-utilities instead of relying on them being installed on the local system.
-However, `addOverviews` still executes a shell command, this will be updated
-after the next release of *sf* which will include a bug fix to `sf::gdal_addo`
-https://github.com/r-spatial/sf/pull/2323.  In the meantime either have the
-utilities installed on your system or avoid that call. 
+This package calls gdal utilties bundled with the **sf** package and no longer
+requires them to be installed independently of R.
+
 
 ## Installation
 
 Use the code below to install rasterPrep from 
 [github](https://github.com/ethanplunkett/rasterPrep).
+
 ``` r
-# Without vignette:
 devtools::install_github("ethanplunkett/rasterPrep")
 ```
 

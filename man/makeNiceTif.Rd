@@ -2,8 +2,7 @@
 % Please edit documentation in R/makeNiceTif.R
 \name{makeNiceTif}
 \alias{makeNiceTif}
-\title{Function to compress and possibly reformat a tif with options to build
-overviews and vat}
+\title{Compress and reformat a TIFF with options to build overviews and VAT}
 \usage{
 makeNiceTif(
   source,
@@ -18,10 +17,10 @@ makeNiceTif(
 )
 }
 \arguments{
-\item{source}{(character) path to a raster file readable by gdal.}
+\item{source}{(character) path to a raster file readable by GDAL.}
 
-\item{destination}{(character) path to a .tif file to be created for viewing
-with GIS software}
+\item{destination}{(character) path to a TIFF file to be created for viewing
+with GIS software.}
 
 \item{type}{(character) If the \code{type} is used the output will be converted
 to it. It should be one of \code{"Byte"}, \code{"UInt16"}, \code{"Int16"},
@@ -44,7 +43,7 @@ For convenience \code{"near"} is silently updated to \code{"nearest"}}
 file will be created containing all the unique values in the grid and
 their associated count of cells. This is only recommended for categorical
 data and can be slow but will speed up setting up symbology of that data
-in ArcGIS.}
+in ESRI software.}
 
 \item{stats}{(logical) if \code{TRUE} than statistics are generated and saved;
 this helps GIS software transform continuous data
@@ -65,19 +64,20 @@ path that is formatted to facilitate viewing in GIS software. It does not
 return anything.
 }
 \description{
-This function creates a compressed copy of a tif with LZW compression,
-stats, and internal tiling. It will optionally build overview and add a vat.
+\code{makeNiceTif()} creates a compressed copy of a TIFF with LZW compression,
+stats, and internal tiling. It will optionally build overviews and add a VAT.
 The output should be ready to view quickly and easily in interactive GIS
 software.
 }
 \details{
-This function is intended to be called after analysis to prepare result
+\code{makeNiceTif()} is intended to be called after analysis to prepare result
 rasters so they can be viewed easily in GIS software. Because it creates
-tiled .tif files it is not a good idea to run on files in preparation for
-analysis with the raster package as that package reads by lines.
+tiled TIFF files it is not a good idea to run on files in preparation for
+analysis with the \pkg{terra} package as it reads by lines, and does not
+benefit from overviews.
 \subsection{No Data values and changes in type}{
 
-\code{type} is currently passed to gdal_translate which will reset the
+\code{type} is currently passed to \code{gdal_translate} which will reset the
 type to the desired value but will \strong{NOT} update no data values of cells.
 One of two things will happen. If the existing no data value is within the
 values supported by the output type they will retain that value. Otherwise
@@ -90,21 +90,21 @@ For example moving from an Int32 to and Int16 will probably work if the
 initial NA value is high because it will will be truncated to the highest
 value in the Int16 and which is what the new no data value will be set to.
 The default \code{noDataValue} of the output when using \code{type} and not
-specifying the \code{noDataValue} is determined by \code{\link{assessType}}.
+specifying the \code{noDataValue} is determined by \link{assessType}.
 
 If you use \code{type} and your output raster ends up with values cells that were
 originally no data you might be able to remedy this by setting
 \code{noDataValue} to that value.
 
 If you want to change the type you can do so safely in a call to
-warpToReference prior to using this function as gdalwarp can reset the type
-and reset the values of the NA cell to the new noDataValue.
+\code{\link[=warpToReference]{warpToReference()}} prior to using this function as gdalwarp can reset
+the type and reset the values of the NA cell to the new \code{noDataValue}.
 
 This is a wrapper to the \code{gdaltranslate} command line utility coupled with
 \code{\link[=addOverviews]{addOverviews()}} and \code{\link[=addVat]{addVat()}}.  For finer control over
 translation see \code{\link[gdalUtilities:gdal_translate]{gdalUtilities::gdal_translate()}}.
 
 If you intend to create a color table for a categorical raster first call
-\code{\link[=addColorTable]{addColorTable()}} and then pass the .vrt file it creates to this function.
+\code{\link[=addColorTable]{addColorTable()}} and then pass the \code{.vrt} file it creates to this function.
 }
 }

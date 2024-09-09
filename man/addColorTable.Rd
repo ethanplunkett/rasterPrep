@@ -2,12 +2,12 @@
 % Please edit documentation in R/addColorTable.R
 \name{addColorTable}
 \alias{addColorTable}
-\title{Function to create a .vrt file with a color table}
+\title{Create a virtual raster file with a color table}
 \usage{
 addColorTable(x, table)
 }
 \arguments{
-\item{x}{(character) the path to raster file containing categorical data,
+\item{x}{The path to raster file containing categorical data,
 must be a single band byte encoded file.}
 
 \item{table}{a  \code{data.frame}  with two or three columns:
@@ -21,31 +21,29 @@ present this will be used in the map legend.}
 }}
 }
 \value{
-this function creates a .vrt file but returns nothing.
+\code{addColorTable}  creates a \code{.vrt} file but returns nothing.
 }
 \description{
-This allows adding a color table to a byte encoded categorical raster in
-which each value is assigned a unique color and, optionally, a category
-label.
+\code{addColorTable()}  creates a virtual raster file (\code{.vrt})
+alongside a byte encoded raster that references the raster and includes
+the color table.  The \code{.vrt} is a GDAL file that describes a
+dataset to be composed of other datasets. it can be read directly by
+some GIS software or can be passed to \code{\link[=makeNiceTif]{makeNiceTif()}} or GDAL translate
+directly to combine the data and color table in a single TIFF file.
 }
 \details{
-The \code{addColorTable} function creates a .vrt file alongside a raster
-that references the raster and includes the color table.  .vrt is a GDAL
-virtual format file that describes a dataset to be composed of other
-datasets.  The .vrt can be read directly by ESRI GIS software or can be
-passed to \code{\link[=makeNiceTif]{makeNiceTif()}} (or GDAL translate directly) in which
-case the data and symbology will be united in an output tif.
+Note: The color table will include all values between 0 and the maximum
+value in the raster.  If your raster doesn't use some values in the sequence
+the missing values will appear in the key with white as the associated color
+and an empty string as the category label.
+Generally it works best if you recode your raster to have values 0 to N-1,
+or 1 to N.
 
-Note: The key will include all values between 0 and the maximum value in the
-raster.  If your raster doesn't use some values in the sequence the missing
-values will appear in the key with white as the associated color and an
-empty string as the category label. Generally it works best if you recode
-your raster to have values 0 to N-1, or 1 to N.
-My workflow is generally:
+The suggested workflow is:
 
 \enumerate{
-\item \code{addColorTable()}   create .vrt alongside existing .tif
-\item \code{\link[=makeNiceTif]{makeNiceTif()}}  called directly on the .vrt to create a .tif
+\item \code{addColorTable()}   create \code{.vrt} alongside existing  TIFF
+\item \code{\link[=makeNiceTif]{makeNiceTif()}}  called directly on the \code{.vrt} to create a TIFF
 with embedded color table, tiled data, stats, and overviews.
 \item optionally call \code{\link[=addVat]{addVat()}} to build a value attribute table.
 }

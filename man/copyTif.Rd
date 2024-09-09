@@ -2,23 +2,24 @@
 % Please edit documentation in R/copyTif.R
 \name{copyTif}
 \alias{copyTif}
-\title{Function to copy a tif and all its associated files}
+\title{Copy a TIFF and all its associated files}
 \usage{
 copyTif(from, to, includeVrt = TRUE, overwrite = FALSE)
 }
 \arguments{
-\item{from}{(character) path to a tif to be copied}
+\item{from}{(character) path to a TIFF to be copied}
 
 \item{to}{(character) path where copy will be created}
 
-\item{includeVrt}{(logical) if TRUE also copy an associated .vrt file with
-same base name.}
+\item{includeVrt}{(logical) if \code{TRUE} also copy an associated \code{.vrt} file
+with same base name.}
 
-\item{overwrite}{(logical) if TRUE overwrite existing file if FALSE don't.}
+\item{overwrite}{(logical) if \code{TRUE} overwrite existing file if \code{FALSE}
+don't.}
 }
 \value{
-this function returns nothing
+Nothing is returned.
 }
 \description{
-Function to copy a tif and all its associated files
+Copy a TIFF and all its associated files
 }
