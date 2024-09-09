@@ -1,12 +1,11 @@
 
-
-
 ## rasterPrep 0.2.0.9002
 
-  * Add dependency on sf >=1.0-16.  
   * Use sf's gdal for overviews.
+  * update documentation
 
-## rasterPrep 0.2.0.9001
+
+# rasterPrep 0.2.0.9001
 
 ### Breaking Changes
 
