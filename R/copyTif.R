@@ -12,9 +12,19 @@
 copyTif <- function(from, to, includeVrt = TRUE, overwrite = FALSE) {
   # Rename a tif file (and it's associated files)
   stopifnot(grepl(".tif$", from, ignore.case = TRUE))
-  targets <- findTifFiles(from, includeVrt = includeVrt)
+  stopifnot(grepl(".tif$", to, ignore.case = TRUE))
+
+  from <- normalizePath(from, winslash = "/")
+  to <- normalizePath(to, winslash = "/", mustWork = FALSE)
+
+  targets <- findTifFiles(from, includeVrt = includeVrt) |>
+    normalizePath(winslash = "/")
+  from <- normalizePath(from, winslash = "/")
+  to <- normalizePath(to, winslash = "/", mustWork = FALSE)
+
   a <- gsub(".tif$", "", from, ignore.case = TRUE)
   b <- gsub(".tif$", "", to, ignore.case = TRUE)
+
   new <- gsub(a, b, targets, ignore.case = TRUE)
   if (rasterPrepOptions()$verbose)
     print(data.frame(from = targets, to = new))

@@ -13,7 +13,8 @@ test_that("addVat() works", {
   if (FALSE)
     terra::plot(r0)
 
-  # Classify into 10 height groups
+  # Classify into 10 height groups not this is now an integer raster
+  # but it does not have an internal attribute table.  see cats() and levels()
   r1 <- r0
   v <- terra::values(r1)
   class_names <- levels(cut(v, 10))
@@ -51,3 +52,37 @@ test_that("addVat() works", {
   expect_equal(names(v3), c("VALUE", "COUNT", names(at)[2]))
 
 })
+
+
+
+test_that("addVat() works with prexisting classes", {
+  # Issue 11
+  # addVat() fails with a TIFF with a pre-existing aux.xml with class names
+  #
+
+
+  dir <- withr::local_tempdir("addVat_classed")
+
+  # Paths
+
+  # A cropped version of the file Brad shared in issue 11 on github:
+  original <- system.file("extdata/class_example.tif", package = "rasterPrep")
+  tif <- file.path(dir, "class_example.tif")  # test copy path
+  vat <- paste0(tif, ".vat.dbf")  # path to vat
+
+  # Make copy in temp dir for testing
+  copyTif(original, tif)
+
+  # Test
+  expect_no_error(addVat(tif))
+  expect_true(file.exists(vat))
+
+  v <- foreign::read.dbf(vat, as.is = TRUE)
+
+  expect_equal(colnames(v), c("VALUE", "COUNT", "class"))
+  expect_snapshot(tail(v, 3))
+
+})
+
+
+

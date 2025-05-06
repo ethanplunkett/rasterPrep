@@ -15,3 +15,13 @@
       9      9   483
       10    10    69
 
+# addVat() works with prexisting classes
+
+    Code
+      tail(v, 3)
+    Output
+         VALUE COUNT class
+      10    16   942    23
+      11    17   233    25
+      12    18   133    26
+

@@ -58,21 +58,43 @@ addVat <- function(x, attributes, skipCount = FALSE) {
   } else {
 
     ft <- terra::freq(r)
+    ft <- ft[ , !names(ft) == "layer", drop = FALSE]
 
+    # This section deals with rasters that already have an attribute table
     # terra::freq() returns labels as the "value" if the raster has labels
     # The code  below retrieves the associated values
     if (!is.null(terra::cats(r)[[1]])) {
+
+      # First replace categories in freq table with actual values
       names(ft)[names(ft) == "value"] <- "category"
-      cgs <- terra::cats(r)[[1]]
-      stopifnot(all(ft$category %in% cgs$category))
-      mv <- match(ft$category, cgs$category)
-      ft$value <- cgs$value[mv]
+      l <- terra::levels(r)[[1]]
+      names(l)  <- c("value", "category")
+      mv <- match(ft$category, l$category)
+      ft$value <- l$value[mv]
+      ft$category <- NULL
+      names(ft)[names(ft) == "value"] <- "VALUE"
+      names(ft)[names(ft) == "count"] <- "COUNT"
+
+      # Now join in remaining preexisting attributes
+      # Assuming here that the first column represents the raster values
+      # as there doesn't seem to be a single convention for column names.
+      old_attr <- terra::cats(r)[[1]]
+      names(old_attr)[1] <- "VALUE"
+      stopifnot(all(ft$VALUE %in% old_attr$VALUE))
+      mv <- match(ft$VALUE, old_attr$VALUE)
+      ft <- cbind(ft, old_attr[mv, !c("VALUE", "COUNT") %in% names(old_attr),
+                               drop = FALSE])
+      new_order <- c("VALUE", "COUNT",
+                     names(ft)[!names(ft) %in% c("VALUE", "COUNT")])
+
+      ft <- ft[, new_order]
+
+
+    } else {
+      names(ft)[names(ft) == "value"] <- "VALUE"
+      names(ft)[names(ft) == "count"] <- "COUNT"
+      ft <- ft[, c("VALUE", "COUNT"), drop = FALSE]
     }
-
-    names(ft)[names(ft) == "value"] <- "VALUE"
-    names(ft)[names(ft) == "count"] <- "COUNT"
-
-    ft <- ft[, c("VALUE", "COUNT"), drop = FALSE]
   }
 
   if (has.att) {

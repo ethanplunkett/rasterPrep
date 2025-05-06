@@ -1,9 +1,16 @@
+## rasterPrep 0.2.0.9003
+
+ * Fix issue (#11) with `addVat()` that caused it to fail when there is already
+  an `.aux.xml` sidecar file with category labels associated with the values
+  in the raster. If the user hasn't supplied `attributes` (an argument)
+  then the columns in the `.aux.xml` are now incorporated into the
+  vat along with the `VALUE` and `COUNT` columns. Previously it would throw
+  an error.
 
 ## rasterPrep 0.2.0.9002
 
   * Use sf's gdal for overviews.
-  * update documentation
-
+  * Update documentation
 
 # rasterPrep 0.2.0.9001
 

@@ -50,7 +50,7 @@ test_that("rasterPrep() addOverviews() works", {
   expect_length(getRastInfo(f2), 1)
 
   expect_warning(averageover <- terra::rast(ovf))
-  avgrsamp <- nearover[10, 10:18]
+  avgrsamp <- averageover[10, 10:18]
 
   if (FALSE)
     terra::plot(averageover)
