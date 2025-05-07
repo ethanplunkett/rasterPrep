@@ -1,7 +1,7 @@
 test_that("addColorTable() works", {
 
   # Setup
-  dir <- withr::local_tempdir("addo")
+  dir <- withr::local_tempdir("addColorTable")
 
   # Paths
   original <- system.file("ex/elev.tif", package = "terra")

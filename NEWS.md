@@ -6,6 +6,10 @@
   then the columns in the `.aux.xml` are now incorporated into the
   vat along with the `VALUE` and `COUNT` columns. Previously it would throw
   an error.
+  
+ * Remove dependency on system gdal utilities from `addColorTable()`.  This 
+ function was mistakenly omitted when the rest of the package switched over
+ to using **sf** to access the utilities in 0.2.0.9001.
 
 ## rasterPrep 0.2.0.9002
 

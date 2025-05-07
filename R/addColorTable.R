@@ -118,21 +118,36 @@ addColorTable <- function(x, table) {
     })
   }
 
-  # Make vrt file to use as templace
+  # Make vrt file to use as template
+  usesf <- rasterPrepOptions()$usesf
 
-  # Gdal translate while assigning projection
-  command <- "gdal_translate"
-  command <- paste0(command, " ",
-                    shQuote(x), " ", shQuote(vrt.file),
-                    " -of VRT")
-  if (verbose)
-    cat("Creating .vrt file with system command:\n", command, "\n")
+  if (usesf) {
+    sf::gdal_utils("translate",
+                   source = x,
+                   destination = vrt.file,
+                   options = c("-of", "VRT"))
 
-  a <- system(command = command, intern = TRUE, wait = TRUE)
-  a <-  gsub("[[:blank:]]", " ", a)
-  if (!file.exists(vrt.file)) {
-    print(a)
-    stop("The vrt file was not created. The function returned: ", a)
+    if (!file.exists(vrt.file)) {
+      stop("The vrt file was not created.")
+    }
+  } else {
+    # Use shell to invoke system command
+
+    # Gdal translate while assigning projection
+    command <- "gdal_translate"
+    command <- paste0(command, " ",
+                      shQuote(x), " ", shQuote(vrt.file),
+                      " -of VRT")
+    if (verbose)
+      cat("Creating .vrt file with system command:\n", command, "\n")
+
+    a <- system(command = command, intern = TRUE, wait = TRUE)
+    a <-  gsub("[[:blank:]]", " ", a)
+
+    if (!file.exists(vrt.file)) {
+      print(a)
+      stop("The vrt file was not created. The function returned: ", a)
+    }
   }
 
   # Read in template vrt file

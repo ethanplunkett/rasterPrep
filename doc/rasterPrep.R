@@ -4,138 +4,120 @@ knitr::opts_chunk$set(
   comment = "#>"
 )
 
-## ---- echo = TRUE, message = FALSE, warning = FALSE---------------------------
-# Load packages
+## ----install, eval = FALSE----------------------------------------------------
+# if (!require("remotes"))
+#   install.packages("remotes")
+# library("remotes")
+# remotes::install_github("ethanplunkett/rasterPrep")
+
+## ----echo = TRUE, message = FALSE, warning = FALSE----------------------------
 library(rasterPrep)
 library(gdalUtilities)  # for ogr2ogr() used to reproject vector Shapefiles
-library(terra)  # for crs() and rast() 
+library(terra)  # for crs() and rast()
 
-# Note because I'm pulling data from one read-only directory and writing to a
-# a second I'm defining complete paths here.  Often it's easier to set a working
-# directory then use file names when calling the functions.
-
-# Set paths for retrieving input data included with this package
-inPaths <- list(
-  bound = system.file("extdata","Amherst.shp" , package = "rasterPrep"),
-  slope = system.file("extdata","slope.tif" , package = "rasterPrep"), 
-  roads =  system.file("extdata","roads.shp" , package = "rasterPrep"),
-  key = system.file("extdata","roadClassKey.csv" , package = "rasterPrep")
+## -----------------------------------------------------------------------------
+input <- list(
+  bound = system.file("extdata", "Amherst.shp", package = "rasterPrep"),
+  slope = system.file("extdata", "slope.tif", package = "rasterPrep"),
+  roads =  system.file("extdata", "roads.shp", package = "rasterPrep"),
+  key = system.file("extdata", "roadClassKey.csv", package = "rasterPrep")
 )
 
-# Output directory: you might want to replace this with a path of your choosing:
-outDir <- tempdir() 
+## -----------------------------------------------------------------------------
+outDir <- file.path(tempdir(), "rasterPrepDemo")
+dir.create(outDir, showWarnings = FALSE)
 
-# Set output paths 
-outPaths <- list(
-  ref = file.path(outDir, "reference.tif"),        # Our reference grid
-  slopeTemp = file.path(outDir, "slopeTemp.tif"),  # Intermediate raster file
-  slope = file.path(outDir, "slope.tif"),          # Slope raster
-  roadLines = file.path(outDir, "roadLines.shp"), # Reprojected vector roads
-  roadsTemp = file.path(outDir, "roads1.tif"),     # Intermediate raster file
-  roads  = file.path(outDir, "roads.tif"),         # Binary Roads raster
-  roadClass  = file.path(outDir, "roadClass.tif") )# Road class raster
+out <-
+  list(ref = file.path(outDir, "reference.tif"),        # reference
+       slopeTemp = file.path(outDir, "slopeTemp.tif"),  # Intermediate slope
+       slope = file.path(outDir, "slope.tif"),          # Slope
+       roadLines = file.path(outDir, "roadLines.shp"),  # Transformed roads
+       roadsTemp = file.path(outDir, "roads1.tif"),     # Intermediate roads
+       roads  = file.path(outDir, "roads.tif"),         # Binary Roads
+       roadClass  = file.path(outDir, "roadClass.tif")) # Road class
 
-# Delete output so rerunning doesn't cause problems
-if(file.exists(outPaths$roadLines))
-  file.remove(list.files(outDir, "roadLines", full.names = TRUE))
+## ----echo = FALSE, eval = TRUE------------------------------------------------
+# Extra cleanup for vignette, to cleanup old output when rerunning.
+# This deletes the entire contents of outDir!  Do not add to your workflow.
+unlink(outDir, recursive = TRUE)
+dir.create(outDir, showWarnings = FALSE)
 
-for(a in setdiff(names(outPaths), "roadLines")){
-  if(file.exists(outPaths[[a]]))
-    deleteTif(outPaths[[a]])
-}
+## ----echo = TRUE, message = FALSE, warning = FALSE, results = FALSE-----------
+makeReference(polyFile = input$bound, destination = out$ref, cellsize = 30)
+
+## ----echo = TRUE, message = FALSE, warning = FALSE, results = FALSE-----------
+warpToReference(input$slope, out$slopeTemp, reference = out$ref,
+                method = "bilinear")
+
+## ----clip slope, echo = TRUE, message = FALSE, warning = FALSE, results = FALSE----
+warpToReference(out$slopeTemp, out$slope, reference =  out$ref,
+                clip = input$bound)
 
 
-
-## ---- echo = TRUE, message = FALSE, warning = FALSE, results = FALSE----------
-
-makeReference(polyFile = inPaths$bound, destination = outPaths$ref, cellsize = 30)
-
-
-## ---- echo = TRUE, message = FALSE, warning = FALSE, results = FALSE----------
-
-# Reproject to final extent, projection and alignment
-warpToReference(inPaths$slope, outPaths$slopeTemp, reference = outPaths$ref, method = "bilinear")
-
-# Assign NA outside of boundary
-warpToReference(outPaths$slopeTemp, outPaths$slope, reference =  outPaths$ref, clip = inPaths$bound)
-
+## ----delete slopeTemp---------------------------------------------------------
 # Delete intermediate file
-deleteTif(outPaths$slopeTemp)
+deleteTif(out$slopeTemp)
+
+## ----visualize slope----------------------------------------------------------
+slope <- rast(out$slope)
+plot(slope)
 
 
-## ---- echo = TRUE, message = FALSE, warning = FALSE, results = FALSE----------
-
-# Reproject vector to reference projection
-refProj <- terra::crs(terra::rast(outPaths$ref))  #  well known text of projection
+## ----echo = TRUE, message = FALSE, warning = FALSE, results = FALSE-----------
+refProj <- terra::crs(terra::rast(out$ref))  # well known text of projection
 projFile <- file.path(outDir, "refproj.txt")
-cat(refProj, file = projFile)   #well known text in file
-gdalUtilities::ogr2ogr(inPaths$roads, outPaths$roadLines, t_srs = projFile)
+cat(refProj, file = projFile)   # well known text in file
+gdalUtilities::ogr2ogr(input$roads, out$roadLines, t_srs = projFile)
 
+## ----echo = TRUE, message = FALSE, warning = FALSE, results = FALSE-----------
+rasterizeToReference(out$roadLines, destination = out$roadClass,
+                     reference = out$ref, attribute = "ROADCLASS",
+                     type = "byte")
 
-## ---- echo = TRUE, message = FALSE, warning = FALSE, results = FALSE----------
-rasterizeToReference(outPaths$roadLines, destination = outPaths$roadClass, reference = outPaths$ref, attribute = "ROADCLASS", type = "byte")
+## ----echo = TRUE, message = FALSE, warning = FALSE, results = FALSE-----------
+rasterizeToReference(input$bound, out$roadsTemp, reference = out$ref,
+                     burn = 0)
 
+## -----------------------------------------------------------------------------
+rasterizeToReference(out$roadLines, destination = out$roadsTemp,
+                     allTouched = TRUE, burn = 1)
 
-## ---- echo = TRUE, message = FALSE, warning = FALSE, results = FALSE----------
+## -----------------------------------------------------------------------------
+warpToReference(out$roadsTemp, out$roads, reference = out$ref,
+                clip = input$bound)
 
-# Burn in zero everywhere within the study area boundary creating a new raster file in the process
-rasterizeToReference(inPaths$bound, outPaths$roadsTemp, 
-                     reference = outPaths$ref, burn = 0, allTouched = TRUE)
+## -----------------------------------------------------------------------------
+deleteTif(out$roadsTemp)
+roads <- rast(out$roads)
+plot(roads)
 
-# Burn in 1 where there are roads (on top of values from prior step)
-rasterizeToReference(outPaths$roadLines, destination = outPaths$roadsTemp, 
-                     burn = 1)
-
-# Write to new file while clipping.  Without this step road cells outside of the 
-#  study boundary will have a value of 1. This re-sets them to NA.
-warpToReference(outPaths$roadsTemp, outPaths$roads, reference = outPaths$ref,
-                clip = inPaths$bound)
-
-# Delete intermediate file
-deleteTif(outPaths$roadsTemp)
-
-## ---- results= FALSE----------------------------------------------------------
-cat("Files created here:\n\t",
-    normalizePath(outPaths$ref), " our reference raster\n\t",
-    normalizePath(outPaths$roadClass), " road class\n\t", 
-    normalizePath(outPaths$roads), " roads 1, other study area cells 0\n\t", 
-    normalizePath(outPaths$slope), " slope."
-    )
-
-# Confirm that projections information is there for all files
-# Not required but changes in R's handling of spatial data have broken this in the past
-refcrs <- terra::crs(terra::rast(outPaths$ref))  # wkt of refrence grid we created
-if(refcrs == "") stop("Reference grid doesn't have projection information")
-for(file in c("slope", "roads", "roadClass")){
-  filecrs <- terra::crs(terra::rast(outPaths[[file]]))
-  stopifnot(filecrs == refcrs)
-}
-
-
-## ---- results= FALSE----------------------------------------------------------
-  final.dir <- file.path(outDir, "final")
- dir.create(final.dir, showWarnings = FALSE)
- makeNiceTif(outPaths$slope, file.path(final.dir,  "slope.tif") , overviewResample = "average")
-
+## ----final setup--------------------------------------------------------------
+finalDir <- file.path(outDir, "final")
+dir.create(finalDir, showWarnings = FALSE)
+final <- list()
+final$slope <- file.path(finalDir,  "slope.tif")
+final$roads <- file.path(finalDir,  "roads.tif")
+final$roadclass <- file.path(finalDir, "roadclass.tif")
 
 ## ----results= FALSE-----------------------------------------------------------
-key <- read.csv(inPaths$key, stringsAsFactors = FALSE)  
-
-# Note the table must have "value", and "color" columns and can optionally 
-# have a "category" column will class labels
-vrt.file <- addColorTable(outPaths$roadClass, table = key)
-
+makeNiceTif(out$slope, final$slope, overviewResample = "average")
 
 ## -----------------------------------------------------------------------------
-finalRoadClass <- file.path(final.dir,  "roadClass.tif")
-makeNiceTif(source = vrt.file, destination = finalRoadClass, overwrite = TRUE, stats = FALSE )
+makeNiceTif(source = out$roads, destination = final$roads,
+            overwrite = TRUE, overviewResample = "near", stats = FALSE,
+            vat = TRUE)
 
 ## -----------------------------------------------------------------------------
+key <- read.csv(input$key, stringsAsFactors = FALSE)
+print(key)
 
-addVat(x = finalRoadClass, attributes = key)
-
+## ----results = FALSE----------------------------------------------------------
+vrt.file <- addColorTable(out$roadClass, table = key) # returns path to file
 
 ## -----------------------------------------------------------------------------
-roadWithVAT <- file.path(final.dir,  "roadsWithVAT.tif")
-makeNiceTif(source = outPaths$roadClass, destination = roadWithVAT, overwrite = TRUE, overviewResample = "near", stats = FALSE, vat = TRUE )
+makeNiceTif(source = vrt.file, destination = final$roadclass,
+            overwrite = TRUE, stats = TRUE)
+
+## -----------------------------------------------------------------------------
+addVat(x = final$roadclass, attributes = key)
 
